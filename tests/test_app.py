@@ -4,19 +4,19 @@ from pathlib import Path
 
 from django.apps import apps
 
-import mvp_access_control
+import mvp_accounts
 
-PACKAGE_ROOT = Path(mvp_access_control.__file__).parent
-COTTON_ROOT = PACKAGE_ROOT / "templates" / "cotton" / "mvp_access_control"
+PACKAGE_ROOT = Path(mvp_accounts.__file__).parent
+COTTON_ROOT = PACKAGE_ROOT / "templates" / "cotton" / "mvp_accounts"
 
-EXAMPLE_TAG = "c-mvp_access_control.example"
+EXAMPLE_TAG = "c-mvp_accounts.example"
 
 
 class TestPackagedApp:
     """What a host project gets after installing and adding it to INSTALLED_APPS."""
 
     def test_app_is_installed(self) -> None:
-        assert apps.is_installed("mvp_access_control")
+        assert apps.is_installed("mvp_accounts")
 
     def test_components_are_where_cotton_looks_for_them(self) -> None:
         """Cotton resolves every tag this package ships under one directory.

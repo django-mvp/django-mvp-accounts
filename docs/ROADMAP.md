@@ -1,4 +1,4 @@
-# Roadmap — django-mvp-access-control
+# Roadmap — django-mvp-accounts
 
 <!--
   The order the work happens in, and what each release is gated on.

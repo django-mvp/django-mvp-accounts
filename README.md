@@ -1,4 +1,4 @@
-# django-mvp-access-control
+# django-mvp-accounts
 
 Sign-up, sign-in, account management and API access for
 [django-mvp](https://github.com/django-mvp/django-mvp) projects, assembled from
@@ -39,7 +39,7 @@ which will be retired once everything it provides is available here.
 ## Installation
 
 ```bash
-pip install django-mvp-access-control
+pip install django-mvp-accounts
 ```
 
 Then add it to `INSTALLED_APPS`, after `mvp`:
@@ -48,7 +48,7 @@ Then add it to `INSTALLED_APPS`, after `mvp`:
 INSTALLED_APPS = [
     # ...
     "mvp",
-    "mvp_access_control",
+    "mvp_accounts",
 ]
 ```
 
@@ -76,9 +76,9 @@ django-mvp supplies, so it does nothing useful on its own.
 ## Contributing
 
 Standards for this repository live in
-[CONSTITUTION.md](https://github.com/django-mvp/django-mvp-access-control/blob/main/CONSTITUTION.md),
+[CONSTITUTION.md](https://github.com/django-mvp/django-mvp-accounts/blob/main/CONSTITUTION.md),
 and the vocabulary to use in issues and commits lives in
-[CONTEXT.md](https://github.com/django-mvp/django-mvp-access-control/blob/main/CONTEXT.md).
+[CONTEXT.md](https://github.com/django-mvp/django-mvp-accounts/blob/main/CONTEXT.md).
 
 ```bash
 poetry install
@@ -97,4 +97,4 @@ poetry run python manage.py runserver
 
 ## License
 
-MIT. See [LICENSE](https://github.com/django-mvp/django-mvp-access-control/blob/main/LICENSE).
+MIT. See [LICENSE](https://github.com/django-mvp/django-mvp-accounts/blob/main/LICENSE).

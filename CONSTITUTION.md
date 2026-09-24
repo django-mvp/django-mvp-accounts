@@ -1,4 +1,4 @@
-# django-mvp-access-control Constitution
+# django-mvp-accounts Constitution
 
 The standards every change to this repository is held to. Read it before
 planning a change and again when reviewing one.

@@ -1,4 +1,4 @@
-"""Django settings for testing django-mvp-access-control.
+"""Django settings for testing django-mvp-accounts.
 
 The application configuration — INSTALLED_APPS, MIDDLEWARE, TEMPLATES,
 EASY_ICONS, FLEX_MENUS, MVP_CONFIG — lives in ``demo/settings.py`` and is
@@ -15,7 +15,7 @@ Only what a test run needs differently is set below.
 
 from demo.settings import *  # noqa: F403
 
-SECRET_KEY = "django-insecure-test-key-for-mvp_access_control-tests-only"
+SECRET_KEY = "django-insecure-test-key-for-mvp_accounts-tests-only"
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 

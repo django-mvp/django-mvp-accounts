@@ -1,6 +1,6 @@
-# django-mvp-access-control
+# django-mvp-accounts
 
-Domain vocabulary for django-mvp-access-control: sign-up, sign-in, account
+Domain vocabulary for django-mvp-accounts: sign-up, sign-in, account
 management and API access for django-mvp projects, assembled from third-party
 packages.
 
@@ -61,14 +61,8 @@ _Avoid_: auth pages, login screens.
 
 ## Terms deliberately not used
 
-**Access control**, as a description of what the package does: in most
-software it means permissions, roles and authorisation — who may do what. The
-package is named for access to your own account. Inside this repository, say
-"account" or "sign-in" for what it does, and "authorisation" for what it does
-not.
-
-**Permissions, roles, groups**: authorisation. Out of scope. They belong to the
-host project.
+**Access control, permissions, roles, groups**: authorisation, meaning who may
+do what. Out of scope. They belong to the host project.
 
 **Integration**, for a supported third-party package: it was the name of
 django-accounts-center's plugin system, which this package does not carry

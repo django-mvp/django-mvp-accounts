@@ -29,7 +29,7 @@
   Replace the rows below.
 -->
 
-These are the standing directions django-mvp-access-control works
+These are the standing directions django-mvp-accounts works
 toward. Each one is a capability or quality to steer by, not a task that gets
 ticked off. Whether any goal has been served well enough is decided in the
 roadmap, in the specifications, and in review, never by the goal itself.

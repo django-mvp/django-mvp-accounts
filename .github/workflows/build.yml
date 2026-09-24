@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'mvp_access_control/**'
+      - 'mvp_accounts/**'
       - 'pyproject.toml'
       - 'poetry.lock'
       - '.pre-commit-config.yaml'
@@ -22,5 +22,5 @@ jobs:
   call-build:
     uses: django-mvp/shared/.github/workflows/build.yml@v0.4.1
     with:
-      source-dir: mvp_access_control
+      source-dir: mvp_accounts
     secrets: inherit

@@ -1,6 +1,6 @@
-# AGENTS.md — Agent configuration for django-mvp-access-control
+# AGENTS.md — Agent configuration for django-mvp-accounts
 
-django-mvp-access-control gives a django-mvp project sign-up, sign-in,
+django-mvp-accounts gives a django-mvp project sign-up, sign-in,
 account management and, when Django REST framework is installed, per-person API
 tokens. It implements none of those itself: allauth, Django REST framework and
 a token package do the work, and this package configures them and renders their
@@ -44,7 +44,7 @@ that introduced it.
 `demo/` is a Django project running on django-mvp's application shell. It is
 how this package is looked at while it is being written, and it is never
 deployed. Nothing in it is distributed — `pyproject.toml` packages
-`mvp_access_control` alone.
+`mvp_accounts` alone.
 
 `tests/settings.py` inherits `demo/settings.py` rather than restating it, so
 there is one description of the shell.
@@ -69,10 +69,10 @@ to run unless `DEBUG` is on.
 ## Components
 
 Components live at
-`mvp_access_control/templates/cotton/mvp_access_control/<name>.html`.
+`mvp_accounts/templates/cotton/mvp_accounts/<name>.html`.
 Cotton maps a tag's first segment onto that directory, so
-`<c-mvp_access_control.example>` resolves to
-`cotton/mvp_access_control/example.html`.
+`<c-mvp_accounts.example>` resolves to
+`cotton/mvp_accounts/example.html`.
 
 The directory name is load-bearing and fails quietly: a component Cotton cannot
 resolve renders as empty output rather than raising, so renaming the directory

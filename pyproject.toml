@@ -1,5 +1,5 @@
 [project]
-name = "django-mvp-access-control"
+name = "django-mvp-accounts"
 description = "Sign-up, sign-in, account management and API access for django-mvp projects, built from the third-party packages that already do each job well"
 # Pre-viable. The first published release is 0.1.0, cut once the Essential
 # goals in GOALS.md are delivered; until then the version stays in 0.0.x and
@@ -32,15 +32,15 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/django-mvp/django-mvp-access-control"
-Repository = "https://github.com/django-mvp/django-mvp-access-control"
-Issues = "https://github.com/django-mvp/django-mvp-access-control/issues"
+Homepage = "https://github.com/django-mvp/django-mvp-accounts"
+Repository = "https://github.com/django-mvp/django-mvp-accounts"
+Issues = "https://github.com/django-mvp/django-mvp-accounts/issues"
 
 [tool.poetry]
 # The demo project is deliberately absent: it is a place to look at this
 # package while it is being written, not something a consuming project should
 # receive.
-packages = [{ include = "mvp_access_control" }]
+packages = [{ include = "mvp_accounts" }]
 requires-poetry = '>=2.0,<3.0'
 
 # django-cotton is deliberately absent from the dependency list. django-mvp
@@ -78,7 +78,7 @@ show_missing = true
 
 [tool.coverage.run]
 branch = true
-source = ["mvp_access_control"]
+source = ["mvp_accounts"]
 
 [tool.djlint]
 profile = "django"
@@ -108,7 +108,7 @@ extend = "ruff-base.toml"
 "demo/*" = ["S101", "S105", "S106"]
 
 [tool.mypy]
-files = ["mvp_access_control"]
+files = ["mvp_accounts"]
 disallow_untyped_defs = "False"
 disallow_any_unimported = "False"
 ignore_missing_imports = "True"
@@ -118,7 +118,7 @@ warn_return_any = "True"
 warn_unused_ignores = "True"
 show_error_codes = "True"
 exclude = ["docs/", "migrations/", "tests/settings.py"]
-mypy_path = "mvp_access_control/"
+mypy_path = "mvp_accounts/"
 plugins = ["mypy_django_plugin.main"]
 
 [tool.django-stubs]

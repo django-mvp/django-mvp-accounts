@@ -2,13 +2,14 @@
 
 django-mvp-accounts gives a django-mvp project sign-up, sign-in,
 account management and, when Django REST framework is installed, per-person API
-tokens. It implements none of those itself: allauth, Django REST framework and
-a token package do the work, and this package configures them and renders their
+tokens. It implements none of those itself: an existing authentication package
+(django-allauth, the only one supported so far), Django REST framework and a
+token package do the work, and this package configures them and renders their
 pages through django-mvp's application shell. `CONTEXT.md` defines the terms,
 and "access" there means access to your own account, never authorisation.
 
-Before building anything, check whether allauth or Django REST framework
-already does it (`CONSTITUTION.md`, Article XIII). Anything that needs Django
+Before building anything, check whether the authentication package or Django
+REST framework already does it (`CONSTITUTION.md`, Article XIII). Anything that needs Django
 REST framework must be absent, not broken, in a project that has not installed
 it (Article XIV). Permissions, roles and groups are out of scope (Article XV).
 

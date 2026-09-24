@@ -7,30 +7,35 @@ the third-party packages that already do each of those jobs well.
 It is not usable yet. Nothing has been released, and the package does nothing
 beyond installing cleanly.
 
-## Scope and philosophy
+## Scope & philosophy
 
 A project built on django-mvp needs people to be able to create an account,
 sign in, change their details, and get back in when they forget how. Once the
-project has an API, those same people need a way to reach it — a token they can
-create, see, and revoke themselves. This package is where all of that is wired
-together, so each project does not do it again by hand.
+project has an API, those same people need a way to reach it: a token they can
+create, see and revoke themselves. This package is where that is wired into
+django-mvp, so each project does not do it again by hand.
 
-It implements none of it. Accounts, sign-in, email verification and two-factor
-authentication come from [django-allauth](https://allauth.org). API access
-comes from [Django REST framework](https://www.django-rest-framework.org) and a
-token package alongside it, and only appears when the project has installed
-Django REST framework. What this package owns is the part in between: the
-settings those packages need, the pages they render through django-mvp's
-application shell, and the places they appear in its menus.
+It implements none of it. Accounts, sign-in and recovery come from an existing
+Django authentication package, and API tokens come from
+[Django REST framework](https://www.django-rest-framework.org) and a token
+package alongside it. The package is not tied to one authentication package,
+but [django-allauth](https://allauth.org) is the only one supported for now.
+What this package owns is the part in between: the pages those packages render
+through django-mvp's application shell, and the places they appear in its menus.
+What appears depends on what the project has installed. Nothing shows up for a
+package or a feature the project has not turned on.
 
 It is about access to your *own* account. It does not decide what a signed-in
-person is allowed to do. Roles, groups, object permissions and
-authorisation rules stay the host project's, and belong in a different package
-if they belong in one at all.
+person is allowed to do: roles, groups, object permissions and authorisation
+rules stay the host project's. Handling people's data rights, such as producing
+what a site holds about someone, belongs to
+[django-mvp-compliance](https://github.com/django-mvp/django-mvp-compliance).
 
 When two designs conflict, the one that leaves more of the work to the
-upstream package wins. A feature allauth or Django REST framework already has
-is configured and rendered here, never rebuilt.
+integrated package wins. A feature it already has is rendered here, never
+rebuilt. Adopting this package should take as little as possible, and each
+integrated package is supported at its latest release wherever that can be
+done.
 
 This package supersedes
 [django-accounts-center](https://github.com/django-mvp/django-accounts-center),

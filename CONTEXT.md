@@ -19,10 +19,19 @@ _Avoid_: consumer, client, downstream.
 **Account**:
 A person's identity on the host project — the user record, the email addresses
 attached to it, and the ways they can prove it is theirs. Creating, changing and
-closing an account is what allauth provides and this package presents.
+closing an account is what the authentication package provides and this
+package presents.
 _Avoid_: profile (the host project's own data about a person, which this
 package does not own), user (fine in code, where it means the Django model, but
 not as a synonym for the whole account).
+
+**Authentication package**:
+The third-party Django package that provides accounts, sign-in and recovery.
+This package is not tied to one, but django-allauth is the only one supported
+so far. Behaviour specific to it is named as allauth's, never presented as how
+accounts work in general.
+_Avoid_: backend (Django's authentication backends are a different thing),
+provider (allauth's word for a social login service such as GitHub).
 
 **Sign-in**:
 Proving who you are to the site in a browser, ending in a session. Covers

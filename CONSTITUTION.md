@@ -209,8 +209,9 @@ warning before it is removed, and the CHANGELOG says what replaces it.
 ### Article XIII — Upstream does the work
 
 Every account, sign-in and token behaviour comes from the package that already
-implements it: allauth for accounts and sign-in, Django REST framework and its
-token package for API access. This package configures them, renders their pages
+implements it: the integrated authentication package for accounts and sign-in
+(django-allauth is the only one supported today), Django REST framework and
+its token package for API access. This package configures them, renders their pages
 through django-mvp's application shell, and places them in its menus. It never
 reimplements one of their features, subclasses one of their models, or ships a
 form that replaces theirs where overriding a template would do.
@@ -279,4 +280,4 @@ Read at planning and at review; applies to every change.
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-24 | **Last Amended**: 2026-09-24
+**Version**: 1.0.1 | **Ratified**: 2026-09-24 | **Last Amended**: 2026-09-24

@@ -23,11 +23,13 @@ classifiers = [
     "Framework :: Django",
     "Framework :: Django :: 5.2",
     "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 
@@ -36,29 +38,31 @@ Homepage = "https://github.com/django-mvp/django-mvp-accounts"
 Repository = "https://github.com/django-mvp/django-mvp-accounts"
 Issues = "https://github.com/django-mvp/django-mvp-accounts/issues"
 
-[tool.poetry]
-# The demo project is deliberately absent: it is a place to look at this
-# package while it is being written, not something a consuming project should
-# receive.
-packages = [{ include = "mvp_accounts" }]
-requires-poetry = '>=2.0,<3.0'
+[dependency-groups]
+# Shared toolchain bundle, pinned to a release tag so every package built this
+# way runs one version of each tool. Ships ruff, mypy, deptry, pre-commit,
+# pytest, pytest-django, pytest-xdist, factory-boy, coverage and django-stubs.
+dev = ["mvp-shared[dev,test]"]
+
+[tool.uv.sources]
+mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.6.0" }
 
 # django-cotton is deliberately absent from the dependency list. django-mvp
 # pins it exactly, and a second constraint here could only ever fight that one.
 # This package has no say in which version a project runs.
 
-[tool.poetry.group.dev.dependencies]
-# Shared toolchain bundle, pinned to a release tag so every package built this
-# way runs one version of each tool. Ships ruff, mypy, deptry, pre-commit,
-# pytest, pytest-django, pytest-xdist, factory-boy, coverage and django-stubs.
-mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.4.1", extras = [
-    "dev",
-    "test",
-] }
-
 [build-system]
-requires = ['poetry-core (>=2.0,<3.0)']
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# The demo project is deliberately absent: it is a place to look at this
+# package while it is being written, not something a consuming project should
+# receive.
+[tool.hatch.build.targets.wheel]
+packages = ["mvp_accounts"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/mvp_accounts", "/README.md", "/LICENSE"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"

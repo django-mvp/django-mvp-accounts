@@ -1,0 +1,26 @@
+{% comment %}
+  A starter component, here so the package has one working surface the day it
+  is generated: a resolvable tag, a demo page that shows it, and a test that
+  asserts it renders. Replace it with the first real component and delete this
+  file.
+
+  The file's path is its tag name. Cotton maps `<c-NAMESPACE.example>` onto
+  `cotton/NAMESPACE/example.html`, where NAMESPACE is this directory. That
+  makes the directory name load-bearing, and it fails quietly: a component
+  Cotton cannot resolve renders as empty output rather than raising, so a
+  renamed directory breaks every tag in it without an error anywhere.
+  `tests/test_app.py` asserts the directory exists for that reason.
+
+  `c-vars` declares an attribute and its default. An attribute declared here
+  is removed from `attrs`; one that is not declared stays in `attrs` and is
+  passed through to the root element, which is what lets a caller add `id`,
+  `class` or a data attribute without this component naming it first.
+{% endcomment %}
+<c-vars title="" />
+
+<section {{ attrs }}>
+  {% if title %}
+    <h2 class="text-lg font-semibold">{{ title }}</h2>
+  {% endif %}
+  {{ slot }}
+</section>

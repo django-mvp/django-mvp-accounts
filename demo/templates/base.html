@@ -1,0 +1,12 @@
+{% extends "mvp/base.html" %}
+{% comment %}
+  The project-level base that django-mvp's own page templates extend.
+  Everything the demo's pages need comes from mvp/base.html, so this file adds
+  nothing of its own — it exists because page_view.html extends "base.html" by
+  that name, and because it is the one place a project-wide override goes.
+
+  A stylesheet or script this package needs on every page is loaded here, with
+  {% load static %} above and a {% block extra_css %} or {% block extra_js %}
+  below. Nothing is loaded from the package automatically: which pages carry an
+  asset, and where in the document it goes, stay the project's decisions.
+{% endcomment %}

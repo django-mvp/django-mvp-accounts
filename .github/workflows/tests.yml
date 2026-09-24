@@ -1,0 +1,31 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mvp_access_control/**'
+      - 'tests/**'
+      - 'demo/**'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+      - '.github/workflows/tests.yml'
+  # No paths filter on pull_request: these checks are required by the branch
+  # ruleset, and a path-filtered required check never reports on an
+  # out-of-scope pull request, which blocks the merge.
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  call-tests:
+    uses: django-mvp/shared/.github/workflows/tests.yml@v0.4.1
+    with:
+      coverage-package: mvp_access_control
+      django-versions: '["5.2", "6.0"]'
+      # Test and lint tooling arrives through the shared bundle in the single
+      # (non-optional) dev group, so the default `--with test` would fail.
+      # Empty args install main + dev, which covers pytest.
+      poetry-install-args: ''
+    secrets: inherit

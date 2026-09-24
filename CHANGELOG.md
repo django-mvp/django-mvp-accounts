@@ -25,3 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - The package, generated and not yet doing anything.
+- Django 6.1 is supported, and tested on every change alongside 5.2 and 6.0.
+
+### Changed
+
+- The package is built with hatchling instead of poetry-core, and developed with uv instead of
+  Poetry.

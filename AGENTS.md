@@ -20,16 +20,16 @@ survey the package was founded on.
 
 ## Stack and commands
 
-- **Stack:** Python 3.12+ / Django 5.2 and 6.0, Poetry-managed, built on
+- **Stack:** Python 3.12+ / Django 5.2, 6.0 and 6.1, uv-managed, built on
   django-mvp and django-cotton
-- **Install:** `poetry install`
-- **Test (whole suite):** `poetry run pytest -n auto --dist loadscope`
-- **Test (one class or file, while iterating):** `poetry run pytest <path> -x` —
+- **Install:** `uv sync`
+- **Test (whole suite):** `uv run pytest -n auto --dist loadscope`
+- **Test (one class or file, while iterating):** `uv run pytest <path> -x` —
   serial, because starting the workers costs more than a focused run takes
-- **Lint:** `poetry run pre-commit run --all-files`
-- **Type-check:** `poetry run mypy`
-- **Build:** `poetry build`
-- **Demo project:** `poetry run python manage.py runserver 0.0.0.0:8022`
+- **Lint:** `uv run pre-commit run --all-files`
+- **Type-check:** `uv run mypy`
+- **Build:** `uv build`
+- **Demo project:** `uv run python manage.py runserver 0.0.0.0:8022`
 
 Lint is the pre-commit run rather than a bare `ruff check .`: the hook config
 excludes `docs/` and migrations, so a raw invocation reports findings in paths
@@ -61,7 +61,7 @@ against the rendered page rather than against the objects behind it.
 `page_view.html` and filling `{% block page.content %}`,
 and a `MenuItem` in `demo/menus.py`.
 
-**Signing in.** `poetry run python manage.py seed_demo` creates three accounts —
+**Signing in.** `uv run python manage.py seed_demo` creates three accounts —
 `regular.user@example.com`, `staff.user@example.com` and
 `super.user@example.com`, all with the password `password`. The shell renders
 differently for each, so all three exist rather than one. The command refuses

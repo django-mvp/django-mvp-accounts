@@ -53,7 +53,7 @@ repos:
         # is also what mirrors-mypy ships.
         require_serial: true
         types: [python]
-        files: ^mvp_access_control/
+        files: ^mvp_accounts/
       - id: deptry
         name: deptry
         entry: poetry run deptry .

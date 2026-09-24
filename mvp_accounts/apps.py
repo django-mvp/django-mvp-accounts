@@ -2,7 +2,7 @@ from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
-class MvpAccessControlConfig(AppConfig):
+class MvpAccountsConfig(AppConfig):
     """What a project gets when it adds this package to INSTALLED_APPS.
 
     The label is set explicitly rather than left to Django's default, which is
@@ -11,7 +11,7 @@ class MvpAccessControlConfig(AppConfig):
     clearly.
     """
 
-    name = "mvp_access_control"
-    label = "mvp_access_control"
-    verbose_name = _("Access Control")
+    name = "mvp_accounts"
+    label = "mvp_accounts"
+    verbose_name = _("Accounts")
     default_auto_field = "django.db.models.BigAutoField"

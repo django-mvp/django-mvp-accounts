@@ -32,7 +32,7 @@ CSRF_COOKIE_SECURE = False
 # silently, for every page in the demo.
 INSTALLED_APPS = [
     "demo",
-    "mvp_access_control",
+    "mvp_accounts",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -134,7 +134,7 @@ EASY_ICONS = {
 MVP_CONFIG = {
     "layout": {
         "sidebar": {
-            "title": "django-mvp-access-control",
+            "title": "django-mvp-accounts",
         },
     },
     "theme": {

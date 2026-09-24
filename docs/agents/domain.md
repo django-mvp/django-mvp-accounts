@@ -21,7 +21,7 @@ put in them.
 ├── docs/adr/
 │   ├── 0001-a-decision.md
 │   └── 0002-another-decision.md
-└── mvp_access_control/
+└── mvp_accounts/
 ```
 
 ## Use the vocabulary

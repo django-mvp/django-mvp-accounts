@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'mvp_access_control/**'
+      - 'mvp_accounts/**'
       - 'tests/**'
       - 'demo/**'
       - 'pyproject.toml'
@@ -22,7 +22,7 @@ jobs:
   call-tests:
     uses: django-mvp/shared/.github/workflows/tests.yml@v0.4.1
     with:
-      coverage-package: mvp_access_control
+      coverage-package: mvp_accounts
       django-versions: '["5.2", "6.0"]'
       # Test and lint tooling arrives through the shared bundle in the single
       # (non-optional) dev group, so the default `--with test` would fail.

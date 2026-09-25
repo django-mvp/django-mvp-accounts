@@ -1,35 +1,9 @@
 # Roadmap — django-mvp-accounts
 
-<!--
-  The order the work happens in, and what each release is gated on.
+**Date:** 2026-09-24
 
-  This file is written against GOALS.md and is the only place a release plan
-  lives. It holds briefs, not specifications: each item says what a person gets
-  and why it comes when it does, in enough detail that someone could pick it up
-  and write the specification without asking what was meant.
-
-  Rules:
-  - Items are R1, R2, R3 …, assigned once and never reused. They are cited from
-    issues and pull requests.
-  - Each item names the goals it advances, by ID.
-  - Group items under the release they are gated on, not under a date. This
-    package has no delivery dates and inventing them would only make the file
-    wrong.
-  - Status is derived from the item's issues, not asserted here. An item is
-    delivered when its issues are closed; saying so twice creates two answers
-    that drift.
-  - An item that is no longer wanted is rewritten or deleted, not struck
-    through. Git already records what it said.
-  - Write in plain language, for a reader who has not seen the code. An item
-    titled after a module name tells them nothing.
-
-  The versioning table below is the standard and applies as written. Replace
-  everything under it.
--->
-
-This document is designed against [GOALS.md](../GOALS.md). See also
-[CONTEXT.md](../CONTEXT.md) for vocabulary and
-[CONSTITUTION.md](../CONSTITUTION.md) for the standards every change is held to.
+This document was designed against [GOALS.md](../GOALS.md). See also [CONTEXT.md](../CONTEXT.md)
+for domain terminology and [CONSTITUTION.md](../CONSTITUTION.md) for project standards.
 
 ## Versioning
 
@@ -45,24 +19,127 @@ Releases are gated on goal importance, not on a count of features.
 | `2.0` | The next major, where breaking changes go |
 
 A goal is not one minor release: some take several, and one release can move
-two. Once `1.0` ships, a breaking change never goes out as `1.x` — it waits for
+two. Once `1.0` ships, a breaking change never goes out as `1.x`. It waits for
 the next major.
 
 ## Essential goals: v0.1.0
 
 Everything needed to reach a minimum usable release.
 
-### R1 — <what a person gets, in plain language>
+### R1 — Accounts, sign-in and recovery
 
-*advances G1*
+*feature · advances G1, G2, G3*
 
-<!--
-  Two or three paragraphs. What exists afterwards that did not before, what it
-  is for, and what it deliberately does not cover. Name the alternative that
-  was considered and set aside, if there was one — that is the part a reader
-  cannot reconstruct.
--->
+A person can create an account on a django-mvp site, sign in, sign out, get
+back in after forgetting their password, and change the details of their
+account, all on pages that belong to the site. This comes first because
+everything else on the roadmap is a page inside an account that already exists:
+two-factor authentication, connected social accounts, session management and
+API tokens all assume someone is signed in and has somewhere to manage their
+account from.
+
+It is built on allauth's account app, the first authentication package this
+package supports.
+
+**Deliverables:**
+
+- Sign-up, sign-in, sign-out, password reset and email verification pages,
+  rendered as the site's own entrance pages rather than allauth's bare ones.
+- Pages for managing email addresses and changing or setting a password,
+  reachable from one place in the application shell once signed in.
+- An account-management menu entry and landing page that list only what the
+  project has installed, so later items add to it without reorganising it.
+- Every behaviour allauth's account app offers that the project turns on in its
+  own settings is presented, including passwordless sign-in by emailed code and
+  re-authentication before a sensitive change.
+- Adoption documented in the README: what to install, what to add to
+  `INSTALLED_APPS` and the URL configuration, and nothing more than that.
+
+Serves G1, G2 and G3. Out of scope: social sign-in, two-factor authentication,
+session management and API tokens, which follow as their own items.
 
 ## Expected goals: v1.0.0
 
-<!-- Items gated on the complete release. Same shape. -->
+Everything needed for the complete release.
+
+### R2 — Connected social accounts
+
+*feature · advances G1, G2, G3*
+
+A person can sign up and sign in with an external account such as GitHub or
+Google, and connect or disconnect those accounts from their own account pages.
+Built on allauth's social account app.
+
+**Deliverables:**
+
+- A button for each configured provider on the sign-in and sign-up pages, and
+  none for a provider the project has not configured.
+- The extra sign-up step allauth needs when an external account is missing
+  something, rendered as an entrance page.
+- A page listing the person's connected accounts, where they can connect
+  another or disconnect one.
+
+Serves G1, G2 and G3. Out of scope: configuring providers, which stays in the
+host project's settings.
+
+### R3 — Two-factor authentication
+
+*feature · advances G1, G2, G3*
+
+A person can protect their account with a second factor: an authenticator app,
+recovery codes, and security keys or passkeys where the project enables them.
+Built on allauth's multi-factor authentication app.
+
+**Deliverables:**
+
+- Pages for setting up, viewing and removing each second factor the project
+  enables.
+- The second-factor challenge during sign-in, rendered as an entrance page.
+- Recovery codes that can be viewed, downloaded and regenerated.
+
+Serves G1, G2 and G3.
+
+### R4 — Signed-in sessions
+
+*feature · advances G1, G2, G3*
+
+A person can see every device and browser currently signed in to their
+account, and sign any of them out. Built on allauth's user sessions app.
+
+**Deliverables:**
+
+- A page listing the person's active sessions, with enough detail to recognise
+  each one and the current session marked.
+- Signing out one session, or every session except the current one.
+
+Serves G1, G2 and G3.
+
+### R5 — Personal API tokens
+
+*feature · advances G4, G2, G3*
+
+When the project has a REST API built on Django REST framework, a person can
+create tokens to reach it, see the tokens they have, and revoke any of them.
+Built on django-rest-knox, which, unlike Django REST framework's own token
+model, allows several tokens per person, lets them expire, and does not store
+them in a form that can be read back.
+
+**Deliverables:**
+
+- A page where a person creates a token, sees it once at creation, and lists
+  and revokes the tokens they already have.
+- Tokens created there authenticate requests to the project's API.
+- Nothing at all in a project without Django REST framework: no menu entry, no
+  page and no import error.
+
+Serves G4, G2 and G3. Out of scope: tokens issued to third-party applications
+on a person's behalf, which is OAuth.
+
+### R6 — Tested against current releases
+
+*resolve · advances G5*
+
+Every integrated package is tested against its latest release, so a new
+release that breaks something is found here before a project finds it.
+
+Serves G5.

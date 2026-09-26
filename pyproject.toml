@@ -144,6 +144,7 @@ non-mirror-paths = [
     "tests/test_elements.py",
     "tests/test_entrance_pages.py",
     "tests/test_recovery_pages.py",
+    "tests/test_without_allauth.py",
 ]
 
 [tool.deptry]

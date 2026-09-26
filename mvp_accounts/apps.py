@@ -1,4 +1,4 @@
-from django.apps import AppConfig, apps
+from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
@@ -15,12 +15,3 @@ class MvpAccountsConfig(AppConfig):
     label = "mvp_accounts"
     verbose_name = _("Accounts")
     default_auto_field = "django.db.models.BigAutoField"
-
-    def ready(self) -> None:
-        """Add this package's Account Center entries when allauth is installed.
-
-        Without allauth there is no account management to point at, and the
-        module that adds the entries is never imported.
-        """
-        if apps.is_installed("allauth.account"):
-            from mvp_accounts import menus  # noqa: F401

@@ -79,3 +79,9 @@ Did: `TestUserMenu` in `tests/test_account_center.py`: signed in, the overview p
 Verified: `uv run pytest tests/test_account_center.py::TestUserMenu` — 3 passed. These pass on first run because the behaviour is django-mvp's; probed by making its user menu template draw nothing, which fails the two signed-in tests.
 Next: T014.
 Watch: the tests read the demo overview page, not the Account Center: the Account Center swaps the user menu's own Account Center row for its sidebar navigation (see decisions).
+
+## 2026-09-26T11:50Z · Implementer US3 · T014
+Did: `tests/settings_without_allauth.py`, `tests/urls_without_allauth.py` and `tests/test_without_allauth.py`, which start Django in a subprocess without allauth's apps, middleware, backend, adapter or routes, then render the demo overview and the Account Center for a signed-in person. The guard moved into `menus.py` and `ready()` was dropped (see decisions); `tests/test_apps.py` follows.
+Verified: `uv run pytest tests/test_without_allauth.py tests/test_apps.py tests/test_menus.py` — 16 passed. The subprocess test failed first with the import guarded only in `ready()`: the entries were on the menu and the page raised.
+Next: T015.
+Watch: none.

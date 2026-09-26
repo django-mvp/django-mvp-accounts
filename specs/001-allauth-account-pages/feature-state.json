@@ -220,8 +220,13 @@
         },
         {
           "id": "T014",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_allauth.py tests/test_apps.py tests/test_menus.py"
+            ]
+          }
         },
         {
           "id": "T015",

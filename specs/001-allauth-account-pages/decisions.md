@@ -140,3 +140,9 @@ management layout lands.
 **Decision:** `menus.py` imports `flex_menu.MenuItem`; deptry's DEP003 ignore in `pyproject.toml` names it instead of adding a direct requirement.
 **Why:** django-mvp requires the menu library and documents `from flex_menu import MenuItem` as how a project extends its menus, so its requirement is the pin that matters.
 **Revisit if:** django-mvp stops requiring it.
+
+### The allauth guard lives in menus.py, and ready() adds nothing
+
+**Decision:** `mvp_accounts/menus.py` adds its entries only when `allauth.account` is installed, and `MvpAccountsConfig` has no `ready()`. This departs from the brief, which had `ready()` import the module.
+**Why:** django-flex-menus imports the `menus` module of every installed app when it starts, so a guard in `ready()` never stopped the import. Without allauth the entries were on the menu and the pages raised on their unresolvable URLs; the subprocess test showed it.
+**Revisit if:** the menus module is renamed so it is no longer autodiscovered, when a `ready()` import would be the guard again.

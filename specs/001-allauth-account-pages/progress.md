@@ -31,3 +31,9 @@ Did: tests that a project's choices show on the sign-in page: an emailed-code op
 Verified: `uv run pytest tests/test_entrance_pages.py` — 12 passed. The behaviour is allauth's and the tests passed on first run, so each was probed by adding a hard-coded link to the entrance layout: the code test and the link-count test then fail.
 Next: T006.
 Watch: none.
+
+## 2026-09-26T10:45Z · Implementer US1 · T006
+Did: `tests/templates_host_override/account/login.html` and a test that, with that directory first in `TEMPLATES[0]["DIRS"]`, the sign-in page is the project's own.
+Verified: `uv run pytest tests/test_entrance_pages.py` — 13 passed. Without the settings change the same test fails, so the directory is what puts the page there.
+Next: T007.
+Watch: none.

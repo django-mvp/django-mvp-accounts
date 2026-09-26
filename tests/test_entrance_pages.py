@@ -6,6 +6,9 @@ what it renders: the shell's stylesheet, no navigation, none of allauth's own
 menu, and the form the page exists for.
 """
 
+import copy
+from pathlib import Path
+
 from django.urls import reverse
 from django.utils.html import escape
 
@@ -137,3 +140,20 @@ class TestWhatAProjectTurnedOff:
         closed = client.get(signup)
         assert "Sign Up Closed" in closed.content.decode()
         assert 'name="password1"' not in closed.content.decode()
+
+
+class TestHostProjectOverride:
+    """A page the host project writes for itself wins over the package's."""
+
+    def test_the_projects_sign_in_page_is_the_one_rendered(
+        self, client, db, settings
+    ) -> None:
+        override_dir = Path(__file__).parent / "templates_host_override"
+        templates = copy.deepcopy(settings.TEMPLATES)
+        templates[0]["DIRS"] = [override_dir, *templates[0]["DIRS"]]
+        settings.TEMPLATES = templates
+
+        html = client.get(reverse("account_login")).content.decode()
+
+        assert "This project's own sign-in page" in html
+        assert 'name="login"' not in html

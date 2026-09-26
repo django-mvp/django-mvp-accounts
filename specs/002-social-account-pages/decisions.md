@@ -25,3 +25,37 @@ before any provider is configured.
 `allauth.socialaccount.providers.dummy` completes a sign-in without leaving the machine, so every
 page in the feature, including the extra sign-up step and the error page, can be reached in the demo
 and in tests without real credentials.
+
+## D5 — "Connected accounts" carries no guard of its own
+
+It is one more child of the "Account" group, which is added only when `allauth` is installed.
+allauth routes the connections page only when `allauth.socialaccount` is installed, and django-mvp
+drops an entry whose URL does not resolve, so the entry follows the app with no check here. An
+`is_installed("allauth.socialaccount")` guard would state that fact twice and add a branch only a
+separate process could measure (research R4).
+
+## D6 — The refusal to disconnect is drawn by the connections page
+
+allauth reports it as a non-field error, and nothing draws non-field errors on a page that does not
+render its form through `fields` (research R3). Drawing them in the `form` element would print them
+twice on every page that does. The package's `socialaccount/connections.html` extends allauth's
+template of the same name and adds the alert before allauth's markup, the same chaining FS-001's
+overview uses.
+
+## D7 — The same-site redirect page is reskinned
+
+It is a page the social account app renders, so FR-001 reaches it, though a project only sees it
+with `SESSION_COOKIE_SAMESITE = "Strict"`. It is the one social account page that extends nothing,
+so it gets a page override keeping allauth's refresh and link (research R1).
+
+## D8 — The suite lists two providers, the demo one
+
+FR-011 asks the demo for the test provider only. Acceptance scenario 1 needs two, so the suite's
+settings add GitHub with an app configured in settings, which needs no database row, and whose
+icon django-mvp's pack already names (research R5).
+
+## D9 — The confirmation page is an entrance page for a signed-in person too
+
+allauth's social account pages extend its entrance layout directly, not through
+`account/base_entrance.html`, so FS-001's rule that a signed-in person gets the management layout
+does not reach them. FR-002 asks for exactly this, so nothing is changed (research R1).

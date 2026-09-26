@@ -58,38 +58,58 @@
       "priority": "P1",
       "issue": 16,
       "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-002",
-      "status": "todo",
+      "status": "done",
       "replans": 0,
       "tasks": [
         {
           "id": "T001",
           "status": "done",
           "attempts": 1,
-          "evidence": "tests/test_demo.py::TestDemoSocialAccounts, 2 passed"
+          "evidence": {
+            "commands": [
+              "tests/test_demo.py::TestDemoSocialAccounts, 2 passed"
+            ]
+          }
         },
         {
           "id": "T002",
           "status": "done",
           "attempts": 1,
-          "evidence": "tests/test_social_entrance_pages.py::TestProviderButtons, 13 passed"
+          "evidence": {
+            "commands": [
+              "tests/test_social_entrance_pages.py::TestProviderButtons, 13 passed"
+            ]
+          }
         },
         {
           "id": "T003",
           "status": "done",
           "attempts": 1,
-          "evidence": "tests/test_social_entrance_pages.py::TestSocialEntrancePages, 20 passed in file"
+          "evidence": {
+            "commands": [
+              "tests/test_social_entrance_pages.py::TestSocialEntrancePages, 20 passed in file"
+            ]
+          }
         },
         {
           "id": "T004",
           "status": "done",
           "attempts": 1,
-          "evidence": "tests/test_social_entrance_pages.py::TestSameSiteRedirectPage, 21 passed in file"
+          "evidence": {
+            "commands": [
+              "tests/test_social_entrance_pages.py::TestSameSiteRedirectPage, 21 passed in file"
+            ]
+          }
         },
         {
           "id": "T005",
           "status": "done",
           "attempts": 1,
-          "evidence": "README.md and CHANGELOG.md; pre-commit clean"
+          "evidence": {
+            "commands": [
+              "README.md and CHANGELOG.md; pre-commit clean"
+            ]
+          }
         }
       ]
     },

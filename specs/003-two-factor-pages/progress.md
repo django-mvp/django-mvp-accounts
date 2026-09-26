@@ -105,3 +105,10 @@ Did: page tests for `mfa_add_webauthn`: a management page, the `mfa_webauthn_add
 Verified: `uv run pytest tests/test_security_key_pages.py::TestAddSecurityKey -q` 2 passed. The page already renders through existing elements, so the tests pass on first run; probed by removing the button element's `id` output, which failed the test, then restored.
 Next: T014.
 Watch: none.
+
+## 2026-09-26T23:15:00Z · Implementer US3 · T014
+
+Did: page tests for passkey sign-in: an entrance page with the `passkey_login` button linked to `mfa_login`, the `mfa_login` form with its credential input, the script-hook check; with passkey sign-in off (URLs rebuilt) none of them is on the page.
+Verified: `uv run pytest tests/test_security_key_pages.py::TestPasskeySignIn -q` 2 passed. Existing elements already carry the ids, so the tests passed on first run; probed by removing the button element's `form` output, which failed, then restored.
+Next: T015.
+Watch: none.

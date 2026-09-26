@@ -17,6 +17,7 @@ from django.core.cache import cache
 from django.urls import reverse
 
 from tests.factories import AuthenticatorFactory, EmailAddressFactory
+from tests.test_entrance_pages import EntrancePageAssertions
 from tests.test_management_pages import ManagementPageAssertions
 
 
@@ -155,3 +156,33 @@ class TestAddSecurityKey(ManagementPageAssertions):
 
         with pytest.raises(AssertionError, match="mfa_webauthn_add"):
             assert_script_hooks(html.replace('id="mfa_webauthn_add"', ""))
+
+
+class TestPasskeySignIn(EntrancePageAssertions):
+    def test_the_sign_in_page_offers_a_passkey(
+        self, client, db, assert_script_hooks
+    ) -> None:
+        response = client.get(reverse("account_login"))
+
+        html = self.assert_entrance_page(response, 'name="login"')
+        soup = BeautifulSoup(html, "html.parser")
+        button = soup.find(id="passkey_login")
+        assert button is not None, "the passkey button is missing"
+        assert button["form"] == "mfa_login"
+        assert "Sign in with a passkey" in button.get_text()
+        form = soup.find("form", id="mfa_login")
+        assert form.find("input", id="mfa_credential")
+        assert form["action"] == reverse("mfa_login_webauthn")
+        assert assert_script_hooks(html) >= 1
+
+    def test_with_passkey_sign_in_off_the_page_offers_none(
+        self, client, db, rebuild_urls
+    ) -> None:
+        with rebuild_urls(MFA_PASSKEY_LOGIN_ENABLED=False):
+            response = client.get(reverse("account_login"))
+
+        html = self.assert_entrance_page(response, 'name="login"')
+        assert 'id="passkey_login"' not in html
+        assert 'id="mfa_login"' not in html
+        assert 'id="mfa_credential"' not in html
+        assert "allauth.webauthn.forms.loginForm" not in html

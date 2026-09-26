@@ -1,0 +1,11 @@
+{% load allauth %}
+{% comment %}
+  allauth's tables, drawn with the table class django-mvp's own tables use.
+  The wrapper scrolls sideways on a narrow screen instead of widening the page.
+{% endcomment %}
+<div class="overflow-x-auto">
+  <table class="table">
+    {% slot %}
+    {% endslot %}
+  </table>
+</div>

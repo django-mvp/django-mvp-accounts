@@ -91,3 +91,10 @@ Did: `seed_demo` adds mfa.user@example.com (password `password`, verified primar
 Verified: `uv run pytest tests/test_demo.py -q` 32 passed; new tests failed first.
 Next: docs check, full verify, report.
 Watch: `TestDemoSignIn::test_seeding_twice_leaves_one_verified_primary_address_each` counted four addresses and now counts five; the minimal change, named in the report.
+
+## 2026-09-26T23:00:00Z · Implementer US3 · T012
+
+Did: table, thead, tbody, tr, th and td elements draw django-mvp's `table` class inside a scrolling wrapper; `td` turns `align` into a `text-<align>` class. `AuthenticatorFactory` gains a `webauthn` trait (with `key_name` and `passkey`) storing a registration response built with fido2's own constructors. Page tests for the list (two keys, edit/remove links, passkey and security-key badges, empty list), rename and remove.
+Verified: `uv run pytest tests/test_elements.py tests/test_security_key_pages.py -q` 40 passed, 1 skipped (a skip already in test_elements.py). Page tests failed first on the missing factory trait, then on `humanize` not being installed (D10), and the element tests failed on the bare markup.
+Next: T013.
+Watch: the demo's own list page needs `django.contrib.humanize` (D10).

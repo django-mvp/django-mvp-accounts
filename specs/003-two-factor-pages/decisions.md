@@ -75,3 +75,12 @@ under show-once (T005), a test security key must be a parseable registration res
 TOTP code helper (T004), the `.bg-white` rule (T004), and repeated panel actions (R2).
 
 **ADR:** none — local to this feature
+
+## D10 — The security-key list needs `django.contrib.humanize`, which the demo does not install
+
+allauth's `mfa/webauthn/authenticator_list.html` loads `{% load humanize %}`. Without
+`django.contrib.humanize` in `INSTALLED_APPS` the page raises `TemplateSyntaxError`, so the demo's
+security-key list returns a 500. The demo settings are outside this story's scope, so the list
+tests add the app with the `settings` fixture, and the demo is reported as needing it.
+
+**Revisit if:** the demo settings gain `django.contrib.humanize`; the fixture then goes.

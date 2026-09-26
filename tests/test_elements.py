@@ -337,3 +337,37 @@ class TestFormId:
         )
 
         assert not soup.form.has_attr("id")
+
+
+class TestTableElements:
+    """allauth's tables are drawn with django-mvp's table class, not bare tags."""
+
+    SOURCE = (
+        "{% element table %}"
+        "{% element thead %}{% element th %}Key{% endelement %}{% endelement %}"
+        "{% element tbody %}{% element tr %}"
+        '{% element td align="right" %}Edit{% endelement %}'
+        "{% endelement %}{% endelement %}"
+        "{% endelement %}"
+    )
+
+    def test_the_table_carries_the_table_class_and_keeps_its_content(self) -> None:
+        soup = render_element(self.SOURCE)
+
+        assert "table" in soup.table["class"]
+        assert soup.select_one("table > thead > th").get_text(strip=True) == "Key"
+        assert soup.select_one("table > tbody > tr > td").get_text(strip=True) == "Edit"
+
+    def test_a_cell_carries_its_alignment_as_a_class_not_an_attribute(self) -> None:
+        cell = render_element(self.SOURCE).td
+
+        assert not cell.has_attr("align")
+        assert "text-right" in cell["class"]
+
+    def test_a_cell_without_alignment_has_none(self) -> None:
+        soup = render_element(
+            "{% element td %}Plain{% endelement %}",
+        )
+
+        assert not soup.td.has_attr("align")
+        assert "text-right" not in soup.td.get("class", [])

@@ -1,0 +1,9 @@
+{% load allauth %}
+{% comment %}
+  `align` is the obsolete HTML attribute, so allauth's value becomes a text
+  alignment class instead.
+{% endcomment %}
+<td{% if attrs.align %} class="text-{{ attrs.align }}"{% endif %}>
+  {% slot %}
+  {% endslot %}
+</td>

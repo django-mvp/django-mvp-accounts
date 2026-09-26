@@ -1,0 +1,11 @@
+{% load i18n allauth %}
+{% comment %}
+  allauth's no-address warning as a warning alert. allauth draws it as a bare
+  paragraph, which reads as body copy and not as something to act on.
+{% endcomment %}
+{% element alert tags="warning" %}
+  {% slot message %}
+    <span><strong>{% trans "Warning:" %}</strong>
+    {% trans "You currently do not have any email address set up. You should really add an email address so you can receive notifications, reset your password, etc." %}</span>
+  {% endslot %}
+{% endelement %}

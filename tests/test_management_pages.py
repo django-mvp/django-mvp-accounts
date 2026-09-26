@@ -209,3 +209,21 @@ class TestPhoneVerificationBase(ManagementPageAssertions):
         assert not sidebar_menus(html), "an entrance page draws no navigation"
         assert NAVIGATION not in html
         assert ALLAUTH_BARE_MENU not in html
+
+
+class TestWarnNoEmail:
+    """allauth's no-address warning shows inside the shell as an alert (US4)."""
+
+    def test_the_warning_is_drawn_as_an_alert(self, client, db) -> None:
+        user = UserFactory(email="")
+        client.force_login(user)
+
+        html = client.get(reverse("account_email")).content.decode()
+
+        assert STYLESHEET in html
+        assert "You currently do not have any email address set up" in html
+        alert = re.search(
+            r'<div role="alert"[^>]*class="alert alert-warning[^"]*"', html
+        ) or re.search(r'class="alert alert-warning[^"]*"[^>]*role="alert"', html)
+        assert alert, "the warning is not drawn as a warning alert"
+        assert html.index("alert-warning") < html.index("You currently do not have")

@@ -75,10 +75,19 @@
       "approved_by": "review-panel",
       "at": "2026-09-26T18:12:30Z",
       "self_resolved": [
-        "COR-001 low: README says the social sign-in pages stay entrance pages \u2014 fixed",
-        "COR-002 low: provider-button class asserted per link \u2014 fixed, fails without the override",
-        "note: seed_demo docstring names which account shows which state \u2014 fixed",
+        "COR-001 low: README says the social sign-in pages stay entrance pages — fixed",
+        "COR-002 low: provider-button class asserted per link — fixed, fails without the override",
+        "note: seed_demo docstring names which account shows which state — fixed",
         "security: approve, no findings"
+      ]
+    },
+    "walkthrough": {
+      "approved_by": "SamuelJennings",
+      "at": "2026-09-26T20:51:47Z",
+      "self_resolved": [
+        "Stop the demo requiring email verification (2c84cce)",
+        "Stack the provider buttons at full width, as on the accounts-center pages (6ef2119)",
+        "Drop the tests that pinned the provider buttons' layout, since design preferences are not tested (26e2cec)"
       ]
     }
   },

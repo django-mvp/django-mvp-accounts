@@ -79,7 +79,7 @@ class TestDemoSignIn:
         call_command("seed_demo", stdout=StringIO())
 
         addresses = EmailAddress.objects.filter(verified=True, primary=True)
-        assert addresses.count() == 3
+        assert addresses.count() == 4
 
 
 class TestUrlconfRebuild:

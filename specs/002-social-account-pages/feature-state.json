@@ -123,7 +123,7 @@
       "tasks": [
         {
           "id": "T006",
-          "status": "blocked",
+          "status": "done",
           "attempts": 1,
           "evidence": {
             "commands": [
@@ -163,7 +163,7 @@
         },
         {
           "id": "T010",
-          "status": "blocked",
+          "status": "done",
           "attempts": 1,
           "evidence": {
             "commands": [

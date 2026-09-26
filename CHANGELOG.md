@@ -57,6 +57,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   markup, including its refusal to disconnect the only way a person can sign in. Without the
   social account app the entry and card do not appear. The demo seeds an account with a connected
   test provider account and one with no password.
+- With allauth's multi-factor app (`allauth.mfa`, from `django-allauth[mfa]`) installed,
+  django-mvp's Account Center gains a Two-factor authentication menu entry, last in the "Account"
+  group, and a card on its landing page. The two-factor overview, activating and deactivating the
+  authenticator app, and the recovery codes pages (view, download, generate) render in the
+  Account Center. The overview draws each factor as a card with all of its actions. The QR code is
+  always dark on white, in every theme, and the recovery codes are shown in a read-only text
+  area. Which factors are enabled stays your choice through allauth's `MFA_*` settings. Without
+  the multi-factor app the entry and card do not appear. The demo installs it with the
+  authenticator app, recovery codes, security keys, passkey sign-in and trusted browsers turned
+  on, and accepts a fixed code (`123456`) for the authenticator app while `DEBUG` is on.
 
 ### Changed
 

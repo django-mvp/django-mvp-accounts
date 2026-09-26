@@ -93,13 +93,14 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password, Phone number and Connected accounts, listed under an
-  "Account" heading below its Overview entry.
+- **Menu entries** for Email, Password, Phone number, Connected accounts and Two-factor
+  authentication, listed under an "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Connected accounts appears only with the social account app (`allauth.socialaccount`)
+installed, and Two-factor authentication only with the multi-factor app (`allauth.mfa`)
 installed. Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
@@ -114,6 +115,30 @@ The Account Center itself, the "Account Center" and "Log out" entries in the use
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
+## Two-factor authentication
+
+To offer two-factor authentication, install allauth's multi-factor app with its `mfa`
+extra (`pip install "django-allauth[mfa]"`), add `allauth.mfa` to `INSTALLED_APPS`, and run
+`migrate`. Which factors are on is your choice, through allauth's own settings:
+`MFA_SUPPORTED_TYPES` (authenticator app, recovery codes and security keys),
+`MFA_PASSKEY_LOGIN_ENABLED`, `MFA_TRUST_ENABLED` and the rest. This package sets none of
+them and checks none of them.
+
+Once `allauth.mfa` is installed, its pages render in django-mvp's shell:
+
+- The two-factor overview, activating and deactivating the authenticator app, and viewing,
+  downloading and generating recovery codes are management pages in the Account Center, with
+  the Two-factor authentication entry and card described above.
+- A page with no factor it can offer leaves that factor out. With `"totp"` missing from
+  `MFA_SUPPORTED_TYPES`, nothing on the overview offers the authenticator app.
+- The QR code is always drawn dark on white, in every theme, because a scanner cannot read
+  it from a dark background.
+- Security keys and passkeys work only over HTTPS or on `localhost`. On any other address the
+  browser refuses them, whatever this package renders.
+
+Without `allauth.mfa` installed, the Account Center has no Two-factor authentication entry or
+card, and nothing else changes.
 
 ## Signing in with other accounts
 

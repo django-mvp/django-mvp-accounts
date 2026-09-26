@@ -101,8 +101,9 @@
         },
         {
           "id": "T007",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "makemessages -l en: three new msgids; pre-commit run below."
         }
       ]
     },

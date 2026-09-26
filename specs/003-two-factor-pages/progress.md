@@ -49,3 +49,10 @@ Did: Added tests/settings_without_mfa.py and a subprocess test: with allauth.mfa
 Verified: uv run pytest tests/test_without_mfa.py: 6 passed.
 Next: next task.
 Watch: none.
+
+## 2026-09-26T21:19:58Z · Implementer US1 · T007
+
+Did: README: Two-factor authentication section (which pages are reskinned once allauth.mfa is installed with the mfa extra, the package sets none of its settings, QR code always dark on white, security keys and passkeys need HTTPS or localhost) and the Account Center list; CHANGELOG entry; catalogue regenerated with makemessages -l en inside mvp_accounts/. No docs/ page describes what this story touched.
+Verified: makemessages -l en: three new msgids; pre-commit run below.
+Next: next task.
+Watch: none.

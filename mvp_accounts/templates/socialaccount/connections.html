@@ -1,0 +1,21 @@
+{% extends "socialaccount/connections.html" %}
+{% load allauth %}
+{% comment %}
+  allauth's connections page, with the form's errors shown above it. Its radio
+  choices are drawn by hand, so the `account` field's errors, the required
+  message and the one for a person's only way to sign in, reach no `field`
+  element, and the non-field errors have nowhere to go either. Django skips
+  this template when it looks for the one it extends and finds allauth's.
+{% endcomment %}
+{% block content %}
+  {% if form.errors %}
+    {% element alert tags="danger" %}
+      {% slot message %}
+        {% for field_errors in form.errors.values %}
+          {% for error in field_errors %}{{ error }}{% if not forloop.last %} {% endif %}{% endfor %}
+        {% endfor %}
+      {% endslot %}
+    {% endelement %}
+  {% endif %}
+  {{ block.super }}
+{% endblock content %}

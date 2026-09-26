@@ -118,7 +118,7 @@
       "priority": "P2",
       "issue": 17,
       "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-002",
-      "status": "todo",
+      "status": "done",
       "replans": 0,
       "tasks": [
         {

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.mfa",
     # allauth's test provider: it completes a sign-in on this machine, so every
     # social account page can be reached without credentials from a real one.
     "allauth.socialaccount.providers.dummy",
@@ -128,6 +129,18 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "phone"]
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_REAUTHENTICATION_REQUIRED = True
+
+# Two-factor authentication with every factor on except passkey sign-up.
+# allauth only allows passkey sign-up with mandatory email verification by
+# code, which the demo does not use, so it stays off here. Security keys and
+# passkeys need HTTPS or `localhost`; over any other host the browser refuses
+# them. The fixed code lets the authenticator app pages be walked through
+# without a phone. allauth refuses it unless DEBUG is on, and the demo is
+# never deployed.
+MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
+MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_TRUST_ENABLED = True
+MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

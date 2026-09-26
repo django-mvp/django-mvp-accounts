@@ -43,7 +43,7 @@ Issues = "https://github.com/django-mvp/django-mvp-accounts/issues"
 # way runs one version of each tool. Ships ruff, mypy, deptry, pre-commit,
 # pytest, pytest-django, pytest-xdist, factory-boy, coverage and django-stubs.
 dev = [
-    "django-allauth>=65.19.4,<66",
+    "django-allauth[mfa]>=65.19.4,<66",
     "mvp-shared[dev,test]",
 ]
 

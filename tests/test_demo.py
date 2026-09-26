@@ -16,6 +16,7 @@ from django.core.mail import EmailMessage
 from django.core.management import call_command
 from django.urls import NoReverseMatch, reverse
 
+from demo import settings as demo_settings
 from demo.adapter import DemoAccountAdapter
 from demo.mail import OutboxEmailBackend
 from tests.factories import PhoneNumberFactory, UserFactory
@@ -235,3 +236,28 @@ class TestSeededSocialAccounts:
         assert "1001" in text
         assert "2002" in text
         assert "All three sign in with the password" not in text
+
+
+class TestDemoTwoFactor:
+    """The demo installs allauth's multi-factor app with every page reachable."""
+
+    def test_the_two_factor_overview_resolves(self) -> None:
+        assert reverse("mfa_index")
+
+    def test_the_suite_never_accepts_a_fixed_code(self, settings) -> None:
+        """Every test enters a real code computed from the secret."""
+        assert settings.MFA_TOTP_INSECURE_BYPASS_CODE is None
+
+    def test_the_demo_accepts_a_fixed_code(self) -> None:
+        """The demo itself lets the pages be walked through without a phone."""
+        assert len(demo_settings.MFA_TOTP_INSECURE_BYPASS_CODE) == 6
+
+    def test_the_demo_turns_on_every_factor_but_passkey_sign_up(self) -> None:
+        assert demo_settings.MFA_SUPPORTED_TYPES == [
+            "totp",
+            "recovery_codes",
+            "webauthn",
+        ]
+        assert demo_settings.MFA_PASSKEY_LOGIN_ENABLED
+        assert demo_settings.MFA_TRUST_ENABLED
+        assert not getattr(demo_settings, "MFA_PASSKEY_SIGNUP_ENABLED", False)

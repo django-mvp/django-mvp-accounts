@@ -190,8 +190,13 @@
       "tasks": [
         {
           "id": "T011",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py tests/test_apps.py"
+            ]
+          }
         },
         {
           "id": "T012",

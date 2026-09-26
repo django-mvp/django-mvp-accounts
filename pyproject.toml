@@ -155,3 +155,8 @@ extend_exclude = ["tests/", "demo/", "docs/"]
 # django-mvp supplies. Dropping it would leave every page unstyled while every
 # import still resolved.
 DEP002 = ["django-mvp"]
+# menus.py builds MenuItem objects with flex_menu, the menu library django-mvp
+# itself is built on and requires. The classes a project appends to
+# django-mvp's menus come from that library, so django-mvp's own requirement is
+# the version pin that matters.
+DEP003 = ["flex_menu"]

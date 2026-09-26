@@ -61,3 +61,9 @@ Did: `account/verified_email_required.html` (copy of allauth 65.19.4's with its 
 Verified: `uv run pytest tests/test_recovery_pages.py` — 13 passed. The verified-email-required test passed before the override existed (see decisions).
 Next: full verify, then the report.
 Watch: allauth rate-limits confirmation mail per address in the cache, which outlives a test; each sign-up test uses its own address.
+
+## 2026-09-26T11:20Z · Implementer US3 · T011
+Did: `mvp_accounts/menus.py` appends Email, Password and Phone number entries to django-mvp's Account Center menu; `MvpAccountsConfig.ready()` imports it only when `allauth.account` is installed. `tests/test_menus.py` and `tests/test_apps.py` assert on the rendered Account Center page (links, labels, icons; no phone entry with phone off). deptry ignore for `flex_menu` (a transitive dependency through django-mvp) in `pyproject.toml`.
+Verified: `uv run pytest tests/test_menus.py tests/test_apps.py` — 12 passed; the first test failed before the module existed. `uv run pre-commit run --all-files` — all hooks pass.
+Next: T012.
+Watch: the phone entry is dropped by django-mvp because its URL does not resolve, so nothing in menus.py checks the setting.

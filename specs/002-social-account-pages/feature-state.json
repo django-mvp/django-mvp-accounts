@@ -2,7 +2,7 @@
   "feature": "002-social-account-pages",
   "branch": "002-social-account-pages",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "REVIEW",
+  "state": "PR_READY",
   "state_history": [
     {
       "state": "QUEUED",
@@ -33,6 +33,11 @@
       "state": "REVIEW",
       "at": "2026-09-26T18:08:17Z",
       "note": "one reviewer correctness+spec+docs, one security lens"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-09-26T18:13:28Z",
+      "note": "review fixed and recorded; PR ready; walkthrough sent"
     }
   ],
   "gates": {
@@ -214,6 +219,6 @@
   },
   "pr": {
     "number": 23,
-    "draft": true
+    "draft": false
   }
 }

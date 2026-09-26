@@ -167,3 +167,10 @@ class TestEmailVerification(EntrancePageAssertions):
             response = self.sign_up(client, "code@example.com")
 
         self.assert_entrance_page(response, 'name="code"')
+
+    def test_no_code_is_offered_when_verification_is_by_link(self, client, db) -> None:
+        """The demo verifies by link, so nothing on the page asks for a code."""
+        response = self.sign_up(client, "link@example.com")
+
+        html = self.assert_entrance_page(response, "Verify Your Email Address")
+        assert 'name="code"' not in html

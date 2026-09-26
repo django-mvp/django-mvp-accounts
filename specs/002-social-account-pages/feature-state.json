@@ -60,6 +60,16 @@
         "DR-004 low: cancel redirects, failed page reached by URL (T003, R5)",
         "DR-005 low: fixed test-provider uids 1001 and 2002 named in seed output (T010)"
       ]
+    },
+    "review": {
+      "approved_by": "review-panel",
+      "at": "2026-09-26T18:12:30Z",
+      "self_resolved": [
+        "COR-001 low: README says the social sign-in pages stay entrance pages \u2014 fixed",
+        "COR-002 low: provider-button class asserted per link \u2014 fixed, fails without the override",
+        "note: seed_demo docstring names which account shows which state \u2014 fixed",
+        "security: approve, no findings"
+      ]
     }
   },
   "stories": [

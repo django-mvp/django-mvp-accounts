@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 11:11+0200\n"
+"POT-Creation-Date: 2026-09-26 11:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: apps.py:16
 msgid "Accounts"
 msgstr ""
@@ -40,6 +41,16 @@ msgstr ""
 
 #: templates/account/logout.html:17
 msgid "Are you sure you want to sign out?"
+msgstr ""
+
+#: templates/account/snippets/warn_no_email.html:8
+msgid "Warning:"
+msgstr ""
+
+#: templates/account/snippets/warn_no_email.html:9
+msgid ""
+"You currently do not have any email address set up. You should really add an "
+"email address so you can receive notifications, reset your password, etc."
 msgstr ""
 
 #: templates/account/verified_email_required.html:12

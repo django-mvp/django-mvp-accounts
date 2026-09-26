@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-26 11:11+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: apps.py:16
+msgid "Accounts"
+msgstr ""
+
+#: menus.py:23 templates/mvp/account/overview.html:13
+msgid "Email"
+msgstr ""
+
+#: menus.py:28 templates/mvp/account/overview.html:22
+msgid "Password"
+msgstr ""
+
+#: menus.py:33 templates/mvp/account/overview.html:31
+msgid "Phone number"
+msgstr ""
+
+#: templates/account/logout.html:10 templates/account/logout.html:14
+#: templates/account/logout.html:27
+msgid "Sign Out"
+msgstr ""
+
+#: templates/account/logout.html:17
+msgid "Are you sure you want to sign out?"
+msgstr ""
+
+#: templates/account/verified_email_required.html:12
+#: templates/account/verified_email_required.html:16
+msgid "Verify Your Email Address"
+msgstr ""
+
+#: templates/account/verified_email_required.html:20
+msgid ""
+"This part of the site requires us to verify that\n"
+"you are who you claim to be. For this purpose, we require that you\n"
+"verify ownership of your email address. "
+msgstr ""
+
+#: templates/account/verified_email_required.html:25
+msgid ""
+"We have sent an email to you for\n"
+"verification. Please click on the link inside that email. If you do not see "
+"the verification email in your main inbox, check your spam folder. "
+"Otherwise\n"
+"contact us if you do not receive it within a few minutes."
+msgstr ""
+
+#: templates/account/verified_email_required.html:30
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"email address</a>."
+msgstr ""
+
+#: templates/mvp/account/overview.html:14
+msgid ""
+"Add, remove and verify the addresses on your account, and choose the one we "
+"write to."
+msgstr ""
+
+#: templates/mvp/account/overview.html:16
+msgid "Manage email"
+msgstr ""
+
+#: templates/mvp/account/overview.html:23
+msgid ""
+"Change the password you sign in with, or set one if you do not have one yet."
+msgstr ""
+
+#: templates/mvp/account/overview.html:25
+msgid "Change password"
+msgstr ""
+
+#: templates/mvp/account/overview.html:32
+msgid "Add or change the phone number on your account."
+msgstr ""
+
+#: templates/mvp/account/overview.html:34
+msgid "Change phone number"
+msgstr ""

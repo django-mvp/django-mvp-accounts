@@ -85,3 +85,9 @@ Did: `tests/settings_without_allauth.py`, `tests/urls_without_allauth.py` and `t
 Verified: `uv run pytest tests/test_without_allauth.py tests/test_apps.py tests/test_menus.py` — 16 passed. The subprocess test failed first with the import guarded only in `ready()`: the entries were on the menu and the page raised.
 Next: T015.
 Watch: none.
+
+## 2026-09-26T11:55Z · Implementer US3 · T015
+Did: `mvp_accounts/locale/en/LC_MESSAGES/django.po` from `makemessages -l en` run inside `mvp_accounts/`; it holds the labels and card texts from `menus.py` and the overview template.
+Verified: grepped the catalogue for each of the nine strings T011 and T012 added: all present. It also holds the strings from earlier stories' templates, which the command picks up.
+Next: README, CHANGELOG, full verify, report.
+Watch: the catalogue has empty `msgstr`s, which is what a base English catalogue is.

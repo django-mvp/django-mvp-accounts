@@ -230,8 +230,13 @@
         },
         {
           "id": "T015",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "cd mvp_accounts && uv run django-admin makemessages -l en"
+            ]
+          }
         }
       ]
     },

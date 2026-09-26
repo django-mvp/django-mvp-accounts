@@ -89,8 +89,9 @@
         },
         {
           "id": "T005",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py tests/test_management_pages.py tests/test_entrance_pages.py: 71 passed, 2 skipped (existing)."
         },
         {
           "id": "T006",

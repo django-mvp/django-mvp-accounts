@@ -187,3 +187,63 @@ class TestDeactivateAuthenticatorApp(ManagementPageAssertions):
         assert "Authenticator app deactivated." in html
         assert "An authenticator app is not active." in html
         assert not Authenticator.objects.filter(user=with_app.user).exists()
+
+
+class TestRecoveryCodes(ManagementPageAssertions):
+    @pytest.fixture
+    def with_codes(self, fresh_client):
+        AuthenticatorFactory(user=fresh_client.user)
+        fresh_client.codes = (
+            AuthenticatorFactory(user=fresh_client.user, recovery_codes=True)
+            .wrap()
+            .get_unused_codes()
+        )
+        return fresh_client
+
+    def test_the_view_page_lists_every_unused_code_in_a_readonly_text_area(
+        self, with_codes
+    ) -> None:
+        response = with_codes.get(reverse("mfa_view_recovery_codes"))
+
+        html = self.assert_management_page(response, "Unused codes")
+        area = BeautifulSoup(html, "html.parser").find("textarea", id="recovery_codes")
+        assert area.has_attr("readonly")
+        assert area.get_text().split() == with_codes.codes
+
+    def test_the_view_page_hooks_resolve_when_codes_are_shown_once(
+        self, with_codes, settings, assert_script_hooks
+    ) -> None:
+        settings.MFA_RECOVERY_CODES_SHOW_ONCE = True
+
+        html = with_codes.get(reverse("mfa_view_recovery_codes")).content.decode()
+
+        assert 'id="codes_saved"' in html
+        assert assert_script_hooks(html) == 1
+
+    def test_the_download_is_allauths_text_file_of_the_codes(self, with_codes) -> None:
+        response = with_codes.get(reverse("mfa_download_recovery_codes"))
+
+        assert response.status_code == 200
+        assert response["Content-Type"].startswith("text/plain")
+        body = response.content.decode()
+        for code in with_codes.codes:
+            assert code in body
+
+    def test_the_generate_page_is_a_management_page(self, with_codes) -> None:
+        response = with_codes.get(reverse("mfa_generate_recovery_codes"))
+
+        html = self.assert_management_page(response, "Generate")
+        assert "This action will invalidate your existing codes." in html
+
+    # allauth adds its message when the transaction commits, which never happens
+    # inside the test's own transaction, so this test commits for real.
+    @pytest.mark.django_db(transaction=True)
+    def test_generating_replaces_the_codes_and_says_so(self, with_codes) -> None:
+        response = with_codes.post(reverse("mfa_generate_recovery_codes"), follow=True)
+
+        html = response.content.decode()
+        assert "A new set of recovery codes has been generated." in html
+        area = BeautifulSoup(html, "html.parser").find("textarea", id="recovery_codes")
+        new_codes = area.get_text().split()
+        assert new_codes
+        assert set(new_codes).isdisjoint(with_codes.codes)

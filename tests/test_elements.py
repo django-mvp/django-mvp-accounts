@@ -284,3 +284,36 @@ class TestImg:
         soup = render_element("{% element img src=src %}{% endelement %}", src="/a.png")
 
         assert soup.find("img").get("alt") is None
+
+
+class TestFieldTextarea:
+    """The recovery codes page draws a read-only text area through ``field``."""
+
+    SOURCE = (
+        '{% element field id="recovery_codes" type="textarea" rows=2 readonly=True %}'
+        "{% slot label %}Unused codes{% endslot %}"
+        "{% slot value %}abc-1\nabc-2{% endslot %}{% endelement %}"
+    )
+
+    def test_it_draws_a_readonly_textarea_with_its_id_rows_and_content(self) -> None:
+        textarea = render_element(self.SOURCE).find("textarea")
+
+        assert textarea["id"] == "recovery_codes"
+        assert textarea.has_attr("readonly")
+        assert textarea["rows"] == "2"
+        assert textarea.get_text() == "abc-1\nabc-2"
+
+    def test_it_keeps_the_label(self) -> None:
+        soup = render_element(self.SOURCE)
+
+        label = soup.find("label", attrs={"for": "recovery_codes"})
+        assert label.get_text(strip=True) == "Unused codes"
+
+    def test_the_content_is_escaped(self) -> None:
+        soup = render_element(
+            '{% element field id="x" type="textarea" %}'
+            "{% slot value %}{{ value }}{% endslot %}{% endelement %}",
+            value="<script>alert(1)</script>",
+        )
+
+        assert soup.find("script") is None

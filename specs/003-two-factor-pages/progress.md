@@ -35,3 +35,10 @@ Did: Added the img element (escaped src/alt, bg-white with padding), the totp_co
 Verified: uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 38 passed, 1 skipped (existing).
 Next: next task.
 Watch: none.
+
+## 2026-09-26T21:18:51Z · Implementer US1 · T005
+
+Did: Added the textarea branch to the field element (id, readonly, rows, value slot, label kept; no whitespace around the value), the assert_script_hooks fixture in conftest, and recovery-code page tests: view page (readonly textarea id=recovery_codes, hooks under SHOW_ONCE), download, generate page and generate replaces codes with allauth's message.
+Verified: uv run pytest tests/test_two_factor_pages.py tests/test_elements.py tests/test_management_pages.py tests/test_entrance_pages.py: 71 passed, 2 skipped (existing).
+Next: next task.
+Watch: none.

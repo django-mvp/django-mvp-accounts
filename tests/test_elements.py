@@ -317,3 +317,23 @@ class TestFieldTextarea:
         )
 
         assert soup.find("script") is None
+
+
+class TestFormId:
+    """allauth's scripts find some forms by id, so a form keeps the one it is given."""
+
+    def test_a_form_keeps_the_id_it_is_given(self) -> None:
+        soup = render_element(
+            '{% element form id="webauthn_form" method="post" %}'
+            "{% slot body %}Hi{% endslot %}{% endelement %}"
+        )
+
+        assert soup.form["id"] == "webauthn_form"
+
+    def test_a_form_without_an_id_writes_none(self) -> None:
+        soup = render_element(
+            '{% element form method="post" %}{% slot body %}Hi{% endslot %}'
+            "{% endelement %}"
+        )
+
+        assert not soup.form.has_attr("id")

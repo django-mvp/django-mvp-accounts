@@ -63,3 +63,10 @@ Did: the full-suite run found `tests/test_apps.py::TestStartup::test_entries_are
 Verified: see the full-suite run recorded in the completion report.
 Next: report.
 Watch: this is a pre-existing test edited outside the story's file list; named in the report's concerns.
+
+## 2026-09-26T21:40:00Z · Implementer US2 · T008
+
+Did: `form` element writes `id` when allauth gives one; `tests/test_two_factor_sign_in.py` covers the second-factor step (entrance page, correct code, recovery code, wrong code, security-key form id and script hooks, no security-key support) and the activate-sign out-sign in path; the new module is listed in non-mirror-paths.
+Verified: `uv run pytest tests/test_two_factor_sign_in.py tests/test_elements.py::TestFormId -q` 10 passed; the id tests and the webauthn test failed first.
+Next: T009.
+Watch: the step tests turn MFA_TRUST_ENABLED off so a correct code finishes the sign-in; T009 covers the trust prompt.

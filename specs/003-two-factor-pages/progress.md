@@ -56,3 +56,10 @@ Did: README: Two-factor authentication section (which pages are reskinned once a
 Verified: makemessages -l en: three new msgids; pre-commit run below.
 Next: next task.
 Watch: none.
+
+## Implementer US1 · T002 follow-up
+
+Did: the full-suite run found `tests/test_apps.py::TestStartup::test_entries_are_on_the_menu_after_startup` listing the Account group's children exactly. Added `two_factor` to the expected list, the minimal change; no assertion weakened.
+Verified: see the full-suite run recorded in the completion report.
+Next: report.
+Watch: this is a pre-existing test edited outside the story's file list; named in the report's concerns.

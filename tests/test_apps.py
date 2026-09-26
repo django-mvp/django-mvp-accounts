@@ -16,7 +16,7 @@ class TestStartup:
         groups = [c for c in AccountCenterMenu.children if c.name == "account"]
         assert len(groups) == 1
         names = [child.name for child in groups[0].children]
-        assert names == ["email", "password", "phone", "connections"]
+        assert names == ["email", "password", "phone", "connections", "two_factor"]
 
     def test_entries_reach_the_rendered_page(self, signed_in_client) -> None:
         page = signed_in_client.get(reverse("account-center")).content.decode()

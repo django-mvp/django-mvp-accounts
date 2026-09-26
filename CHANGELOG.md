@@ -44,6 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   management pages for a signed-in person, so phone verification after a change is one, and the
   same page during sign-up stays an entrance page. Until django-mvp#358 ships, these pages do not
   get the Account Center's container padding.
+- allauth's social sign-in pages (confirm, extra sign-up step, cancelled, failed, and the same-site
+  redirect page) render as django-mvp entrance pages. The sign-in and sign-up pages show one button
+  for each provider allauth lists, drawn from django-mvp's button with the provider's name. Each
+  button's icon is named after allauth's provider id, so your django-easy-icons setup needs an icon
+  under each id of a provider you configure. With `DEBUG` off a missing icon raises, as
+  `EASY_ICONS_FAIL_SILENTLY` defaults to `DEBUG`. The package ships no provider icons. The demo
+  installs allauth's test provider.
 
 ### Changed
 

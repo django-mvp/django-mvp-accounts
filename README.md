@@ -112,6 +112,38 @@ the sign-out form are django-mvp's. Another installed app can add its own card t
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
 
+## Signing in with other accounts
+
+To offer sign-in with GitHub, Google or another provider, install
+`allauth.socialaccount` and each provider's app, and configure them as
+[allauth documents](https://docs.allauth.org/en/latest/socialaccount/index.html).
+Nothing about that is checked or configured for you.
+
+The social sign-in pages render as django-mvp entrance pages, like the rest of
+allauth's sign-in pages. The sign-in and sign-up pages show one button for each
+provider allauth lists, with the provider's name as its text.
+
+Each button's icon is named after allauth's provider id (`github`, `google`),
+so the project's [django-easy-icons](https://github.com/django-easy-icons/django-easy-icons)
+setup needs an icon under each id of a provider it configures:
+
+```python
+EASY_ICONS = {
+    "default": {
+        # ...
+        "icons": {
+            "google": "bi bi-google",
+        },
+    },
+}
+```
+
+What a missing icon does is django-easy-icons' decision. `EASY_ICONS_FAIL_SILENTLY`
+defaults to the value of `DEBUG`, so with `DEBUG` off a missing icon raises and
+breaks the sign-in and sign-up pages, and with it on (or the setting turned on) the
+button shows its name alone. This package ships no provider icons and checks for none.
+The OpenID buttons, one for each brand, all use the `openid` icon.
+
 ## Quickstart
 
 <!--

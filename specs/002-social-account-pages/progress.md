@@ -32,3 +32,10 @@ Did: socialaccount/login_redirect.html extending socialaccount/base_entrance.htm
 Verified: red first (bare document, no stylesheet); `uv run pytest tests/test_social_entrance_pages.py` 21 passed.
 Next: T005
 Watch: -
+
+## 2026-09-26T19:59:15+02:00 · Implementer US1 · T005
+
+Did: README section "Signing in with other accounts" and a CHANGELOG Added entry. Nothing under docs/ describes the touched surface (ROADMAP, adr, agents, brainstorm only).
+Verified: pre-commit clean; wording checked against the brief's acceptance list.
+Next: full verify, report.
+Watch: -

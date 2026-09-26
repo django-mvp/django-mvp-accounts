@@ -18,6 +18,7 @@ CARDS = {
     "Email": "account_email",
     "Password": "account_change_password",
     "Phone number": "account_change_phone",
+    "Connected accounts": "socialaccount_connections",
 }
 
 
@@ -54,6 +55,14 @@ class TestOverviewCards:
         assert "<span>Email</span>" in cards
         assert "<span>Password</span>" in cards
         assert "<span>Phone number</span>" not in cards
+
+    def test_the_connected_accounts_card_offers_its_button_and_icon(
+        self, account_center
+    ) -> None:
+        cards = cards_of(account_center)
+
+        assert "Manage connected accounts" in cards
+        assert "bi-link-45deg" in cards
 
     def test_a_signed_out_visitor_is_sent_to_sign_in(self, client, db) -> None:
         response = client.get(reverse("account-center"))

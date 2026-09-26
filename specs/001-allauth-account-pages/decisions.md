@@ -217,3 +217,14 @@ verification by link offers no code, and a test pinning D22. Dispatching an Impl
 would have cost more than the change.
 
 **ADR:** none — a note on how this run worked
+
+## D24 — The demo keeps what it sends on an outbox page
+
+Sign-in by code, password reset, email verification and phone verification all send something
+the next page waits for. A development server prints it to the console, which someone trying the
+demo in a browser cannot see. The demo stores each email and text message and lists them on an
+Outbox page that exists only with DEBUG on, beside the seeded accounts. seed_demo also gives the
+staff account a second, unverified address and the super account a verified phone number, so the
+email and phone pages can show every state.
+
+**ADR:** none — demo tooling, nothing in the package depends on it

@@ -109,3 +109,11 @@ Watch: the account needs a blank `email` on the user, or allauth's email page cr
 - Two decisions graduated to ADRs: 0001 (reskin allauth through its templates) and 0002 (account management lives in the Account Center). Every decision carries a verdict.
 - Whole-feature verify green: 95 passed, 2 skipped (django-mvp#358, #412). Every class the templates use exists in django-mvp's stylesheet.
 - tamper-check: three flags, all additions to shared test infrastructure (conftest fixtures, new demo test classes, test routes). No pre-existing assertion was changed or removed.
+
+## 2026-09-26T16:05Z · Review
+- One correctness, spec and documentation reviewer and one security reviewer, one round. Four verified findings: one high (the "Request new code" button tied to another form defaulted to `type="button"` and submitted nothing; the security lens reported the same defect at medium) and two low (password reset opened while signed in had no test pinning its layout; verification by link had no "offers no code" assertion).
+- Fixed directly (D23): T020, T021, T022. The high finding's test fails with the old default restored.
+- Main merged into the branch (the FS-002 and FS-003 specifications and coverage of the no-allauth subprocess); no code the review read changed.
+- Demo outbox added for the walkthrough (D24).
+- Verify green on the merged branch: 104 passed, 2 skipped (django-mvp#358, #412).
+Next: walkthrough.

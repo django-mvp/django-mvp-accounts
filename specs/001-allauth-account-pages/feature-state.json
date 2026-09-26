@@ -245,7 +245,7 @@
       "priority": "P2",
       "issue": 13,
       "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts",
-      "status": "todo",
+      "status": "done",
       "replans": 0,
       "tasks": [
         {
@@ -253,7 +253,10 @@
           "status": "done",
           "attempts": 1,
           "evidence": {
-            "commands": ["uv run pytest tests/test_management_pages.py", "uv run pre-commit run --all-files"]
+            "commands": [
+              "uv run pytest tests/test_management_pages.py",
+              "uv run pre-commit run --all-files"
+            ]
           }
         },
         {
@@ -261,7 +264,10 @@
           "status": "done",
           "attempts": 1,
           "evidence": {
-            "commands": ["uv run pytest tests/test_management_pages.py::TestWarnNoEmail", "uv run pre-commit run --all-files"]
+            "commands": [
+              "uv run pytest tests/test_management_pages.py::TestWarnNoEmail",
+              "uv run pre-commit run --all-files"
+            ]
           }
         }
       ]

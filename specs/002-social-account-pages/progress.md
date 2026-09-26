@@ -25,3 +25,10 @@ Did: TestSocialEntrancePages: confirmation page, test provider's form, extra sig
 Verified: `uv run pytest tests/test_social_entrance_pages.py` 20 passed. These pages already render through FS-001's layouts, so the tests passed on first run; probed by removing allauth/layouts/entrance.html: 8 failed, then restored.
 Next: T004
 Watch: allauth answers the failed page with 401, so that test makes the shared assertions inline (the helper wants 200).
+
+## 2026-09-26T19:58:56+02:00 · Implementer US1 · T004
+
+Did: socialaccount/login_redirect.html extending socialaccount/base_entrance.html (title, refresh in extra_head, Continue link through the p element); TestSameSiteRedirectPage.
+Verified: red first (bare document, no stylesheet); `uv run pytest tests/test_social_entrance_pages.py` 21 passed.
+Next: T005
+Watch: -

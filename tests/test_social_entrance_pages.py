@@ -153,3 +153,25 @@ class TestSocialEntrancePages(EntrancePageAssertions):
         page = client.get(reverse("overview"))
         assert page.wsgi_request.user.is_authenticated
         assert page.wsgi_request.user.email == "social.person@example.com"
+
+
+class TestSameSiteRedirectPage(EntrancePageAssertions):
+    """With a Strict session cookie the callback bounces through its own page.
+
+    The browser withholds the cookie from a cross-site request, so allauth
+    answers the first visit with a page that sends the browser to the same URL
+    again, from this site.
+    """
+
+    def test_it_renders_as_an_entrance_page(self, client, db, settings) -> None:
+        settings.SESSION_COOKIE_SAMESITE = "Strict"
+        callback = reverse("github_callback")
+
+        response = client.get(callback)
+
+        html = self.assert_entrance_page(response, "Continue")
+        assert "Sign In" in html.split("</title>")[0]
+        assert (
+            f'<meta http-equiv="refresh" content="0;URL=\'{callback}?_redir=\'"' in html
+        )
+        assert f'href="{callback}?_redir="' in html

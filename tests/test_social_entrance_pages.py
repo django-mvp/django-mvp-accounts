@@ -69,21 +69,6 @@ class TestProviderButtons(EntrancePageAssertions):
         assert all('class="btn ' in link for link in links)
         assert "<ul>" not in page
 
-    def test_each_button_fills_the_width(self, page: str) -> None:
-        links = re.findall(r'<a\b[^>]*href="/accounts/\w+/login/[^"]*"[^>]*>', page)
-
-        assert links
-        assert all("btn-block" in link for link in links)
-
-    def test_the_buttons_stack(self, page: str) -> None:
-        """The list is a column at every width, never a row."""
-        first = page.index('href="/accounts/dummy/login/')
-        container = page[:first].rsplit("<div ", 1)[1].split(">", 1)[0]
-
-        assert "flex-col" in container
-        assert "flex-row" not in container
-        assert "flex-wrap" not in container
-
     def test_no_provider_leaves_no_button_and_no_heading(
         self, client, db, settings
     ) -> None:

@@ -211,6 +211,22 @@ class TestPhoneVerificationBase(ManagementPageAssertions):
         assert ALLAUTH_BARE_MENU not in html
 
 
+class TestEntranceBaseFollowsTheVisitor(ManagementPageAssertions):
+    """A page built on allauth's entrance base draws the shell when signed in.
+
+    An entrance page is one seen before signing in, so a signed-in person who
+    opens password reset gets the management layout, as re-authentication does
+    (ADR 0001).
+    """
+
+    def test_password_reset_when_signed_in_is_a_management_page(
+        self, signed_in_client
+    ) -> None:
+        response = signed_in_client.get(reverse("account_reset_password"))
+
+        self.assert_management_page(response, 'name="email"')
+
+
 class TestWarnNoEmail:
     """allauth's no-address warning shows inside the shell as an alert (US4)."""
 

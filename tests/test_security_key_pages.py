@@ -10,9 +10,12 @@ The subject is a set of templates, not one source file, so this module does not
 mirror a source file.
 """
 
+import re
+
 import pytest
 from allauth.mfa.models import Authenticator
 from bs4 import BeautifulSoup
+from django.core import mail
 from django.core.cache import cache
 from django.urls import reverse
 
@@ -186,3 +189,40 @@ class TestPasskeySignIn(EntrancePageAssertions):
         assert 'id="mfa_login"' not in html
         assert 'id="mfa_credential"' not in html
         assert "allauth.webauthn.forms.loginForm" not in html
+
+
+VERIFICATION_CODE = re.compile(r"^[A-Z0-9]{4}-[A-Z0-9]{4}$", re.MULTILINE)
+PASSKEY_SIGNUP = {
+    "MFA_PASSKEY_SIGNUP_ENABLED": True,
+    "ACCOUNT_EMAIL_VERIFICATION": "mandatory",
+    "ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED": True,
+}
+
+
+class TestPasskeySignUp(EntrancePageAssertions):
+    """The demo leaves passkey sign-up off, so these run under settings overrides."""
+
+    def test_the_passkey_sign_up_page_is_an_entrance_page(
+        self, client, db, rebuild_urls
+    ) -> None:
+        with rebuild_urls(**PASSKEY_SIGNUP):
+            response = client.get(reverse("account_signup_by_passkey"))
+
+        self.assert_entrance_page(response, 'name="email"')
+
+    def test_after_the_email_code_the_person_creates_the_passkey(
+        self, client, db, rebuild_urls, assert_script_hooks
+    ) -> None:
+        with rebuild_urls(**PASSKEY_SIGNUP):
+            client.post(
+                reverse("account_signup_by_passkey"), {"email": "passkey@example.com"}
+            )
+            code = VERIFICATION_CODE.search(mail.outbox[-1].body).group(0)
+            response = client.post(
+                reverse("account_email_verification_sent"), {"code": code}, follow=True
+            )
+            passkey_page = reverse("mfa_signup_webauthn")
+
+        assert response.redirect_chain[-1][0] == passkey_page
+        html = self.assert_entrance_page(response, 'id="mfa_webauthn_signup"')
+        assert assert_script_hooks(html) >= 1

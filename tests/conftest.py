@@ -103,6 +103,7 @@ URLCONF_MODULES = (
     "allauth.account.views",
     "allauth.account.urls",
     "allauth.mfa.base.urls",
+    "allauth.mfa.webauthn.urls",
     "allauth.mfa.urls",
     "allauth.urls",
     "demo.urls",

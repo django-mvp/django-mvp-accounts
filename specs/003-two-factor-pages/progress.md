@@ -112,3 +112,10 @@ Did: page tests for passkey sign-in: an entrance page with the `passkey_login` b
 Verified: `uv run pytest tests/test_security_key_pages.py::TestPasskeySignIn -q` 2 passed. Existing elements already carry the ids, so the tests passed on first run; probed by removing the button element's `form` output, which failed, then restored.
 Next: T015.
 Watch: none.
+
+## 2026-09-26T23:30:00Z · Implementer US3 · T015
+
+Did: `allauth.mfa.webauthn.urls` added to the URL rebuild list, ahead of `allauth.mfa.urls`. Tests for passkey sign-up under passkey sign-up + mandatory verification + verification by code: `account_signup_by_passkey` is an entrance page; posting an address and the emailed code reaches `mfa_signup_webauthn`, an entrance page with the `mfa_webauthn_signup` button and the script-hook check.
+Verified: `uv run pytest tests/test_security_key_pages.py -q` 14 passed. Without the conftest line the whole file fails (`mfa_signup_webauthn` not found) once an earlier test has imported the webauthn URLs with sign-up off; run alone the class passes either way.
+Next: T016.
+Watch: the verification-code page is `account_email_verification_sent`, not `account_confirm_email`.

@@ -149,3 +149,8 @@ is gone (D10). The cell element's alignment used a class django-mvp's stylesheet
 it now uses `text-end`, and the test pinning the class was removed. D1 graduated to ADR 0004. Every
 decision carries its ADR verdict. Patch coverage of the package's Python: 100%.
 Next: code review.
+
+## 2026-09-26T21:46:28Z · Forge · S6 review
+
+Did: correctness and security reviews both approve, no critical or high finding. One medium and four
+low findings fixed on the branch and recorded on the pull request. Next: walkthrough.

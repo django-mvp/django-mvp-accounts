@@ -11,3 +11,10 @@ Did: social account app and test provider in the demo (dummy icon mapped); GitHu
 Verified: `uv run pytest tests/test_demo.py::TestDemoSocialAccounts` 2 passed (red first: NoReverseMatch); test_without_allauth 4 passed; pre-commit clean; migrate run.
 Next: T002
 Watch: -
+
+## 2026-09-26T19:58:02+02:00 · Implementer US1 · T002
+
+Did: provider and provider_list elements (c-button with the provider id as icon, name as text and title, in a wrapping row); NoProvidersSocialAdapter; tests/test_social_entrance_pages.py (TestProviderButtons) added to non-mirror-paths.
+Verified: `uv run pytest tests/test_social_entrance_pages.py` red first (icon, shell-button assertions failed on allauth's bare list), then 13 passed; pre-commit clean.
+Next: T003
+Watch: -

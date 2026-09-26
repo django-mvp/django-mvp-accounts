@@ -15,7 +15,7 @@
       {% endslot %}
     </c-button>
   {% elif attrs.form %}
-    <c-button type="{{ attrs.type|default:'button' }}"
+    <c-button type="{{ attrs.type|default:'submit' }}"
               form="{{ attrs.form }}"
               name="{{ attrs.name }}"
               value="{{ attrs.value }}"

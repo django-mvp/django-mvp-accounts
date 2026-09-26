@@ -146,6 +146,19 @@ class TestButtons:
         assert soup.find("script") is None
         assert soup.find("a")["href"] == '"><script>alert(1)</script>'
 
+    def test_a_button_tied_to_another_form_submits_it(self) -> None:
+        """allauth's "Request new code" button names a form and no type.
+
+        It relies on the browser's default, which submits, so the element has to
+        keep that default or the button does nothing when pressed.
+        """
+        soup = render_element(
+            '{% element button form="resend" %}Request new code{% endelement %}'
+        )
+
+        button = soup.find("button", attrs={"form": "resend"})
+        assert button["type"] == "submit"
+
     def test_a_button_group_holds_its_buttons(self) -> None:
         soup = render_element(
             "{% element button_group %}{% element button %}A{% endelement %}"

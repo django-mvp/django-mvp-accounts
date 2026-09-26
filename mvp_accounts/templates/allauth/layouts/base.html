@@ -1,0 +1,6 @@
+{% extends "allauth/layouts/entrance.html" %}
+{% comment %}
+  allauth's own document, with its bare HTML and Menu list, is never drawn.
+  Nothing in allauth's account app extends this layout directly, but a page
+  from another allauth app might, and it lands on the entrance layout.
+{% endcomment %}

@@ -10,9 +10,12 @@ are known passwords, and the only thing standing between them and a deployed
 site is that this command will not execute there.
 """
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
+
+from demo.models import PhoneNumber
 
 PASSWORD = "password"
 
@@ -47,8 +50,35 @@ class Command(BaseCommand):
                 setattr(user, attribute, value)
             user.set_password(PASSWORD)
             user.save()
+            # allauth refuses to sign in an account whose address is not
+            # verified, so each account gets one that is, marked primary.
+            EmailAddress.objects.update_or_create(
+                user=user,
+                email=email,
+                defaults={"verified": True, "primary": True},
+            )
             self.stdout.write(f"  {'created' if created else 'updated'}  {email}")
+
+        self.seed_states(user_model, username_field)
 
         self.stdout.write(
             self.style.SUCCESS(f"\nAll three sign in with the password {PASSWORD!r}.")
+        )
+
+    def seed_states(self, user_model, username_field):
+        """Give the accounts what the account pages have to show.
+
+        The staff account has a second, unverified address, so the email page
+        lists several with their badges and actions. The super account has a
+        verified phone number, so the phone page shows one to change.
+        """
+        staff = user_model.objects.get(**{username_field: "staff.user@example.com"})
+        EmailAddress.objects.get_or_create(
+            user=staff,
+            email="staff.user+second@example.com",
+            defaults={"verified": False, "primary": False},
+        )
+        admin = user_model.objects.get(**{username_field: "super.user@example.com"})
+        PhoneNumber.objects.update_or_create(
+            user=admin, defaults={"number": "+4915100000001", "verified": True}
         )

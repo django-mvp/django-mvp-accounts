@@ -1,0 +1,17 @@
+{% extends "page_view.html" %}
+{% comment %}
+  The demo's outbox: what it would have emailed or texted, newest first, so a
+  sign-in code or a reset link can be followed from the browser.
+{% endcomment %}
+{% block page.content %}
+  {% for message in messages_sent %}
+    <c-section title="{{ message.subject }}" icon="email">
+      <c-text>To {{ message.recipient }} · {{ message.sent_at|timesince }} ago</c-text>
+      <div class="prose max-w-none">
+        <c-text>{{ message.body|urlize|linebreaksbr }}</c-text>
+      </div>
+    </c-section>
+  {% empty %}
+    <c-text>Nothing sent yet. Ask for a sign-in code or a password reset, then come back.</c-text>
+  {% endfor %}
+{% endblock page.content %}

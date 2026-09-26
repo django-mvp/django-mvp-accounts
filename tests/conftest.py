@@ -9,11 +9,17 @@ those factories. A one-off variation needs no fixture of its own — call the
 factory inline in the test with the field overridden.
 """
 
+import importlib
+from contextlib import contextmanager
+
 import pytest
 from django import template as dj_template
 from django.template import Context
-from django.urls import reverse
+from django.test import override_settings
+from django.urls import clear_url_caches, reverse
 from django_cotton.compiler_regex import CottonCompiler
+
+from tests.factories import EmailAddressFactory
 
 
 @pytest.fixture(scope="session")
@@ -36,3 +42,55 @@ def render():
 def overview_page(client, db):
     """The demo project's overview page, rendered, as a string."""
     return client.get(reverse("overview")).content.decode()
+
+
+@pytest.fixture
+def signed_in_client(client, db):
+    """A test client signed in as an account with a verified primary address."""
+    address = EmailAddressFactory()
+    client.force_login(address.user)
+    client.user = address.user
+    return client
+
+
+# The views come first: a view class reads some settings, the template it
+# renders among them, when it is defined, and the URLconf holds the classes.
+URLCONF_MODULES = (
+    "allauth.account.views",
+    "allauth.account.urls",
+    "allauth.urls",
+    "demo.urls",
+    "tests.urls",
+)
+
+
+def reload_urlconf():
+    """Import the views and routes again, so they follow the settings as they stand."""
+    for name in URLCONF_MODULES:
+        importlib.reload(importlib.import_module(name))
+    clear_url_caches()
+
+
+@pytest.fixture
+def rebuild_urls():
+    """Apply settings overrides and rebuild allauth's routes to match.
+
+    allauth decides which account routes and templates exist when its views and
+    URLconf are imported, so
+    switching a setting with ``override_settings`` alone changes nothing a test
+    can see. Used as ``with rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False):``.
+    The routes are rebuilt again on the way out, from the restored settings.
+    Every xdist worker is its own process, so a rebuild in one cannot reach
+    another.
+    """
+
+    @contextmanager
+    def rebuild(**overrides):
+        try:
+            with override_settings(**overrides):
+                reload_urlconf()
+                yield
+        finally:
+            reload_urlconf()
+
+    return rebuild

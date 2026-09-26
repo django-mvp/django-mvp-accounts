@@ -1,0 +1,320 @@
+{
+  "feature": "001-allauth-account-pages",
+  "branch": "001-allauth-account-pages",
+  "repo": "django-mvp/django-mvp-accounts",
+  "state": "PR_READY",
+  "state_history": [
+    {
+      "state": "QUEUED",
+      "at": "2026-09-26T06:52:46Z",
+      "note": "specification merged to main in PR #9, merge commit 132d6911e6a6f423ca6b6c0d79bcfc09d8477a21; epic #5, stories #10-#13"
+    },
+    {
+      "state": "PLAN",
+      "at": "2026-09-26T08:39:46Z",
+      "note": "plan.md, research.md, tasks.md"
+    },
+    {
+      "state": "DESIGN_REVIEW",
+      "at": "2026-09-26T08:40:48Z",
+      "note": "design reviewer dispatched, three lenses, one round"
+    },
+    {
+      "state": "IMPLEMENT",
+      "at": "2026-09-26T08:51:45Z",
+      "note": "US1-US4 sequentially in the main checkout"
+    },
+    {
+      "state": "CONVERGE",
+      "at": "2026-09-26T09:19:57Z",
+      "note": "all four stories done"
+    },
+    {
+      "state": "REVIEW",
+      "at": "2026-09-26T09:22:58Z",
+      "note": "one reviewer correctness+spec+docs, one security lens"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-09-26T15:15:45Z",
+      "note": "review fixed and recorded; walkthrough required"
+    }
+  ],
+  "gates": {
+    "spec": {
+      "approved_by": "SamuelJennings",
+      "at": "2026-09-26T06:52:46Z",
+      "self_resolved": []
+    },
+    "plan": {
+      "approved_by": "notified",
+      "at": "2026-09-26T08:52:00Z",
+      "self_resolved": []
+    },
+    "merge": {
+      "approved_by": null,
+      "at": null
+    },
+    "design_review": {
+      "approved_by": "design-panel",
+      "at": "2026-09-26T08:50:00Z",
+      "self_resolved": [
+        "SPEC-001 high: four pages on the opposite allauth base — base_entrance follows the visitor, logout and verified_email_required copied with an entrance parent (R1, T003, T010, T016)",
+        "SPEC-002 medium: management navigation asserted by the sidebar menu, not the 'Main navigation' label (plan)",
+        "SPEC-003 medium: sign-up link on sign-in is allauth's — read in decisions, T005 uses a closed-signup test adapter",
+        "SPEC-004 medium: without allauth the Account Center and stand-in sign-out are django-mvp's — read in decisions",
+        "SPEC-005 medium: Account Center sidebar assertion moved from T011 to T016",
+        "SPEC-006 medium: whole-form FR-015 must pass; single-field path skipped naming django-mvp#412 (T004)",
+        "ARCH-001 medium: element list trimmed to the twelve the account app uses (R4)",
+        "ARCH-002 medium: icons from django-mvp's pack (T011)",
+        "ARCH-003 medium: factories and a signed-in fixture in T001",
+        "SPEC-007 low: FR-012 read as demo plus tests (decisions)",
+        "SPEC-008 low: code pages' own title block wins the browser title (R1, T003)",
+        "ARCH-004 low: chained-card template in its own directory (T012)"
+      ]
+    },
+    "walkthrough": {
+      "approved_by": "SamuelJennings",
+      "at": "2026-09-26T15:37:49Z",
+      "self_resolved": [
+        "Group the allauth menu entries under a non-collapsible Account heading, added only when allauth is installed"
+      ]
+    }
+  },
+  "stories": [
+    {
+      "id": "US1",
+      "priority": "P1",
+      "issue": 10,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T001",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py tests/test_app.py"
+            ]
+          }
+        },
+        {
+          "id": "T002",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py"
+            ]
+          }
+        },
+        {
+          "id": "T003",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_entrance_pages.py"
+            ]
+          }
+        },
+        {
+          "id": "T004",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_elements.py tests/test_demo.py"
+            ]
+          }
+        },
+        {
+          "id": "T005",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_entrance_pages.py"
+            ]
+          }
+        },
+        {
+          "id": "T006",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_entrance_pages.py"
+            ]
+          }
+        },
+        {
+          "id": "T007",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pre-commit run --all-files"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US2",
+      "priority": "P1",
+      "issue": 11,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T008",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_recovery_pages.py::TestPasswordResetByLink"
+            ]
+          }
+        },
+        {
+          "id": "T009",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_recovery_pages.py::TestPasswordResetByCode"
+            ]
+          }
+        },
+        {
+          "id": "T010",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_recovery_pages.py::TestEmailVerification"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US3",
+      "priority": "P2",
+      "issue": 12,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T011",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py tests/test_apps.py"
+            ]
+          }
+        },
+        {
+          "id": "T012",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_account_center.py::TestOverviewCards tests/test_account_center.py::TestChainedCard"
+            ]
+          }
+        },
+        {
+          "id": "T013",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_account_center.py::TestUserMenu"
+            ]
+          }
+        },
+        {
+          "id": "T014",
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_allauth.py tests/test_apps.py tests/test_menus.py"
+            ]
+          }
+        },
+        {
+          "id": "T015",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "cd mvp_accounts && uv run django-admin makemessages -l en"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US4",
+      "priority": "P2",
+      "issue": 13,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T016",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_management_pages.py",
+              "uv run pre-commit run --all-files"
+            ]
+          }
+        },
+        {
+          "id": "T017",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_management_pages.py::TestWarnNoEmail",
+              "uv run pre-commit run --all-files"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "converge_cycles": {
+      "used": 1,
+      "max": 2
+    },
+    "review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "design_review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "tokens": {
+      "used": 0,
+      "max": 120
+    }
+  },
+  "pr": {
+    "number": 14,
+    "draft": true
+  }
+}

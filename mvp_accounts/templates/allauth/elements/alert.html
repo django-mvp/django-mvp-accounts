@@ -1,0 +1,12 @@
+{% load allauth %}
+{% comment %}
+  allauth hands an alert its `tags`, a comma-separated string. The variant is
+  read from it, and an alert with no tag we know is informational.
+{% endcomment %}
+{% with tags=attrs.tags|default:"" %}
+  <c-alert class="my-4"
+           variant="{% if 'danger' in tags or 'error' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% else %}info{% endif %}">
+    {% slot message %}
+    {% endslot %}
+  </c-alert>
+{% endwith %}

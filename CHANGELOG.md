@@ -26,8 +26,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The package, generated and not yet doing anything.
 - Django 6.1 is supported, and tested on every change alongside 5.2 and 6.0.
+- django-allauth's sign-in, sign-up, sign-out, sign-in-by-code and account-inactive pages, and its
+  "sign-up closed" page, now render as django-mvp entrance pages: no sidebar, one centred card, with
+  messages shown above it. allauth's forms, buttons, alerts and headings are drawn from django-mvp's
+  components. To use them, list `mvp_accounts` in `INSTALLED_APPS` ahead of `allauth` and `mvp`, and
+  include `allauth.urls` and `mvp.urls`. django-allauth 65.19.4 up to, but not including, 66 is
+  supported. A template of your own with the same name as one of allauth's still takes precedence.
+- allauth's password reset pages (by link and by code) and its email verification pages (by link and
+  by code, including "verified email required") render as entrance pages too.
+- With allauth installed, django-mvp's Account Center gains Email, Password and Phone number menu
+  entries and a card for each page on its landing page. Phone number appears only when phone
+  numbers are on. Without allauth the package adds nothing. An English translation catalogue is
+  included.
+- allauth's account management pages (email, change email, password change and set, phone change
+  and phone verification, re-authentication) render in django-mvp's Account Center, inside the
+  shell with its sidebar and messages. Pages allauth builds on its entrance base render as
+  management pages for a signed-in person, so phone verification after a change is one, and the
+  same page during sign-up stays an entrance page. Until django-mvp#358 ships, these pages do not
+  get the Account Center's container padding.
 
 ### Changed
 
+- The minimum django-mvp version is 0.25.0.
 - The package is built with hatchling instead of poetry-core, and developed with uv instead of
   Poetry.

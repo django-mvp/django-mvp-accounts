@@ -252,3 +252,35 @@ class TestPanel:
         )
 
         assert soup.select(".card a") == []
+
+
+class TestImg:
+    """The QR code is drawn from a data URI and always on white."""
+
+    def test_it_draws_the_image_with_its_source_and_alt(self) -> None:
+        soup = render_element(
+            "{% element img src=src alt=alt %}{% endelement %}",
+            src="data:image/svg+xml;base64,AAAA",
+            alt="A secret",
+        )
+
+        img = soup.find("img")
+        assert img["src"] == "data:image/svg+xml;base64,AAAA"
+        assert img["alt"] == "A secret"
+        assert "bg-white" in img["class"]
+
+    def test_the_source_and_alt_are_escaped(self) -> None:
+        soup = render_element(
+            "{% element img src=src alt=alt %}{% endelement %}",
+            src='"><script>alert(1)</script>',
+            alt='"><script>alert(2)</script>',
+        )
+
+        assert soup.find("script") is None
+        assert soup.find("img")["src"] == '"><script>alert(1)</script>'
+        assert soup.find("img")["alt"] == '"><script>alert(2)</script>'
+
+    def test_an_image_without_alt_has_no_alt_attribute(self) -> None:
+        soup = render_element("{% element img src=src %}{% endelement %}", src="/a.png")
+
+        assert soup.find("img").get("alt") is None

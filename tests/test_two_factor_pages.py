@@ -9,12 +9,18 @@ The subject is a set of templates, not one source file, so this module does not
 mirror a source file.
 """
 
+import base64
+import re
+
 import pytest
+from allauth.mfa.models import Authenticator
+from bs4 import BeautifulSoup
+from django.contrib.staticfiles import finders
 from django.core.cache import cache
 from django.urls import reverse
 
 from tests.factories import AuthenticatorFactory, EmailAddressFactory
-from tests.test_management_pages import ManagementPageAssertions
+from tests.test_management_pages import ManagementPageAssertions, sidebar_menus
 
 
 @pytest.fixture(autouse=True)
@@ -99,3 +105,85 @@ class TestTwoFactorOverview(ManagementPageAssertions):
 
         assert response.status_code == 302
         assert reverse("account_login") in response["Location"]
+
+
+class TestActivateAuthenticatorApp(ManagementPageAssertions):
+    @pytest.fixture
+    def page(self, fresh_client) -> BeautifulSoup:
+        response = fresh_client.get(reverse("mfa_activate_totp"))
+        self.assert_management_page(response, 'name="code"')
+        return BeautifulSoup(response.content.decode(), "html.parser")
+
+    def test_the_qr_code_sits_on_white(self, page) -> None:
+        assert "bg-white" in page.select_one("img[src^='data:image/svg+xml']")["class"]
+
+    def test_the_stylesheet_defines_white(self) -> None:
+        """A class the packaged stylesheet does not emit does nothing."""
+        with open(finders.find("css/django-mvp.css")) as stylesheet:
+            assert ".bg-white{" in stylesheet.read()
+
+    def test_the_qr_code_is_drawn_in_a_dark_colour(self, page) -> None:
+        uri = page.select_one("img[src^='data:image/svg+xml']")["src"]
+        svg = base64.b64decode(uri.split(",", 1)[1]).decode()
+
+        fill = re.search(r'<path[^>]*fill="([^"]+)"', svg).group(1)
+
+        assert fill.lower() in {"#000", "#000000", "black"}
+
+    def test_the_secret_is_shown(self, page, fresh_client) -> None:
+        secret = fresh_client.session["mfa.totp.secret"]
+
+        field = page.find(id="authenticator_secret")
+
+        assert field.has_attr("disabled")
+        assert field["value"] == secret
+
+    def test_a_wrong_code_shows_allauths_error(self, fresh_client) -> None:
+        fresh_client.get(reverse("mfa_activate_totp"))
+
+        response = fresh_client.post(reverse("mfa_activate_totp"), {"code": "000000"})
+
+        html = self.assert_management_page(response, 'name="code"')
+        assert "Incorrect code." in html
+        assert not Authenticator.objects.filter(user=fresh_client.user).exists()
+
+    # allauth adds its message when the transaction commits. Inside the test's
+    # own transaction that never happens, so this test commits for real.
+    @pytest.mark.django_db(transaction=True)
+    def test_a_correct_code_activates_and_says_so(
+        self, fresh_client, totp_code
+    ) -> None:
+        fresh_client.get(reverse("mfa_activate_totp"))
+        secret = fresh_client.session["mfa.totp.secret"]
+
+        response = fresh_client.post(
+            reverse("mfa_activate_totp"), {"code": totp_code(secret)}, follow=True
+        )
+
+        assert Authenticator.objects.filter(
+            user=fresh_client.user, type=Authenticator.Type.TOTP
+        ).exists()
+        html = response.content.decode()
+        assert "Authenticator app activated." in html
+        assert sidebar_menus(html)
+
+
+class TestDeactivateAuthenticatorApp(ManagementPageAssertions):
+    @pytest.fixture
+    def with_app(self, fresh_client):
+        AuthenticatorFactory(user=fresh_client.user)
+        return fresh_client
+
+    def test_it_is_a_management_page(self, with_app) -> None:
+        response = with_app.get(reverse("mfa_deactivate_totp"))
+
+        html = self.assert_management_page(response, "Deactivate Authenticator App")
+        assert "Are you sure?" in html
+
+    def test_deactivating_says_so_and_leaves_nothing_active(self, with_app) -> None:
+        response = with_app.post(reverse("mfa_deactivate_totp"), follow=True)
+
+        html = response.content.decode()
+        assert "Authenticator app deactivated." in html
+        assert "An authenticator app is not active." in html
+        assert not Authenticator.objects.filter(user=with_app.user).exists()

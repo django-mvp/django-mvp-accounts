@@ -17,6 +17,11 @@ import sys
 from contextlib import contextmanager
 
 import pytest
+from allauth.mfa.totp.internal.auth import (
+    format_hotp_value,
+    hotp_value,
+    yield_hotp_counters_from_time,
+)
 from django import template as dj_template
 from django.template import Context
 from django.test import override_settings
@@ -46,6 +51,17 @@ def render():
 def overview_page(client, db):
     """The demo project's overview page, rendered, as a string."""
     return client.get(reverse("overview")).content.decode()
+
+
+@pytest.fixture
+def totp_code():
+    """The authenticator code that is valid right now for a secret."""
+
+    def code_for(secret: str) -> str:
+        counter = next(yield_hotp_counters_from_time())
+        return format_hotp_value(hotp_value(secret, counter))
+
+    return code_for
 
 
 @pytest.fixture

@@ -1,0 +1,15 @@
+{% comment %}
+  The two-factor QR code, and any other image allauth draws.
+
+  allauth's QR code is dark modules on a transparent canvas. On a dark theme
+  those sit on a dark page and cannot be scanned, so the image is always drawn
+  on white, with padding for the quiet zone the scanner needs. `bg-white` is the
+  fixed colour, not a theme colour, so it is white in every theme.
+
+  `src` and `alt` go through `{{ }}` so they are escaped. `alt` is left out
+  when allauth does not give one, because an empty `alt` would tell a screen
+  reader the image is decorative.
+{% endcomment %}
+<img src="{{ attrs.src }}"
+     {% if attrs.alt %}alt="{{ attrs.alt }}"{% endif %}
+     class="bg-white p-4 rounded">

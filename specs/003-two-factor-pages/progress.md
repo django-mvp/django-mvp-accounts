@@ -28,3 +28,10 @@ Did: Added the panel element (card, title, body, every action in the footer), th
 Verified: uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 27 passed, 1 skipped (existing).
 Next: next task.
 Watch: none.
+
+## 2026-09-26T21:17:08Z · Implementer US1 · T004
+
+Did: Added the img element (escaped src/alt, bg-white with padding), the totp_code fixture in conftest, and tests for activating and deactivating the authenticator app: QR on white, dark SVG fill, stylesheet defines .bg-white, secret shown, wrong code error, correct code activates with allauth's message. The activation test commits for real because allauth adds its message on commit. AuthenticatorFactory was added in T003.
+Verified: uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 38 passed, 1 skipped (existing).
+Next: next task.
+Watch: none.

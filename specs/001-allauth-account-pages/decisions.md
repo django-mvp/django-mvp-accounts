@@ -128,3 +128,15 @@ rendered as an entrance page before the copy existed, and its test was never red
 anyway: once the management layout exists, the page would otherwise take it. **Revisit if** the test
 is not red when the copy's `{% extends %}` is pointed back at `account/base_manage.html` after the
 management layout lands.
+
+### The user menu is asserted on the demo overview page, not the Account Center
+
+**Decision:** T013 reads the shell's user menu off the demo's overview page.
+**Why:** On the Account Center itself django-mvp draws its own navigation in place of the menu's "Account Center" row, and the sidebar's Overview entry links to the same URL, so a link assertion there passes with the user menu removed.
+**Revisit if:** django-mvp draws the row on the Account Center too.
+
+### flex_menu is a declared transitive dependency
+
+**Decision:** `menus.py` imports `flex_menu.MenuItem`; deptry's DEP003 ignore in `pyproject.toml` names it instead of adding a direct requirement.
+**Why:** django-mvp requires the menu library and documents `from flex_menu import MenuItem` as how a project extends its menus, so its requirement is the pin that matters.
+**Revisit if:** django-mvp stops requiring it.

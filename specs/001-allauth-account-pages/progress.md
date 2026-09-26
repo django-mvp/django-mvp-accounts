@@ -67,3 +67,15 @@ Did: `mvp_accounts/menus.py` appends Email, Password and Phone number entries to
 Verified: `uv run pytest tests/test_menus.py tests/test_apps.py` — 12 passed; the first test failed before the module existed. `uv run pre-commit run --all-files` — all hooks pass.
 Next: T012.
 Watch: the phone entry is dropped by django-mvp because its URL does not resolve, so nothing in menus.py checks the setting.
+
+## 2026-09-26T11:35Z · Implementer US3 · T012
+Did: `mvp_accounts/templates/mvp/account/overview.html` extends the same-named django-mvp template and adds an Email, Password and Phone number card after `{{ block.super }}`, each behind `{% url ... as %}`. `tests/test_account_center.py` (`TestOverviewCards`, `TestChainedCard`) with the chained template in `tests/templates_chained_card/`; the module is in `non-mirror-paths`.
+Verified: `uv run pytest tests/test_account_center.py` — 9 passed; the five card tests failed before the template existed.
+Next: T013 (tests only).
+Watch: none.
+
+## 2026-09-26T11:36Z · Implementer US3 · T013
+Did: `TestUserMenu` in `tests/test_account_center.py`: signed in, the overview page's user menu links to the Account Center and holds a form posting to `account_logout`; signed out, neither.
+Verified: `uv run pytest tests/test_account_center.py::TestUserMenu` — 3 passed. These pass on first run because the behaviour is django-mvp's; probed by making its user menu template draw nothing, which fails the two signed-in tests.
+Next: T014.
+Watch: the tests read the demo overview page, not the Account Center: the Account Center swaps the user menu's own Account Center row for its sidebar navigation (see decisions).

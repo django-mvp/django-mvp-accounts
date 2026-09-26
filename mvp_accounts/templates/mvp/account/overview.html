@@ -1,0 +1,38 @@
+{% extends "mvp/account/overview.html" %}
+{% load i18n %}
+{% comment %}
+  One card per account management page. Each URL is looked up with
+  `{% url ... as %}`, which leaves the variable empty instead of raising, so a
+  page allauth has not routed (phone numbers turned off) gets no card, and
+  without allauth none of them is drawn.
+{% endcomment %}
+{% block account.cards %}
+  {{ block.super }}
+  {% url "account_email" as email_url %}
+  {% if email_url %}
+    <c-card title="{% trans "Email" %}" icon="email">
+      <c-text>{% trans "Add, remove and verify the addresses on your account, and choose the one we write to." %}</c-text>
+      <c-slot name="footer">
+        <c-button href="{{ email_url }}" variant="primary" size="sm">{% trans "Manage email" %}</c-button>
+      </c-slot>
+    </c-card>
+  {% endif %}
+  {% url "account_change_password" as password_url %}
+  {% if password_url %}
+    <c-card title="{% trans "Password" %}" icon="password">
+      <c-text>{% trans "Change the password you sign in with, or set one if you do not have one yet." %}</c-text>
+      <c-slot name="footer">
+        <c-button href="{{ password_url }}" variant="primary" size="sm">{% trans "Change password" %}</c-button>
+      </c-slot>
+    </c-card>
+  {% endif %}
+  {% url "account_change_phone" as phone_url %}
+  {% if phone_url %}
+    <c-card title="{% trans "Phone number" %}" icon="phone">
+      <c-text>{% trans "Add or change the phone number on your account." %}</c-text>
+      <c-slot name="footer">
+        <c-button href="{{ phone_url }}" variant="primary" size="sm">{% trans "Change phone number" %}</c-button>
+      </c-slot>
+    </c-card>
+  {% endif %}
+{% endblock account.cards %}

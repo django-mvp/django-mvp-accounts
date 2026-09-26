@@ -122,3 +122,48 @@ class TestPasswordResetByCode(EntrancePageAssertions):
 
         html = self.assert_entrance_page(response, 'name="email"')
         assert not re.search(r"\bcode\b", html, re.IGNORECASE)
+
+
+class TestEmailVerification(EntrancePageAssertions):
+    def sign_up(self, client, email: str):
+        """Sign up as ``email``.
+
+        allauth rate-limits mail per address in the cache, which outlives a
+        test, so each test signs up as an address of its own.
+        """
+        return client.post(
+            reverse("account_signup"),
+            {
+                "email": email,
+                "password1": NEW_PASSWORD,
+                "password2": NEW_PASSWORD,
+            },
+            follow=True,
+        )
+
+    def test_verification_sent_page(self, client, db) -> None:
+        response = self.sign_up(client, "sent@example.com")
+
+        self.assert_entrance_page(response, "Verify Your Email Address")
+
+    def test_confirmation_page_from_the_emailed_link(self, client, db) -> None:
+        self.sign_up(client, "confirm@example.com")
+
+        response = client.get(first_link_in_mail(), follow=True)
+
+        self.assert_entrance_page(response, "Confirm Email Address")
+
+    def test_verified_email_required_page(self, client, db) -> None:
+        address = EmailAddressFactory(verified=False)
+        client.force_login(address.user)
+
+        response = client.get(reverse("members_only"))
+
+        html = self.assert_entrance_page(response, "Verify Your Email Address")
+        assert reverse("account_email") in html
+
+    def test_code_page(self, client, db, rebuild_urls) -> None:
+        with rebuild_urls(ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED=True):
+            response = self.sign_up(client, "code@example.com")
+
+        self.assert_entrance_page(response, 'name="code"')

@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   components. To use them, list `mvp_accounts` in `INSTALLED_APPS` ahead of `allauth` and `mvp`, and
   include `allauth.urls` and `mvp.urls`. django-allauth 65.19.4 up to, but not including, 66 is
   supported. A template of your own with the same name as one of allauth's still takes precedence.
+- allauth's password reset pages (by link and by code) and its email verification pages (by link and
+  by code, including "verified email required") render as entrance pages too.
 
 ### Changed
 

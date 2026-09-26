@@ -118,3 +118,13 @@ The email page's template is chosen by a class attribute of its view, read when 
 imported (`ACCOUNT_CHANGE_EMAIL` picks between two templates), so reloading only the URLconf left the
 old template in place. The fixture reloads `allauth.account.views` first. **Revisit if** a supported
 allauth release moves that choice to request time.
+
+## The "verified email required" test passes without its override, for now
+
+allauth's page extends `account/base_manage.html`, which extends `allauth/layouts/manage.html`.
+That layout is not in the package yet, so allauth's own is found, and it extends
+`allauth/layouts/base.html`, which the package sends to the entrance layout. The page therefore
+rendered as an entrance page before the copy existed, and its test was never red. The copy is added
+anyway: once the management layout exists, the page would otherwise take it. **Revisit if** the test
+is not red when the copy's `{% extends %}` is pointed back at `account/base_manage.html` after the
+management layout lands.

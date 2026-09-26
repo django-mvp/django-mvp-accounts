@@ -43,3 +43,21 @@ Did: README installation section (install both packages, the supported allauth r
 Verified: `uv run pre-commit run --all-files` — all hooks pass.
 Next: full verify, then the report.
 Watch: the README's scope section still names the package it supersedes, a line that was on main before this story.
+
+## 2026-09-26T11:20Z · Implementer US2 · T008
+Did: `tests/test_recovery_pages.py` with `TestPasswordResetByLink`: request page, "check your email", new-password page from the emailed link, "password changed", an invalid link and a used link, each through the four entrance-page assertions. Added the module to `non-mirror-paths`.
+Verified: `uv run pytest tests/test_recovery_pages.py` — 6 passed. Probed by pointing the entrance layout at allauth's bare base: all six fail.
+Next: T009.
+Watch: none.
+
+## 2026-09-26T11:25Z · Implementer US2 · T009
+Did: `TestPasswordResetByCode`: with `ACCOUNT_PASSWORD_RESET_BY_CODE_ENABLED=True` through `rebuild_urls`, the code page and the new-password page (code read from `mail.outbox`) are entrance pages; with it off, the request page has no word "code".
+Verified: `uv run pytest tests/test_recovery_pages.py::TestPasswordResetByCode` — 3 passed.
+Next: T010.
+Watch: the "no code" test only fails if a page adds the word; allauth's request page is identical with the setting on, so it guards the package's own markup rather than allauth's.
+
+## 2026-09-26T11:35Z · Implementer US2 · T010
+Did: `account/verified_email_required.html` (copy of allauth 65.19.4's with its parent switched to the entrance layout), `members_only` test view in `tests/urls.py`, and `TestEmailVerification`: "verification sent", the confirmation page from the emailed link, "verified email required" for a signed-in person with an unverified address, and the code page under `ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED`. CHANGELOG entry.
+Verified: `uv run pytest tests/test_recovery_pages.py` — 13 passed. The verified-email-required test passed before the override existed (see decisions).
+Next: full verify, then the report.
+Watch: allauth rate-limits confirmation mail per address in the cache, which outlives a test; each sign-up test uses its own address.

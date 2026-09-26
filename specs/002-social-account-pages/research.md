@@ -110,8 +110,14 @@ django-mvp's icon pack names `link` (and `copy-link`) (`mvp/utils.py`), so the e
   sign-in, or renders the cancelled page when the post carries `action=cancel`
   (`socialaccount/providers/dummy/views.py`). Leaving out the email address with `"email*"` in
   `ACCOUNT_SIGNUP_FIELDS` sends the visitor to the extra sign-up step. The failed page is
-  `socialaccount_login_error`, and the dummy form also reaches it with an invalid state.
+  `socialaccount_login_error`, reached only by its URL: cancel redirects to
+  `socialaccount_login_cancelled` (`socialaccount/helpers.py:55-56`), and a missing or unknown
+  state is a 403, not the failed page (`dummy/views.py:42-43`, `socialaccount/models.py:431-435`).
 - **Same-site redirect**: a GET to the GitHub callback with `SESSION_COOKIE_SAMESITE="Strict"`.
+- **Recent sign-in**: connecting and disconnecting both ask for re-authentication when
+  `ACCOUNT_REAUTHENTICATION_REQUIRED` is on (`socialaccount/internal/flows/connect.py:45-46`,
+  `:111`), and `force_login` records none, so those tests turn it off as `tests/test_elements.py`
+  does. The refusal does not need to.
 - **Refusal to disconnect**: a person with an unusable password and one connected account posts
   the disconnect form. The error is raised in `clean`, before re-authentication is asked for
   (`socialaccount/internal/flows/connect.py:44-46` runs only on save).

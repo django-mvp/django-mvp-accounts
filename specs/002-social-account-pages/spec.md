@@ -35,9 +35,9 @@ that icon.
   button's text. The host project makes sure its django-easy-icons setup has an icon under that
   name. The package ships no provider icons.
 - Q: What happens when the host project has not mapped an icon for a configured provider? → A:
-  Whatever django-easy-icons does. It raises an error unless the project sets
-  `EASY_ICONS_FAIL_SILENTLY`, in which case the button shows its text alone. The README states the
-  requirement and that behaviour. The package does not check for missing icons.
+  Whatever django-easy-icons does. Its `EASY_ICONS_FAIL_SILENTLY` setting defaults to `DEBUG`, so
+  the button shows its text alone while `DEBUG` is on and the page raises an error when it is off,
+  unless the project sets the setting. The README states the requirement and that behaviour. The package does not check for missing icons.
 - Q: Where does the connected-accounts page appear in account management? → A: As an entry and a
   card in the Account Center, added the same way FS-001 adds the email and password pages. It
   appears whenever allauth's connections page is routed, even before any provider is configured,
@@ -114,7 +114,7 @@ throughout, and removing the only way to sign in shows allauth's refusal.
 ### Edge Cases
 
 - A provider configured in the project but without an icon in its django-easy-icons setup raises
-  unless the project sets `EASY_ICONS_FAIL_SILENTLY`. That is django-easy-icons' behaviour and the
+  when `EASY_ICONS_FAIL_SILENTLY` is off, which is its default with `DEBUG` off. That is django-easy-icons' behaviour and the
   package does not intercept it.
 - allauth lists each OpenID brand as its own button, all under the provider id `openid`. Every
   such button gets the `openid` icon, because allauth gives the button no other id.

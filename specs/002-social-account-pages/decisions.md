@@ -10,7 +10,9 @@ make this package a brand-asset catalogue.
 
 ## D2 — A missing provider icon behaves as django-easy-icons decides
 
-django-easy-icons raises for an unknown name unless `EASY_ICONS_FAIL_SILENTLY` is set. The package
+django-easy-icons decides what an unknown name does through `EASY_ICONS_FAIL_SILENTLY`, which
+defaults to `DEBUG` (`easy_icons/utils.py:319`): silent, drawing the name alone, while `DEBUG` is
+on, and raising when it is off. The package
 does not catch this or fall back, in line with FS-001's rule that configuration is the host
 project's and is not checked here. The README states the requirement.
 
@@ -40,7 +42,9 @@ allauth reports it as a non-field error, and nothing draws non-field errors on a
 render its form through `fields` (research R3). Drawing them in the `form` element would print them
 twice on every page that does. The package's `socialaccount/connections.html` extends allauth's
 template of the same name and adds the alert before allauth's markup, the same chaining FS-001's
-overview uses.
+overview uses. It lists `form.errors`, because the form's one field is hand-drawn as radios that
+never receive their errors either. The alert sits above the page heading, where the shell draws
+messages, since `{{ block.super }}` cannot be split.
 
 ## D7 — The same-site redirect page is reskinned
 
@@ -59,3 +63,10 @@ icon django-mvp's pack already names (research R5).
 allauth's social account pages extend its entrance layout directly, not through
 `account/base_entrance.html`, so FS-001's rule that a signed-in person gets the management layout
 does not reach them. FR-002 asks for exactly this, so nothing is changed (research R1).
+
+## D10 — The spec's account of a missing icon is corrected in place
+
+The clarification and edge case said a missing icon raises unless `EASY_ICONS_FAIL_SILENTLY` is
+set. The setting defaults to `DEBUG`, so it is silent in development and raises in production. The
+answer, "whatever django-easy-icons does", is unchanged, and so is every requirement. Only the
+description of that behaviour was wrong, so the sentences were corrected rather than re-gated.

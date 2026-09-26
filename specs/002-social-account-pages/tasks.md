@@ -19,16 +19,14 @@ FR-012, and SC-001 to SC-003 and US1's part of SC-005.
 
 ### T001 — The social account app and the test provider in the demo
 
-**Files**: `demo/settings.py`, `tests/settings.py`, `tests/settings_without_allauth.py` (only if a
-new setting names allauth), `tests/test_demo.py`
+**Files**: `demo/settings.py`, `tests/settings.py`, `tests/test_demo.py`
 
 Research R5, R6. `allauth.socialaccount` and `allauth.socialaccount.providers.dummy` after
 `allauth.account` in `INSTALLED_APPS`. `EASY_ICONS["default"]["icons"]["dummy"]` mapped to a
 Bootstrap icon class, with a comment saying the project, not the package, supplies provider icons.
 The suite's settings add `allauth.socialaccount.providers.github` and a GitHub app configured in
 `SOCIALACCOUNT_PROVIDERS` (placeholder client id and secret), so the suite lists two providers; the
-comment says why. `tests/settings_without_allauth.py` must still strip every allauth app, including
-the providers; check that its filter does. Tests: the test provider's login URL resolves in the demo.
+comment says why. Tests: the test provider's login URL resolves in the demo.
 
 ### T002 — Provider buttons
 
@@ -59,8 +57,9 @@ assertions as an entrance page:
 - the extra sign-up step: post the test provider's form without an email, land on
   `socialaccount_signup`; then post that step with an invalid email and assert the field error is
   on the page (FR-008);
-- the cancelled page (post the test provider's form with `action=cancel`);
-- the failed page (`socialaccount_login_error`);
+- the cancelled page (post the test provider's form with `action=cancel` and follow the redirect
+  to `socialaccount_login_cancelled`);
+- the failed page (`socialaccount_login_error`, opened by its URL);
 - a completed sign-in: post the test provider's form with an id and a verified email, and end
   signed in.
 
@@ -82,8 +81,10 @@ refresh to the same URL with `_redir`.
 FR-010. A README section on signing in with other accounts: install `allauth.socialaccount` and the
 providers the project wants, as allauth documents; one button per provider allauth lists, with the
 provider's name; each button's icon is named after allauth's provider id (`github`, `google`), so
-the project's django-easy-icons setup needs an icon under each configured id; a missing one raises
-unless `EASY_ICONS_FAIL_SILENTLY` is set, in which case the button shows its name alone; the
+the project's django-easy-icons setup needs an icon under each configured id; a missing one is
+django-easy-icons' call: `EASY_ICONS_FAIL_SILENTLY` defaults to `DEBUG`, so with `DEBUG` off a
+missing icon raises and breaks the sign-in and sign-up pages, and with it on (or the setting on)
+the button shows its name alone; the
 package ships no provider icons and checks none. Mention that OpenID brands all use the `openid`
 icon. CHANGELOG `Added` entry under `[Unreleased]`.
 
@@ -120,8 +121,9 @@ signed-in person.
 
 Research R3, R5. `SocialAccountFactory` (test provider, sequential uid, a user from
 `UserFactory`). The page extends `socialaccount/connections.html` and adds to `content` through
-`{{ block.super }}`: when `form.non_field_errors`, an error alert through allauth's `alert`
-element, before allauth's markup. Tests, each asserting the plan's four assertions as a management
+`{{ block.super }}`: when the form has errors, an error alert through allauth's `alert`
+element listing `form.errors` (the non-field errors and the hand-drawn `account` field's, which
+allauth's radio `field` elements never receive), before allauth's markup. Tests, each asserting the plan's four assertions as a management
 page:
 
 - one connected account: listed with allauth's "Remove" action, provider buttons shown with
@@ -129,9 +131,11 @@ page:
 - none connected: allauth's "no third-party accounts" sentence and the provider buttons;
 - refusal: a person with an unusable password and one connected account posts the form, and
   allauth's "Your account has no password set up." is on the page (FR-008);
-- connecting: signed in, follow the test provider's `process=connect` button through its
+- connecting (under `override_settings(ACCOUNT_REAUTHENTICATION_REQUIRED=False)`, as
+  `tests/test_elements.py` does, since `force_login` records no recent sign-in): signed in, follow the test provider's `process=connect` button through its
   confirmation and form, and the new account is listed on the connections page (SC-005);
-- a successful disconnect for a person with a password redirects, and allauth's message appears on
+- an empty post: allauth's required-field message for `account` is on the page (FR-008);
+- a successful disconnect (same override) for a person with a password redirects, and allauth's message appears on
   the page it lands on.
 
 ### T009 — Without the social account app
@@ -144,16 +148,18 @@ Research R5. Settings from the suite's with every `allauth.socialaccount` app an
 `SOCIALACCOUNT_PROVIDERS` removed, allauth kept. A subprocess like FS-001's: the Account Center
 and its landing page render with 200, "Connected accounts" is on neither, the sign-in page renders
 with no provider button, and nothing raises (SC-004). Share the runner with
-`test_without_allauth.py` rather than copying it.
+`test_without_allauth.py` rather than copying it, keeping that module's assertions byte-identical
+so the change reads as a move.
 
 ### T010 — Demo states, catalogue and documentation
 
 **Files**: `demo/management/commands/seed_demo.py`, `tests/test_demo.py`,
 `mvp_accounts/locale/en/LC_MESSAGES/django.po`, `README.md`, `CHANGELOG.md`
 
-Research R6. `seed_demo` gives the staff account a connected test-provider account and creates
-`social.user@example.com` with an unusable password, a verified primary address and one connected
-test-provider account, both idempotent; the command's docstring names the states. Test: running
+Research R6. `seed_demo` gives the staff account a connected test-provider account with uid `1001` and
+creates `social.user@example.com` with an unusable password, a verified primary address and one
+connected test-provider account with uid `2002`, both idempotent. The docstring and the closing
+output name both uids, and the closing line no longer says every account signs in with a password. Test: running
 `seed_demo` twice leaves one of each. `makemessages -l en` from inside `mvp_accounts/`. README's
 Account Center section lists Connected accounts and says it appears only with the social account
 app installed. CHANGELOG `Added` entry.

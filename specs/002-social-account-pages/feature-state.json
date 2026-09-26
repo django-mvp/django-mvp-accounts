@@ -63,28 +63,33 @@
       "tasks": [
         {
           "id": "T001",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "tests/test_demo.py::TestDemoSocialAccounts, 2 passed"
         },
         {
           "id": "T002",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "tests/test_social_entrance_pages.py::TestProviderButtons, 13 passed"
         },
         {
           "id": "T003",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "tests/test_social_entrance_pages.py::TestSocialEntrancePages, 20 passed in file"
         },
         {
           "id": "T004",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "tests/test_social_entrance_pages.py::TestSameSiteRedirectPage, 21 passed in file"
         },
         {
           "id": "T005",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "README.md and CHANGELOG.md; pre-commit clean"
         }
       ]
     },

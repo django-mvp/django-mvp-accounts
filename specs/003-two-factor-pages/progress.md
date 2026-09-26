@@ -119,3 +119,10 @@ Did: `allauth.mfa.webauthn.urls` added to the URL rebuild list, ahead of `allaut
 Verified: `uv run pytest tests/test_security_key_pages.py -q` 14 passed. Without the conftest line the whole file fails (`mfa_signup_webauthn` not found) once an earlier test has imported the webauthn URLs with sign-up off; run alone the class passes either way.
 Next: T016.
 Watch: the verification-code page is `account_email_verification_sent`, not `account_confirm_email`.
+
+## 2026-09-26T23:40:00Z · Implementer US3 · T016
+
+Did: page test for `mfa_reauthenticate_webauthn` with a stored security key and a session that has no recent sign-in: a management page with the `mfa_webauthn_reauthenticate` button and the script-hook check.
+Verified: `uv run pytest tests/test_security_key_pages.py::TestReauthenticateWithSecurityKey -q` 1 passed; passed on first run since the page already renders through existing elements, and failed when the button element's `id` output was removed (restored afterwards).
+Next: T017.
+Watch: none.

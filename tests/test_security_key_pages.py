@@ -226,3 +226,17 @@ class TestPasskeySignUp(EntrancePageAssertions):
         assert response.redirect_chain[-1][0] == passkey_page
         html = self.assert_entrance_page(response, 'id="mfa_webauthn_signup"')
         assert assert_script_hooks(html) >= 1
+
+
+class TestReauthenticateWithSecurityKey(ManagementPageAssertions):
+    def test_it_is_a_management_page_with_the_hooks_the_script_needs(
+        self, client, db, assert_script_hooks
+    ) -> None:
+        address = EmailAddressFactory()
+        AuthenticatorFactory(user=address.user, webauthn=True, key_name="Office")
+        client.force_login(address.user)
+
+        response = client.get(reverse("mfa_reauthenticate_webauthn"))
+
+        html = self.assert_management_page(response, 'id="mfa_webauthn_reauthenticate"')
+        assert assert_script_hooks(html) >= 1

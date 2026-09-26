@@ -86,6 +86,10 @@ show_missing = true
 [tool.coverage.run]
 branch = true
 source = ["mvp_accounts"]
+# tests/test_without_allauth.py starts Django in a subprocess, because allauth
+# cannot be uninstalled from a running one. Measuring the subprocess is the only
+# way the no-allauth branch of mvp_accounts/menus.py is counted as covered.
+patch = ["subprocess"]
 
 [tool.djlint]
 profile = "django"

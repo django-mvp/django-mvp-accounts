@@ -103,3 +103,9 @@ Did: `account/snippets/warn_no_email.html` draws allauth's warning through the `
 Verified: `uv run pytest tests/test_management_pages.py::TestWarnNoEmail` — failed first (the warning was a bare paragraph), passes now. `uv run pre-commit run --all-files` — all hooks pass.
 Next: full verify, report.
 Watch: the account needs a blank `email` on the user, or allauth's email page creates an address from it before drawing the warning.
+
+## 2026-09-26 · Converge
+- Gaps closed: T018 (the demo adapter now stores a phone number verified after a change, which allauth's change flow relies on) and T019 (English catalogue regenerated for the warning snippet's strings).
+- Two decisions graduated to ADRs: 0001 (reskin allauth through its templates) and 0002 (account management lives in the Account Center). Every decision carries a verdict.
+- Whole-feature verify green: 95 passed, 2 skipped (django-mvp#358, #412). Every class the templates use exists in django-mvp's stylesheet.
+- tamper-check: three flags, all additions to shared test infrastructure (conftest fixtures, new demo test classes, test routes). No pre-existing assertion was changed or removed.

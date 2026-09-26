@@ -25,3 +25,42 @@ tests. Giving the dev server an HTTPS address is general tooling, not part of th
 
 `account/signup_by_passkey.html` ships in allauth's account app but only exists when the
 multi-factor app is installed with passkey sign-up enabled. FS-001 left it to this feature.
+
+## D5 — The demo leaves passkey sign-up off
+
+allauth refuses to start with `MFA_PASSKEY_SIGNUP_ENABLED` unless email verification is mandatory
+and done by code (`allauth/mfa/checks.py`, a `Critical` check). The demo keeps email verification
+optional, as FS-001 set it, so turning passkey sign-up on in the demo would change how every other
+sign-up in it behaves. FR-010 asks the demo to enable it so every page can be reached. The passkey
+sign-up pages are instead reached in tests that turn on all three settings together, and the demo
+enables every other factor. Checked against FS-001 and FS-002 before planning: neither changed
+anything this spec relies on, and this is the only point where the spec and the demo's settings
+meet.
+
+**ADR:** none — a choice about the demo project, which is not distributed
+
+## D6 — The demo accepts a fixed second-factor code
+
+`MFA_TOTP_INSECURE_BYPASS_CODE` lets the demo's second-factor step and authenticator-app activation
+be walked through without a phone. allauth raises `ImproperlyConfigured` when it is set with `DEBUG`
+off, and the demo is never deployed. The suite resets it to `None`, so every test enters a real
+code computed from the secret.
+
+**ADR:** none — a choice about the demo project, which is not distributed
+
+## D7 — "Two-factor authentication" carries no guard of its own
+
+The entry sits in the "Account" group with `view_name="mfa_index"`, which only resolves when
+`allauth.mfa` is installed. django-mvp drops an entry whose view does not resolve, which is what
+the connected accounts entry already relies on, so an `apps.is_installed("allauth.mfa")` check would
+repeat a test django-mvp makes.
+
+**ADR:** docs/adr/0002-account-management-lives-in-the-account-center.md
+
+## D8 — No page template is overridden
+
+Every multi-factor page extends a layout FS-001 already overrides (research R1). Reskinning happens
+entirely through allauth's elements, so allauth's pages keep their own markup, script tags and
+JSON configuration, which is where every id its scripts look up is named.
+
+**ADR:** docs/adr/0001-reskin-allauth-through-its-templates.md

@@ -11,6 +11,7 @@ ENTRIES = {
     "email": "account_email",
     "password": "account_change_password",
     "phone": "account_change_phone",
+    "connections": "socialaccount_connections",
 }
 
 
@@ -31,11 +32,13 @@ class TestAccountCenterMenuEntries:
     def test_each_management_page_is_an_entry(self, account_center, name) -> None:
         assert href(name) in account_center
 
-    @pytest.mark.parametrize("label", ["Email", "Password", "Phone number"])
+    @pytest.mark.parametrize(
+        "label", ["Email", "Password", "Phone number", "Connected accounts"]
+    )
     def test_entries_carry_their_labels(self, account_center, label) -> None:
         assert f"<span>{label}</span>" in account_center
 
-    @pytest.mark.parametrize("icon", ["envelope", "key", "telephone"])
+    @pytest.mark.parametrize("icon", ["envelope", "key", "telephone", "link-45deg"])
     def test_entries_carry_their_icons(self, account_center, icon) -> None:
         assert f'<i class="bi bi-{icon}"' in account_center
 
@@ -49,6 +52,15 @@ class TestAccountCenterMenuEntries:
         assert href("account_change_password") in page
         assert "<span>Phone number</span>" not in page
         assert href("account_change_phone") not in page
+
+
+class TestConnectedAccountsEntry:
+    """The connections page is one more entry, after Phone number."""
+
+    def test_it_follows_the_phone_number_entry(self, account_center) -> None:
+        assert account_center.index(href("socialaccount_connections")) > (
+            account_center.index(href("account_change_phone"))
+        )
 
 
 class TestAccountGroup:

@@ -31,16 +31,6 @@ def fresh_caches():
 
 
 @pytest.fixture
-def humanize(settings) -> None:
-    """Install the app allauth's security-key list loads its date filters from.
-
-    The demo does not install it, so the list page fails to render there; the
-    suite adds it here to test the page itself.
-    """
-    settings.INSTALLED_APPS = [*settings.INSTALLED_APPS, "django.contrib.humanize"]
-
-
-@pytest.fixture
 def fresh_client(client, db):
     """A client that signed in through the form, so allauth need not ask again."""
     address = EmailAddressFactory()
@@ -53,7 +43,7 @@ def fresh_client(client, db):
 
 
 @pytest.fixture
-def two_keys(fresh_client, humanize):
+def two_keys(fresh_client):
     """A passkey named Laptop and a security key named Office."""
     user = fresh_client.user
     return (
@@ -90,7 +80,7 @@ class TestSecurityKeyList(ManagementPageAssertions):
         assert "Passkey" in by_name["Laptop"]
         assert "Security key" in by_name["Office"]
 
-    def test_with_no_keys_it_says_so(self, fresh_client, humanize) -> None:
+    def test_with_no_keys_it_says_so(self, fresh_client) -> None:
         response = fresh_client.get(reverse("mfa_list_webauthn"))
 
         html = self.assert_management_page(response, "Security Keys")

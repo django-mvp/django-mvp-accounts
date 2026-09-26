@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    # allauth's security-key list loads its date filters from here.
+    "django.contrib.humanize",
     "mvp",
     "easy_icons",
     "crispy_forms",

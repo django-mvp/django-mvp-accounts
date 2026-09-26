@@ -140,3 +140,12 @@ Did: CONTEXT.md defines Second factor and Passkey; README covers the security-ke
 Verified: documentation only, no test covers it; `uv run pre-commit run --all-files` clean, checked by reading the three files against the settings named.
 Next: full verify, report.
 Watch: the demo does not install `django.contrib.humanize`, so its security-key list page fails to render (D10); reported in concerns.
+
+## 2026-09-26 · Forge · S5 converge
+
+Did: every FR and SC traced to a delivered task; no migrations in the package. The demo installs
+`django.contrib.humanize`, which allauth's security-key list loads, and the suite's fixture adding it
+is gone (D10). The cell element's alignment used a class django-mvp's stylesheet does not ship, so
+it now uses `text-end`, and the test pinning the class was removed. D1 graduated to ADR 0004. Every
+decision carries its ADR verdict. Patch coverage of the package's Python: 100%.
+Next: code review.

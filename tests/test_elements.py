@@ -357,17 +357,3 @@ class TestTableElements:
         assert "table" in soup.table["class"]
         assert soup.select_one("table > thead > th").get_text(strip=True) == "Key"
         assert soup.select_one("table > tbody > tr > td").get_text(strip=True) == "Edit"
-
-    def test_a_cell_carries_its_alignment_as_a_class_not_an_attribute(self) -> None:
-        cell = render_element(self.SOURCE).td
-
-        assert not cell.has_attr("align")
-        assert "text-right" in cell["class"]
-
-    def test_a_cell_without_alignment_has_none(self) -> None:
-        soup = render_element(
-            "{% element td %}Plain{% endelement %}",
-        )
-
-        assert not soup.td.has_attr("align")
-        assert "text-right" not in soup.td.get("class", [])

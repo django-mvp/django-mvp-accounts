@@ -9,11 +9,15 @@ Keeping every id and data attribute allauth passes an element is the whole rule,
 checks the hooks are present. FS-001's field element forwards a fixed list of attributes. Where the
 multi-factor pages pass one that list does not include, this feature extends the element.
 
+**ADR:** docs/adr/0004-elements-keep-allauths-script-hooks.md
+
 ## D2 — The QR code is always dark on light
 
 Authenticator apps read QR codes as dark modules on a light background, and many cannot read an
 inverted one. allauth renders the code as an image, so it keeps a light background in every theme
 rather than following the page's colours.
+
+**ADR:** none — local to this feature's QR code, and stated as a requirement in the spec
 
 ## D3 — HTTPS for the dev server stays out of scope
 
@@ -21,10 +25,14 @@ Browsers only allow WebAuthn over HTTPS or on `localhost`, so security keys and 
 tried on the dev server's plain HTTP tailnet address. The pages and their script hooks are covered by
 tests. Giving the dev server an HTTPS address is general tooling, not part of this feature.
 
+**ADR:** none — tooling for the dev server, not a decision about the package
+
 ## D4 — Passkey sign-up is specified here
 
 `account/signup_by_passkey.html` ships in allauth's account app but only exists when the
 multi-factor app is installed with passkey sign-up enabled. FS-001 left it to this feature.
+
+**ADR:** none — records which feature specifies a page, nothing downstream inherits it
 
 ## D5 — The demo leaves passkey sign-up off
 
@@ -76,11 +84,11 @@ TOTP code helper (T004), the `.bg-white` rule (T004), and repeated panel actions
 
 **ADR:** none — local to this feature
 
-## D10 — The security-key list needs `django.contrib.humanize`, which the demo does not install
+## D10 — The demo installs `django.contrib.humanize`
 
 allauth's `mfa/webauthn/authenticator_list.html` loads `{% load humanize %}`. Without
-`django.contrib.humanize` in `INSTALLED_APPS` the page raises `TemplateSyntaxError`, so the demo's
-security-key list returns a 500. The demo settings are outside this story's scope, so the list
-tests add the app with the `settings` fixture, and the demo is reported as needing it.
+`django.contrib.humanize` in `INSTALLED_APPS` the page raises `TemplateSyntaxError`. The demo
+installs it, the suite inherits it, and the README tells a host project that enables security keys
+to install it too. The package does not add it, in line with FR-009.
 
-**Revisit if:** the demo settings gain `django.contrib.humanize`; the fixture then goes.
+**ADR:** none — a requirement allauth places on the host project, documented in the README

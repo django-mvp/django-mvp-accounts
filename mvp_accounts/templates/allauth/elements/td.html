@@ -1,9 +1,9 @@
 {% load allauth %}
 {% comment %}
-  `align` is the obsolete HTML attribute, so allauth's value becomes a text
-  alignment class instead.
+  `align` is the obsolete HTML attribute, so allauth's value becomes django-mvp's
+  logical alignment class instead. allauth only passes `right`.
 {% endcomment %}
-<td{% if attrs.align %} class="text-{{ attrs.align }}"{% endif %}>
+<td{% if attrs.align == "right" %} class="text-end"{% endif %}>
   {% slot %}
   {% endslot %}
 </td>

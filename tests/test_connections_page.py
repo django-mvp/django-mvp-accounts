@@ -59,6 +59,18 @@ class TestConnectionsPage(ManagementPageAssertions):
 
         assert CONNECT_LINK.search(html)
 
+    def test_the_connect_buttons_stack_at_full_width(self, client, person) -> None:
+        """A management page carries the shell's ``collapse`` context, which
+        must not turn the list into a row on wide screens."""
+        html = client.get(CONNECTIONS).content.decode()
+        before = html[: CONNECT_LINK.search(html).start()]
+        button = before.rsplit("<a ", 1)[1]
+        container = before.rsplit("<div ", 1)[1].split(">", 1)[0]
+
+        assert "btn-block" in button
+        assert "flex-col" in container
+        assert "flex-row" not in container
+
     def test_with_none_connected_it_says_so_and_offers_the_buttons(
         self, client, person
     ) -> None:

@@ -1,5 +1,10 @@
 {% load allauth %}
-<c-group row wrap class="items-center my-4">
+{% comment %}
+  Provider buttons stack at full width, one per row. collapse and row are pinned
+  False because a management page carries the shell's own `collapse` context
+  variable, which would otherwise turn the stack into a row on wide screens.
+{% endcomment %}
+<c-group class="my-4" :collapse="False" :row="False">
   {% slot %}
   {% endslot %}
 </c-group>

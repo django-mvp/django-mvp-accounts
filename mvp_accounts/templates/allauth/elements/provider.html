@@ -1,0 +1,15 @@
+{% load allauth %}
+{% comment %}
+  One provider's sign-in button.
+
+  The icon is named after allauth's provider id (`github`, `google`), not the
+  display name, and the host project supplies it through its icon mapping: the
+  package ships no provider icons. Values go through `{{ }}` so they are
+  escaped, never `|safe`.
+{% endcomment %}
+<c-button href="{{ attrs.href }}"
+          outline
+          full
+          icon="{{ attrs.provider_id }}"
+          title="{{ attrs.name }}"
+          text="{{ attrs.name }}" />

@@ -11,6 +11,7 @@ from io import StringIO
 
 import pytest
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.models import SocialAccount
 from django.core.mail import EmailMessage
 from django.core.management import call_command
 from django.urls import NoReverseMatch, reverse
@@ -78,7 +79,7 @@ class TestDemoSignIn:
         call_command("seed_demo", stdout=StringIO())
 
         addresses = EmailAddress.objects.filter(verified=True, primary=True)
-        assert addresses.count() == 3
+        assert addresses.count() == 4
 
 
 class TestUrlconfRebuild:
@@ -185,3 +186,52 @@ class TestSeededStates:
         user = EmailAddress.objects.get(email="super.user@example.com").user
         number, verified = DemoAccountAdapter().get_phone(user)
         assert verified
+
+
+class TestDemoSocialAccounts:
+    """The demo installs allauth's test provider, so a sign-in needs no credentials."""
+
+    def test_the_test_providers_login_url_resolves(self) -> None:
+        assert reverse("dummy_login")
+
+    def test_the_suite_also_lists_github(self) -> None:
+        assert reverse("github_login")
+
+
+class TestSeededSocialAccounts:
+    """The demo has one account that signs in with a password and one that cannot."""
+
+    @pytest.fixture(autouse=True)
+    def seeded_twice(self, db, settings):
+        settings.DEBUG = True
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+    def test_staff_has_one_connected_test_provider_account(self) -> None:
+        accounts = SocialAccount.objects.filter(user__email="staff.user@example.com")
+
+        assert [(a.provider, a.uid) for a in accounts] == [("dummy", "1001")]
+
+    def test_social_user_signs_in_only_through_the_test_provider(self) -> None:
+        user = EmailAddress.objects.get(email="social.user@example.com").user
+
+        assert not user.has_usable_password()
+        assert [(a.provider, a.uid) for a in user.socialaccount_set.all()] == [
+            ("dummy", "2002")
+        ]
+
+    def test_social_user_has_one_verified_primary_address(self) -> None:
+        addresses = EmailAddress.objects.filter(user__email="social.user@example.com")
+
+        assert [(a.verified, a.primary) for a in addresses] == [(True, True)]
+
+    def test_the_closing_output_names_both_uids_and_no_shared_password(
+        self, settings
+    ) -> None:
+        out = StringIO()
+        call_command("seed_demo", stdout=out)
+
+        text = out.getvalue()
+        assert "1001" in text
+        assert "2002" in text
+        assert "All three sign in with the password" not in text

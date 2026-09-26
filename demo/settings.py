@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     "mvp_accounts",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
+    # allauth's test provider: it completes a sign-in on this machine, so every
+    # social account page can be reached without credentials from a real one.
+    "allauth.socialaccount.providers.dummy",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -113,14 +117,15 @@ AUTHENTICATION_BACKENDS = [
 # Codes and links are kept for the outbox page rather than sent anywhere.
 EMAIL_BACKEND = "demo.mail.OutboxEmailBackend"
 
-# What a typical project runs: sign in by email, a link to verify it, a code as
-# an alternative to the password, phone numbers stored by the demo's adapter,
-# and a fresh sign-in before anything sensitive changes. The tests reach the
-# other halves of each choice by rebuilding allauth's URLconf.
+# What a typical project runs: sign in by email, a verification link that is
+# sent but never required, a code as an alternative to the password, phone
+# numbers stored by the demo's adapter, and a fresh sign-in before anything
+# sensitive changes. The tests reach the other halves of each choice by
+# overriding the setting, and rebuilding allauth's URLconf where it needs to.
 ACCOUNT_ADAPTER = "demo.adapter.DemoAccountAdapter"
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "phone"]
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_REAUTHENTICATION_REQUIRED = True
 
@@ -150,6 +155,9 @@ EASY_ICONS = {
         "packs": ["mvp.utils.BS5_ICONS"],
         "icons": {
             "overview": "bi bi-house",
+            # A provider button draws the icon named after its provider id. The
+            # package ships none: the project supplies one per provider it lists.
+            "dummy": "bi bi-person-badge",
         },
     },
 }

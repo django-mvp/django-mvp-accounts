@@ -2,6 +2,7 @@
 
 import factory
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
 
@@ -43,3 +44,14 @@ class PhoneNumberFactory(DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     number = factory.Sequence(lambda n: f"+4915100{n:06d}")
     verified = True
+
+
+class SocialAccountFactory(DjangoModelFactory):
+    """An account connected through allauth's test provider."""
+
+    class Meta:
+        model = SocialAccount
+
+    user = factory.SubFactory(UserFactory)
+    provider = "dummy"
+    uid = factory.Sequence(lambda n: str(5000 + n))

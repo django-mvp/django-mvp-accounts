@@ -5,10 +5,6 @@ are installed is decided when Django starts, so the running suite cannot switch
 allauth off. The subject is that startup, so the module mirrors no source file.
 """
 
-import json
-import os
-import subprocess
-import sys
 import textwrap
 
 import pytest
@@ -50,25 +46,9 @@ SCRIPT = textwrap.dedent(
 
 
 @pytest.fixture(scope="module")
-def result() -> dict:
+def result(run_in_subprocess) -> dict:
     """Start Django without allauth and report what it built and rendered."""
-    completed = subprocess.run(  # noqa: S603
-        [sys.executable, "-c", SCRIPT],
-        capture_output=True,
-        text=True,
-        check=False,
-        env={
-            # Coverage passes its configuration to the subprocess through
-            # these, so the subprocess is measured along with the suite.
-            **{k: v for k, v in os.environ.items() if k.startswith("COVERAGE")},
-            "DJANGO_SETTINGS_MODULE": "tests.settings_without_allauth",
-            "PATH": "",
-            "PYTHONPATH": ".",
-        },
-        timeout=120,
-    )
-    assert completed.returncode == 0, completed.stderr
-    return json.loads(completed.stdout.strip().splitlines()[-1])
+    return run_in_subprocess("tests.settings_without_allauth", SCRIPT)
 
 
 class TestWithoutAllauth:

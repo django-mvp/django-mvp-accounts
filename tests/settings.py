@@ -35,3 +35,14 @@ ROOT_URLCONF = "tests.urls"
 # Templates that exist only to put something in one exact situation a test
 # needs. They are not part of the demo project and are never distributed.
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "tests" / "templates"]  # noqa: F405
+
+# The demo lists the test provider alone. The pages that draw provider buttons
+# are asserted with two, so the suite adds GitHub, whose app is configured here
+# rather than in the database and whose icon django-mvp's pack already names.
+INSTALLED_APPS = [*INSTALLED_APPS, "allauth.socialaccount.providers.github"]  # noqa: F405
+
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APPS": [{"client_id": "suite-client-id", "secret": "suite-secret"}],
+    },
+}

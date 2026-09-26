@@ -35,4 +35,13 @@
       </c-slot>
     </c-card>
   {% endif %}
+  {% url "socialaccount_connections" as connections_url %}
+  {% if connections_url %}
+    <c-card title="{% trans "Connected accounts" %}" icon="link">
+      <c-text>{% trans "See the accounts you can sign in with, connect another one, or remove one." %}</c-text>
+      <c-slot name="footer">
+        <c-button href="{{ connections_url }}" variant="primary" size="sm">{% trans "Manage connected accounts" %}</c-button>
+      </c-slot>
+    </c-card>
+  {% endif %}
 {% endblock account.cards %}

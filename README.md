@@ -93,24 +93,59 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password and Phone number, listed under an "Account" heading
-  below its Overview entry.
+- **Menu entries** for Email, Password, Phone number and Connected accounts, listed under an
+  "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
-Without allauth installed the package adds nothing and raises nothing.
+Connected accounts appears only with the social account app (`allauth.socialaccount`)
+installed. Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
-change and verification, and re-authentication) render in the Account Center, inside the shell
-with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
+change and verification, connected accounts, and re-authentication) render in the Account
+Center, inside the shell with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
 for a signed-in person, so re-authentication and the phone verification that follows a change are
-management pages, while phone verification during sign-up stays an entrance page.
+management pages, while phone verification during sign-up stays an entrance page. The social
+sign-in pages, including the confirmation a signed-in person sees when connecting another
+account, always render as entrance pages.
 
 The Account Center itself, the "Account Center" and "Log out" entries in the user menu, and
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
+## Signing in with other accounts
+
+To offer sign-in with GitHub, Google or another provider, install
+`allauth.socialaccount` and each provider's app, and configure them as
+[allauth documents](https://docs.allauth.org/en/latest/socialaccount/index.html).
+Nothing about that is checked or configured for you.
+
+The social sign-in pages render as django-mvp entrance pages, like the rest of
+allauth's sign-in pages. The sign-in and sign-up pages show one button for each
+provider allauth lists, with the provider's name as its text.
+
+Each button's icon is named after allauth's provider id (`github`, `google`),
+so the project's [django-easy-icons](https://github.com/django-mvp/django-easy-icons)
+setup needs an icon under each id of a provider it configures:
+
+```python
+EASY_ICONS = {
+    "default": {
+        # ...
+        "icons": {
+            "google": "bi bi-google",
+        },
+    },
+}
+```
+
+What a missing icon does is django-easy-icons' decision. `EASY_ICONS_FAIL_SILENTLY`
+defaults to the value of `DEBUG`, so with `DEBUG` off a missing icon raises and
+breaks the sign-in and sign-up pages, and with it on (or the setting turned on) the
+button shows its name alone. This package ships no provider icons and checks for none.
+The OpenID buttons, one for each brand, all use the `openid` icon.
 
 ## Quickstart
 

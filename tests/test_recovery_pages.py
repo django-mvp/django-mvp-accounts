@@ -8,6 +8,7 @@ sign-up pages.
 
 import re
 
+import pytest
 from django.core import mail
 from django.urls import reverse
 
@@ -125,6 +126,14 @@ class TestPasswordResetByCode(EntrancePageAssertions):
 
 
 class TestEmailVerification(EntrancePageAssertions):
+    @pytest.fixture(autouse=True)
+    def verification_required(self, settings):
+        """These are the pages of a project that requires email verification.
+
+        The demo only offers verification, so each test turns the requirement on.
+        """
+        settings.ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
     def sign_up(self, client, email: str):
         """Sign up as ``email``.
 
@@ -163,13 +172,16 @@ class TestEmailVerification(EntrancePageAssertions):
         assert reverse("account_email") in html
 
     def test_code_page(self, client, db, rebuild_urls) -> None:
-        with rebuild_urls(ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED=True):
+        with rebuild_urls(
+            ACCOUNT_EMAIL_VERIFICATION="mandatory",
+            ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED=True,
+        ):
             response = self.sign_up(client, "code@example.com")
 
         self.assert_entrance_page(response, 'name="code"')
 
     def test_no_code_is_offered_when_verification_is_by_link(self, client, db) -> None:
-        """The demo verifies by link, so nothing on the page asks for a code."""
+        """Verification by link, the default, asks for no code."""
         response = self.sign_up(client, "link@example.com")
 
         html = self.assert_entrance_page(response, "Verify Your Email Address")

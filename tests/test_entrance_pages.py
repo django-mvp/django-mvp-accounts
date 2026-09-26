@@ -82,8 +82,9 @@ class TestEntrancePages(EntrancePageAssertions):
 
 
 class TestMessages(EntrancePageAssertions):
-    def test_a_message_shows_on_an_entrance_page(self, client, db) -> None:
+    def test_a_message_shows_on_an_entrance_page(self, client, db, settings) -> None:
         """Signing up under mandatory verification lands on an entrance page."""
+        settings.ACCOUNT_EMAIL_VERIFICATION = "mandatory"
         response = client.post(
             reverse("account_signup"),
             {

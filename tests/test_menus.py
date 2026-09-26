@@ -1,5 +1,7 @@
 """The entries this package adds to the Account Center's navigation."""
 
+import re
+
 import pytest
 from django.urls import reverse
 
@@ -47,3 +49,19 @@ class TestAccountCenterMenuEntries:
         assert href("account_change_password") in page
         assert "<span>Phone number</span>" not in page
         assert href("account_change_phone") not in page
+
+
+class TestAccountGroup:
+    """The entries sit under one "Account" heading, never a collapsible group."""
+
+    HEADING = re.compile(r'<li class="menu-title[^"]*">\s*<span>Account</span>')
+
+    def test_the_entries_are_headed_account(self, account_center) -> None:
+        heading = self.HEADING.search(account_center)
+
+        assert heading is not None
+        for name in ENTRIES.values():
+            assert account_center.index(href(name)) > heading.end()
+
+    def test_the_group_does_not_collapse(self, account_center) -> None:
+        assert "<details" not in account_center

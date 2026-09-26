@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 11:20+0200\n"
+"POT-Creation-Date: 2026-09-26 17:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,15 +22,19 @@ msgstr ""
 msgid "Accounts"
 msgstr ""
 
-#: menus.py:23 templates/mvp/account/overview.html:13
+#: menus.py:22
+msgid "Account"
+msgstr ""
+
+#: menus.py:27 templates/mvp/account/overview.html:13
 msgid "Email"
 msgstr ""
 
-#: menus.py:28 templates/mvp/account/overview.html:22
+#: menus.py:32 templates/mvp/account/overview.html:22
 msgid "Password"
 msgstr ""
 
-#: menus.py:33 templates/mvp/account/overview.html:31
+#: menus.py:37 templates/mvp/account/overview.html:31
 msgid "Phone number"
 msgstr ""
 

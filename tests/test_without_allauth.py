@@ -79,7 +79,7 @@ class TestWithoutAllauth:
         assert not result["allauth_installed"]
 
     def test_the_menu_holds_none_of_this_packages_entries(self, result) -> None:
-        assert not {"email", "password", "phone"} & set(result["menu"])
+        assert "account" not in result["menu"]
 
     def test_the_demo_overview_renders(self, result) -> None:
         status, _page = result["overview"]

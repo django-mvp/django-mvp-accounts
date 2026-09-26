@@ -7,13 +7,15 @@
 The account overview is django-mvp's Account Center landing page. This package adds to it rather
 than building a page of its own:
 
-- one `AccountCenterMenu` entry per management page, from `mvp_accounts/menus.py`;
+- one `AccountCenterMenu` entry per management page, all under a single "Account" heading (a
+  django-mvp `MenuGroup`, never a collapsible one), from `mvp_accounts/menus.py`;
 - one card per management page, from `mvp_accounts/templates/mvp/account/overview.html`, which
   extends the template of the same name and adds to `{% block account.cards %}` through
   `{{ block.super }}`.
 
 An entry or card whose allauth URL does not resolve is not drawn, so what appears follows what the
-project has turned on in allauth. `menus.py` adds nothing unless `allauth.account` is installed.
+project has turned on in allauth. `menus.py` adds nothing unless `allauth` is installed, so a project without it never builds
+entries only to drop them again.
 
 The user menu's "Account Center" and "Log out" entries are django-mvp's own, and this package adds
 none.

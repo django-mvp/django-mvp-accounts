@@ -93,7 +93,8 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password and Phone number, beside its Overview entry.
+- **Menu entries** for Email, Password and Phone number, listed under an "Account" heading
+  below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off

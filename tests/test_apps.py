@@ -13,8 +13,10 @@ class TestStartup:
     """Starting the app adds this package's entries to the Account Center menu."""
 
     def test_entries_are_on_the_menu_after_startup(self) -> None:
-        names = [child.name for child in AccountCenterMenu.children]
-        assert {"email", "password", "phone"} <= set(names)
+        groups = [c for c in AccountCenterMenu.children if c.name == "account"]
+        assert len(groups) == 1
+        names = [child.name for child in groups[0].children]
+        assert names == ["email", "password", "phone"]
 
     def test_entries_reach_the_rendered_page(self, signed_in_client) -> None:
         page = signed_in_client.get(reverse("account-center")).content.decode()

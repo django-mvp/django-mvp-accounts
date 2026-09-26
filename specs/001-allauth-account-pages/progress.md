@@ -117,3 +117,9 @@ Watch: the account needs a blank `email` on the user, or allauth's email page cr
 - Demo outbox added for the walkthrough (D24).
 - Verify green on the merged branch: 104 passed, 2 skipped (django-mvp#358, #412).
 Next: walkthrough.
+
+## 2026-09-26T16:05Z · Walkthrough
+- Sam walked every page: looks and works as expected.
+- Asked for: the Email, Password and Phone number entries grouped under one "Account" heading (django-mvp `MenuGroup`, not collapsible), and the group added only when `allauth` itself is installed.
+- Done: `mvp_accounts/menus.py` appends one `MenuGroup` gated on `apps.is_installed("allauth")`. `TestAccountGroup` (heading precedes every entry, no `<details>`) failed first and passes now. The startup and no-allauth tests follow the group. ADR 0002, README and the English catalogue updated.
+- Verified: 106 passed, 2 skipped. Coverage of `mvp_accounts` 100%. pre-commit green on the changed files.

@@ -10,6 +10,10 @@ factory inline in the test with the field overridden.
 """
 
 import importlib
+import json
+import os
+import subprocess
+import sys
 from contextlib import contextmanager
 
 import pytest
@@ -94,3 +98,34 @@ def rebuild_urls():
             reload_urlconf()
 
     return rebuild
+
+
+@pytest.fixture(scope="session")
+def run_in_subprocess():
+    """Run a script under other settings and return the JSON it prints last.
+
+    Which apps are installed is decided when Django starts, so the running
+    suite cannot switch one off. The script starts Django itself, in a process
+    that reads ``settings_module`` instead.
+    """
+
+    def run(settings_module: str, script: str) -> dict:
+        completed = subprocess.run(  # noqa: S603
+            [sys.executable, "-c", script],
+            capture_output=True,
+            text=True,
+            check=False,
+            env={
+                # Coverage passes its configuration to the subprocess through
+                # these, so the subprocess is measured along with the suite.
+                **{k: v for k, v in os.environ.items() if k.startswith("COVERAGE")},
+                "DJANGO_SETTINGS_MODULE": settings_module,
+                "PATH": "",
+                "PYTHONPATH": ".",
+            },
+            timeout=120,
+        )
+        assert completed.returncode == 0, completed.stderr
+        return json.loads(completed.stdout.strip().splitlines()[-1])
+
+    return run

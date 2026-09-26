@@ -124,7 +124,7 @@ allauth's sign-in pages. The sign-in and sign-up pages show one button for each
 provider allauth lists, with the provider's name as its text.
 
 Each button's icon is named after allauth's provider id (`github`, `google`),
-so the project's [django-easy-icons](https://github.com/django-easy-icons/django-easy-icons)
+so the project's [django-easy-icons](https://github.com/django-mvp/django-easy-icons)
 setup needs an icon under each id of a provider it configures:
 
 ```python

@@ -21,3 +21,10 @@ Did: Added the Two-factor authentication entry (last child of the Account group,
 Verified: uv run pytest tests/test_menus.py tests/test_account_center.py: 31 passed.
 Next: next task.
 Watch: none.
+
+## 2026-09-26T21:15:51Z · Implementer US1 · T003
+
+Did: Added the panel element (card, title, body, every action in the footer), the two-factor overview page tests, and AuthenticatorFactory (TOTP and recovery-code traits, built through allauth's own activation), which T004 also lists. Probed: removing panel.html fails the bare-section test.
+Verified: uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 27 passed, 1 skipped (existing).
+Next: next task.
+Watch: none.

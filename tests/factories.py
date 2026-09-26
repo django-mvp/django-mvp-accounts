@@ -2,6 +2,9 @@
 
 import factory
 from allauth.account.models import EmailAddress
+from allauth.mfa.models import Authenticator
+from allauth.mfa.recovery_codes.internal.auth import RecoveryCodes
+from allauth.mfa.totp.internal.auth import TOTP, generate_totp_secret
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
@@ -55,3 +58,30 @@ class SocialAccountFactory(DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     provider = "dummy"
     uid = factory.Sequence(lambda n: str(5000 + n))
+
+
+class AuthenticatorFactory(DjangoModelFactory):
+    """A second factor for a user, built through allauth's own activation.
+
+    An authenticator app by default. The ``recovery_codes`` trait makes the
+    person's recovery codes instead. Both go through the calls allauth's views
+    make, so the stored data is exactly what a real activation stores.
+    """
+
+    class Meta:
+        model = Authenticator
+
+    class Params:
+        recovery_codes = factory.Trait(type=Authenticator.Type.RECOVERY_CODES)
+
+    user = factory.SubFactory(UserFactory)
+    type = Authenticator.Type.TOTP
+    # Not a model field: read and removed in ``_create``.
+    secret = factory.LazyFunction(generate_totp_secret)
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        user, secret = kwargs["user"], kwargs.pop("secret")
+        if kwargs["type"] == Authenticator.Type.RECOVERY_CODES:
+            return RecoveryCodes.activate(user).instance
+        return TOTP.activate(user, secret).instance

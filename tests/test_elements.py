@@ -219,3 +219,36 @@ class TestElementMarkup:
 
         assert soup.form["method"] == "post"
         assert soup.form["action"] == "/x/"
+
+
+class TestPanel:
+    """The two-factor overview draws one panel per factor."""
+
+    def test_it_draws_a_card_with_its_title_and_body(self) -> None:
+        soup = render_element(
+            "{% element panel %}{% slot title %}Authenticator App{% endslot %}"
+            "{% slot body %}Not active.{% endslot %}{% endelement %}"
+        )
+
+        card = soup.select_one(".card")
+        assert "Authenticator App" in card.get_text()
+        assert "Not active." in card.get_text()
+
+    def test_it_draws_every_action(self) -> None:
+        """allauth passes one ``actions`` slot per button and expects them all."""
+        soup = render_element(
+            "{% element panel %}{% slot title %}Codes{% endslot %}"
+            "{% slot actions %}<a href='/view/'>View</a>{% endslot %}"
+            "{% slot actions %}<a href='/download/'>Download</a>{% endslot %}"
+            "{% endelement %}"
+        )
+
+        hrefs = [a["href"] for a in soup.select(".card a")]
+        assert hrefs == ["/view/", "/download/"]
+
+    def test_a_panel_without_actions_draws_no_footer_links(self) -> None:
+        soup = render_element(
+            "{% element panel %}{% slot title %}Keys{% endslot %}{% endelement %}"
+        )
+
+        assert soup.select(".card a") == []

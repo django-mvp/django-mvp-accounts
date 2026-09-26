@@ -2,7 +2,7 @@
   "feature": "001-allauth-account-pages",
   "branch": "001-allauth-account-pages",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "DESIGN_REVIEW",
+  "state": "IMPLEMENT",
   "state_history": [
     {
       "state": "QUEUED",
@@ -18,6 +18,11 @@
       "state": "DESIGN_REVIEW",
       "at": "2026-09-26T08:40:48Z",
       "note": "design reviewer dispatched, three lenses, one round"
+    },
+    {
+      "state": "IMPLEMENT",
+      "at": "2026-09-26T08:51:45Z",
+      "note": "US1-US4 sequentially in the main checkout"
     }
   ],
   "gates": {

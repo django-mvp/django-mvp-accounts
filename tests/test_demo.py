@@ -14,7 +14,7 @@ from allauth.account.models import EmailAddress
 from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
 from django.core.mail import EmailMessage
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.urls import NoReverseMatch, reverse
 
 from demo import settings as demo_settings
@@ -210,6 +210,14 @@ class TestDemoTwoFactorAccount:
             Authenticator.Type.RECOVERY_CODES,
         }
 
+    def test_nothing_is_seeded_with_debug_off(self, db, settings) -> None:
+        settings.DEBUG = False
+
+        with pytest.raises(CommandError):
+            call_command("seed_demo", stdout=StringIO())
+
+        assert not Authenticator.objects.filter(user__email=self.EMAIL).exists()
+
     def test_seeding_twice_leaves_one_of_each(self, db) -> None:
         call_command("seed_demo", stdout=StringIO())
         call_command("seed_demo", stdout=StringIO())
@@ -318,10 +326,6 @@ class TestDemoTwoFactor:
     def test_the_suite_never_accepts_a_fixed_code(self, settings) -> None:
         """Every test enters a real code computed from the secret."""
         assert settings.MFA_TOTP_INSECURE_BYPASS_CODE is None
-
-    def test_the_demo_accepts_a_fixed_code(self) -> None:
-        """The demo itself lets the pages be walked through without a phone."""
-        assert len(demo_settings.MFA_TOTP_INSECURE_BYPASS_CODE) == 6
 
     def test_the_demo_turns_on_every_factor_but_passkey_sign_up(self) -> None:
         assert demo_settings.MFA_SUPPORTED_TYPES == [

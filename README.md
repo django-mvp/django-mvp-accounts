@@ -137,10 +137,10 @@ Once `allauth.mfa` is installed, its pages render in django-mvp's shell:
   list also needs `django.contrib.humanize` in `INSTALLED_APPS`, which allauth's page loads.
 - Signing in with a passkey (`MFA_PASSKEY_LOGIN_ENABLED`) adds a "Sign in with a passkey" button
   to the sign-in page. Creating an account with a passkey (`MFA_PASSKEY_SIGNUP_ENABLED`) adds
-  its own sign-up page and a page to create the passkey; allauth only allows it with
-  `ACCOUNT_EMAIL_VERIFICATION = "mandatory"` and
-  `ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True`. Both are your project's settings, and
-  the demo leaves passkey sign-up off. Sign-in and sign-up pages are entrance pages. Every
+  its own sign-up page and a page to create the passkey. allauth refuses to start with it unless
+  `webauthn` is in `MFA_SUPPORTED_TYPES`, `ACCOUNT_EMAIL_VERIFICATION = "mandatory"`,
+  `ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True` and `ACCOUNT_SIGNUP_FIELDS` requires
+  `email*`. All four are your project's settings, and the demo leaves passkey sign-up off. Sign-in and sign-up pages are entrance pages. Every
   page keeps the ids and data attributes allauth's JavaScript looks for.
 - The QR code is always drawn dark on white, in every theme, because a scanner cannot read
   it from a dark background.

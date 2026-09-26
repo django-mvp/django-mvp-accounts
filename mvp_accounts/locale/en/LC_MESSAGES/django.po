@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 16:19-0500\n"
+"POT-Creation-Date: 2026-09-26 23:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,8 +131,8 @@ msgstr ""
 
 #: templates/mvp/account/overview.html:50
 msgid ""
-"Protect your account with an authenticator app, recovery codes or a security "
-"key, so a stolen password is not enough to sign in."
+"Add a second step to signing in, so a stolen password is not enough on its "
+"own."
 msgstr ""
 
 #: templates/mvp/account/overview.html:52

@@ -80,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   data attributes allauth's JavaScript looks for. The security-key list needs
   `django.contrib.humanize` in `INSTALLED_APPS`. Browsers only allow security keys and passkeys
   over HTTPS or on `localhost`. The demo leaves passkey sign-up off, because allauth requires
-  mandatory email verification by code for it.
+  mandatory email verification by code for it, among other settings.
 
 ### Changed
 

@@ -124,13 +124,6 @@ class TestRemoveSecurityKey(ManagementPageAssertions):
         assert "Security key removed." in response.content.decode()
 
 
-class TestStoredKeysSurviveAuthentication(ManagementPageAssertions):
-    def test_reauthentication_parses_a_stored_key(self, fresh_client, two_keys) -> None:
-        response = fresh_client.get(reverse("mfa_reauthenticate_webauthn"))
-
-        assert response.status_code == 200
-
-
 class TestAddSecurityKey(ManagementPageAssertions):
     def test_the_page_carries_every_hook_the_script_looks_for(
         self, fresh_client, assert_script_hooks
@@ -220,13 +213,10 @@ class TestPasskeySignUp(EntrancePageAssertions):
 
 class TestReauthenticateWithSecurityKey(ManagementPageAssertions):
     def test_it_is_a_management_page_with_the_hooks_the_script_needs(
-        self, client, db, assert_script_hooks
+        self, fresh_client, two_keys, assert_script_hooks
     ) -> None:
-        address = EmailAddressFactory()
-        AuthenticatorFactory(user=address.user, webauthn=True, key_name="Office")
-        client.force_login(address.user)
-
-        response = client.get(reverse("mfa_reauthenticate_webauthn"))
+        """Both stored keys, a passkey and a security key, parse as the page begins."""
+        response = fresh_client.get(reverse("mfa_reauthenticate_webauthn"))
 
         html = self.assert_management_page(response, 'id="mfa_webauthn_reauthenticate"')
         assert assert_script_hooks(html) >= 1

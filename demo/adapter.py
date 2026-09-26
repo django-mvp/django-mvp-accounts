@@ -1,13 +1,13 @@
 """The demo's account adapter.
 
 allauth has no model of its own for phone numbers, so a project that turns them
-on says where they are kept. The demo keeps them in one table and prints the
-code it would have texted.
+on says where they are kept. The demo keeps them in one table, and keeps the
+code it would have texted in the outbox.
 """
 
 from allauth.account.adapter import DefaultAccountAdapter
 
-from demo.models import PhoneNumber
+from demo.models import PhoneNumber, SentMessage
 
 
 class DemoAccountAdapter(DefaultAccountAdapter):
@@ -35,3 +35,8 @@ class DemoAccountAdapter(DefaultAccountAdapter):
 
     def send_verification_code_sms(self, user, phone, code, **kwargs):
         print(f"SMS to {phone}: your verification code is {code}")
+        SentMessage.objects.create(
+            recipient=phone,
+            subject="Text message",
+            body=f"Your verification code is {code}",
+        )

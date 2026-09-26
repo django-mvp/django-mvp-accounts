@@ -11,11 +11,13 @@ from io import StringIO
 
 import pytest
 from allauth.account.models import EmailAddress
+from django.core.mail import EmailMessage
 from django.core.management import call_command
 from django.urls import NoReverseMatch, reverse
 
 from demo.adapter import DemoAccountAdapter
-from tests.factories import PhoneNumberFactory
+from demo.mail import OutboxEmailBackend
+from tests.factories import PhoneNumberFactory, UserFactory
 
 
 class TestOverviewPage:
@@ -113,3 +115,73 @@ class TestDemoAccountAdapter:
         phone = PhoneNumberFactory(number="+4915112345678", verified=True)
         DemoAccountAdapter().set_phone_verified(phone.user, "+4915187654321")
         assert DemoAccountAdapter().get_phone(phone.user) == ("+4915187654321", True)
+
+
+class TestOutbox:
+    """The demo keeps what it would have sent, so a reviewer can follow a link.
+
+    Sign-in by code, password reset and verification all send something. On a
+    development server that would go to the console, which a reviewer opening
+    the demo in a browser cannot see.
+    """
+
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        """The demo's development-only pages exist only with DEBUG on."""
+        settings.DEBUG = True
+
+    def test_a_sent_email_is_listed(self, client, db) -> None:
+        message = EmailMessage(
+            "Reset your password",
+            "Follow http://testserver/accounts/password/reset/key/abc/",
+            to=["regular.user@example.com"],
+        )
+        OutboxEmailBackend().send_messages([message])
+
+        html = client.get(reverse("outbox")).content.decode()
+
+        assert "Reset your password" in html
+        assert 'href="http://testserver/accounts/password/reset/key/abc/"' in html
+
+    def test_a_text_message_is_listed(self, client, db) -> None:
+        user = UserFactory()
+        DemoAccountAdapter().send_verification_code_sms(
+            user, "+4915112345678", "ABC-123"
+        )
+
+        html = client.get(reverse("outbox")).content.decode()
+
+        assert "+4915112345678" in html
+        assert "ABC-123" in html
+
+    def test_the_outbox_is_in_the_sidebar(self, overview_page: str) -> None:
+        assert reverse("outbox") in overview_page
+
+    def test_it_does_not_exist_without_debug(self, client, db, settings) -> None:
+        settings.DEBUG = False
+        assert client.get(reverse("outbox")).status_code == 404
+
+
+class TestSeededStates:
+    """The seeded accounts between them reach every state a page can show."""
+
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        """The demo's development-only pages exist only with DEBUG on."""
+        settings.DEBUG = True
+
+    def test_staff_has_a_second_unverified_address(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+
+        addresses = EmailAddress.objects.filter(user__email="staff.user@example.com")
+        assert sorted((a.verified, a.primary) for a in addresses) == [
+            (False, False),
+            (True, True),
+        ]
+
+    def test_super_has_a_verified_phone_number(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="super.user@example.com").user
+        number, verified = DemoAccountAdapter().get_phone(user)
+        assert verified

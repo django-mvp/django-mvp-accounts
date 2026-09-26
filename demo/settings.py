@@ -110,8 +110,8 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-# Codes and links are written to the console rather than sent anywhere.
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# Codes and links are kept for the outbox page rather than sent anywhere.
+EMAIL_BACKEND = "demo.mail.OutboxEmailBackend"
 
 # What a typical project runs: sign in by email, a link to verify it, a code as
 # an alternative to the password, phone numbers stored by the demo's adapter,

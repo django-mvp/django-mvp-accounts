@@ -31,3 +31,41 @@ class PhoneNumber(models.Model):
 
     def __str__(self) -> str:
         return self.number
+
+
+class SentMessage(models.Model):
+    """An email or text message the demo would have sent.
+
+    A development server would print these to the console, which a reviewer
+    opening the demo in a browser cannot see. Keeping them lets the outbox
+    page show the link or code a page is waiting for.
+    """
+
+    recipient = models.CharField(
+        max_length=254,
+        verbose_name=_("recipient"),
+        help_text=_("The address or phone number it was sent to."),
+    )
+    subject = models.CharField(
+        max_length=255,
+        verbose_name=_("subject"),
+        help_text=_("The email's subject, or 'Text message'."),
+    )
+    body = models.TextField(
+        verbose_name=_("body"),
+        help_text=_("The message as it would have been sent."),
+    )
+    sent_at = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True,
+        verbose_name=_("sent at"),
+        help_text=_("When it was sent. The outbox lists the newest first."),
+    )
+
+    class Meta:
+        ordering = ["-sent_at"]
+        verbose_name = _("sent message")
+        verbose_name_plural = _("sent messages")
+
+    def __str__(self) -> str:
+        return f"{self.subject} → {self.recipient}"

@@ -146,3 +146,15 @@ management layout lands.
 **Decision:** `mvp_accounts/menus.py` adds its entries only when `allauth.account` is installed, and `MvpAccountsConfig` has no `ready()`. This departs from the brief, which had `ready()` import the module.
 **Why:** django-flex-menus imports the `menus` module of every installed app when it starts, so a guard in `ready()` never stopped the import. Without allauth the entries were on the menu and the pages raised on their unresolvable URLs; the subprocess test showed it.
 **Revisit if:** the menus module is renamed so it is no longer autodiscovered, when a `ready()` import would be the guard again.
+
+### The warning snippet is overridden because allauth draws it as a paragraph
+
+**Decision:** `account/snippets/warn_no_email.html` is this package's copy of allauth's three-line snippet, drawing the warning through `{% element alert tags="warning" %}`.
+**Why:** allauth 65.19.4 renders it with `{% element p %}`, which the elements draw as body copy. The brief asks for an alert, and the alert element already maps the `warning` tag to django-mvp's warning variant, so the copy is the only change.
+**Revisit if:** allauth's own snippet moves to the alert element.
+
+### The phone verification test asserts the page, not the stored number
+
+**Decision:** the signed-in phone verification test asserts the redirect back to the phone page and allauth's "You have verified phone number" message, not a `PhoneNumber` row.
+**Why:** with no stored number, the demo adapter's `set_phone_verified` updates nothing, and allauth calls `set_phone` only on the sign-up path, so no row exists to assert on. The demo adapter is outside this story's files, so it is reported in the completion report instead of changed.
+**Revisit if:** the demo adapter creates the row when a number is verified.

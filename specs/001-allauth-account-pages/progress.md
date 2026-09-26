@@ -91,3 +91,15 @@ Did: `mvp_accounts/locale/en/LC_MESSAGES/django.po` from `makemessages -l en` ru
 Verified: grepped the catalogue for each of the nine strings T011 and T012 added: all present. It also holds the strings from earlier stories' templates, which the command picks up.
 Next: README, CHANGELOG, full verify, report.
 Watch: the catalogue has empty `msgstr`s, which is what a base English catalogue is.
+
+## 2026-09-26T12:20Z · Implementer US4 · T016
+Did: `allauth/layouts/manage.html` extends `mvp/account/base.html` and maps allauth's four blocks; `account/base_entrance.html` extends the management layout for a signed-in person and the entrance layout otherwise. `tests/test_management_pages.py` (in `non-mirror-paths`) asserts stylesheet, sidebar navigation menu, no bare `Menu:` list and the page's own form for email (three addresses), change email, password change, password set, phone change, phone verification by code (code read from the demo adapter's printed line), re-authentication; the email, password and phone pages draw "Account navigation"; a message allauth adds shows in the shell; phone verification during sign-up is an entrance page. The container test is skipped naming django-mvp#358. README and CHANGELOG say management pages render in the Account Center.
+Verified: `uv run pytest tests/test_management_pages.py` — 10 passed, 1 skipped (django-mvp#358); the management tests failed first (no sidebar menu on any page). Probed the base override: making it always entrance fails the phone verification and re-authentication tests, always management fails the sign-up test. `tests/test_entrance_pages.py` and `tests/test_recovery_pages.py` stay green (sign-out and "verified email required" remain entrance pages while signed in). `uv run pre-commit run --all-files` — all hooks pass.
+Next: T017.
+Watch: allauth rate-limits phone codes per address and IP in the cache, so the module clears the cache before each test.
+
+## 2026-09-26T12:30Z · Implementer US4 · T017
+Did: `account/snippets/warn_no_email.html` draws allauth's warning through the `alert` element (warning variant). `TestWarnNoEmail` opens the email page for an account with no address.
+Verified: `uv run pytest tests/test_management_pages.py::TestWarnNoEmail` — failed first (the warning was a bare paragraph), passes now. `uv run pre-commit run --all-files` — all hooks pass.
+Next: full verify, report.
+Watch: the account needs a blank `email` on the user, or allauth's email page creates an address from it before drawing the warning.

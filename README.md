@@ -89,6 +89,22 @@ Nothing about that setup is checked or configured for you. This package adds no
 system check and sets no default, so allauth's middleware, authentication
 backend and settings are yours to choose.
 
+## What appears in the Account Center
+
+With django-allauth installed, this package adds to django-mvp's Account Center:
+
+- **Menu entries** for Email, Password and Phone number, beside its Overview entry.
+- **A card for each of those pages** on the Account Center landing page, linking to it.
+
+A page allauth has not routed gets neither. With phone numbers turned off
+(`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
+Without allauth installed the package adds nothing and raises nothing.
+
+The Account Center itself, the "Account Center" and "Log out" entries in the user menu, and
+the sign-out form are django-mvp's. Another installed app can add its own card the same way:
+ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
+and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
 ## Quickstart
 
 <!--

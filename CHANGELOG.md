@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   supported. A template of your own with the same name as one of allauth's still takes precedence.
 - allauth's password reset pages (by link and by code) and its email verification pages (by link and
   by code, including "verified email required") render as entrance pages too.
+- With allauth installed, django-mvp's Account Center gains Email, Password and Phone number menu
+  entries and a card for each page on its landing page. Phone number appears only when phone
+  numbers are on. Without allauth the package adds nothing. An English translation catalogue is
+  included.
 
 ### Changed
 

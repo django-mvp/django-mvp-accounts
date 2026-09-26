@@ -2,7 +2,7 @@
   "feature": "001-allauth-account-pages",
   "branch": "001-allauth-account-pages",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "PR_READY",
+  "state": "MERGED",
   "state_history": [
     {
       "state": "QUEUED",
@@ -38,6 +38,11 @@
       "state": "PR_READY",
       "at": "2026-09-26T15:15:45Z",
       "note": "review fixed and recorded; walkthrough required"
+    },
+    {
+      "state": "MERGED",
+      "at": "2026-09-26T15:47:05Z",
+      "note": "PR #14 merged; approved by SamuelJennings"
     }
   ],
   "gates": {
@@ -52,17 +57,17 @@
       "self_resolved": []
     },
     "merge": {
-      "approved_by": null,
-      "at": null
+      "approved_by": "SamuelJennings",
+      "at": "2026-09-26T15:46:55Z"
     },
     "design_review": {
       "approved_by": "design-panel",
       "at": "2026-09-26T08:50:00Z",
       "self_resolved": [
-        "SPEC-001 high: four pages on the opposite allauth base — base_entrance follows the visitor, logout and verified_email_required copied with an entrance parent (R1, T003, T010, T016)",
+        "SPEC-001 high: four pages on the opposite allauth base \u2014 base_entrance follows the visitor, logout and verified_email_required copied with an entrance parent (R1, T003, T010, T016)",
         "SPEC-002 medium: management navigation asserted by the sidebar menu, not the 'Main navigation' label (plan)",
-        "SPEC-003 medium: sign-up link on sign-in is allauth's — read in decisions, T005 uses a closed-signup test adapter",
-        "SPEC-004 medium: without allauth the Account Center and stand-in sign-out are django-mvp's — read in decisions",
+        "SPEC-003 medium: sign-up link on sign-in is allauth's \u2014 read in decisions, T005 uses a closed-signup test adapter",
+        "SPEC-004 medium: without allauth the Account Center and stand-in sign-out are django-mvp's \u2014 read in decisions",
         "SPEC-005 medium: Account Center sidebar assertion moved from T011 to T016",
         "SPEC-006 medium: whole-form FR-015 must pass; single-field path skipped naming django-mvp#412 (T004)",
         "ARCH-001 medium: element list trimmed to the twelve the account app uses (R4)",
@@ -309,12 +314,12 @@
       "max": 1
     },
     "tokens": {
-      "used": 0,
+      "used": 18.49,
       "max": 120
     }
   },
   "pr": {
     "number": 14,
-    "draft": true
+    "draft": false
   }
 }

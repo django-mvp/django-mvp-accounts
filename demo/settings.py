@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     "mvp_accounts",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
+    # allauth's test provider: it completes a sign-in on this machine, so every
+    # social account page can be reached without credentials from a real one.
+    "allauth.socialaccount.providers.dummy",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -150,6 +154,9 @@ EASY_ICONS = {
         "packs": ["mvp.utils.BS5_ICONS"],
         "icons": {
             "overview": "bi bi-house",
+            # A provider button draws the icon named after its provider id. The
+            # package ships none: the project supplies one per provider it lists.
+            "dummy": "bi bi-person-badge",
         },
     },
 }

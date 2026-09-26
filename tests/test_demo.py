@@ -185,3 +185,13 @@ class TestSeededStates:
         user = EmailAddress.objects.get(email="super.user@example.com").user
         number, verified = DemoAccountAdapter().get_phone(user)
         assert verified
+
+
+class TestDemoSocialAccounts:
+    """The demo installs allauth's test provider, so a sign-in needs no credentials."""
+
+    def test_the_test_providers_login_url_resolves(self) -> None:
+        assert reverse("dummy_login")
+
+    def test_the_suite_also_lists_github(self) -> None:
+        assert reverse("github_login")

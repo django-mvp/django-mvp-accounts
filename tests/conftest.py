@@ -9,10 +9,14 @@ those factories. A one-off variation needs no fixture of its own — call the
 factory inline in the test with the field overridden.
 """
 
+import importlib
+from contextlib import contextmanager
+
 import pytest
 from django import template as dj_template
 from django.template import Context
-from django.urls import reverse
+from django.test import override_settings
+from django.urls import clear_url_caches, reverse
 from django_cotton.compiler_regex import CottonCompiler
 
 from tests.factories import EmailAddressFactory
@@ -47,3 +51,37 @@ def signed_in_client(client, db):
     client.force_login(address.user)
     client.user = address.user
     return client
+
+
+URLCONF_MODULES = ("allauth.account.urls", "allauth.urls", "demo.urls", "tests.urls")
+
+
+def reload_urlconf():
+    """Import the routes again, so they follow the settings as they now stand."""
+    for name in URLCONF_MODULES:
+        importlib.reload(importlib.import_module(name))
+    clear_url_caches()
+
+
+@pytest.fixture
+def rebuild_urls():
+    """Apply settings overrides and rebuild allauth's routes to match.
+
+    allauth decides which account routes exist when its URLconf is imported, so
+    switching a setting with ``override_settings`` alone changes nothing a test
+    can see. Used as ``with rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False):``.
+    The routes are rebuilt again on the way out, from the restored settings.
+    Every xdist worker is its own process, so a rebuild in one cannot reach
+    another.
+    """
+
+    @contextmanager
+    def rebuild(**overrides):
+        try:
+            with override_settings(**overrides):
+                reload_urlconf()
+                yield
+        finally:
+            reload_urlconf()
+
+    return rebuild

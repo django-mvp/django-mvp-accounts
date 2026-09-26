@@ -9,9 +9,10 @@ than against the objects that built them.
 
 from io import StringIO
 
+import pytest
 from allauth.account.models import EmailAddress
 from django.core.management import call_command
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 
 
 class TestOverviewPage:
@@ -73,3 +74,24 @@ class TestDemoSignIn:
 
         addresses = EmailAddress.objects.filter(verified=True, primary=True)
         assert addresses.count() == 3
+
+
+class TestUrlconfRebuild:
+    """allauth reads its settings when its URLconf is imported.
+
+    A test that switches one of those settings has to rebuild the URLconf, and
+    put it back afterwards so the next test starts from the demo's own.
+    """
+
+    def test_a_route_allauth_leaves_out_does_not_resolve(self, rebuild_urls) -> None:
+        with (
+            rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False),
+            pytest.raises(NoReverseMatch),
+        ):
+            reverse("account_request_login_code")
+
+    def test_the_demos_own_urlconf_is_back_afterwards(self, rebuild_urls) -> None:
+        with rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False):
+            pass
+
+        assert reverse("account_request_login_code")

@@ -7,3 +7,9 @@ Did: the demo runs allauth (apps, middleware, backend, console email, `allauth.u
 Verified: `uv run pytest tests/test_demo.py tests/test_app.py` — 13 passed; `uv run pre-commit run --all-files` — all hooks pass. The new tests failed at collection before allauth was installed in the demo.
 Next: T002.
 Watch: the demo's seed tests set `settings.DEBUG = True` because `seed_demo` refuses to run otherwise.
+
+## 2026-09-26T09:30Z · Implementer US1 · T002
+Did: `rebuild_urls` fixture in `tests/conftest.py`, a context manager that applies settings overrides, reloads allauth's, the demo's and the suite's URLconfs, and reloads them again from the restored settings on the way out.
+Verified: `uv run pytest tests/test_demo.py` — 9 passed. With `ACCOUNT_LOGIN_BY_CODE_ENABLED=False` the code route does not resolve, and it resolves again afterwards. The tests failed on the missing fixture first.
+Next: T003.
+Watch: it is used as `with rebuild_urls(...):`, so the restore happens at the end of the block, not at test teardown.

@@ -18,7 +18,41 @@ of the account app's pages do in 65.19.4) lands on the entrance layout rather th
 HTML document.
 
 allauth's pages fill four blocks: `head_title`, `extra_head`, `content` and `extra_body`. The
-layouts map them onto the shell's `title`, `head`, `content` and `extra_js`.
+layouts map them onto the shell's `title`, `head` (keeping `{{ block.super }}`, which holds the
+charset, title and stylesheet), `content` and `extra_js`. The code-entry pages also fill a block
+named `title` inside their content (`account/base_confirm_code.html:6`), which then replaces the
+layout's `title` block too, so their browser title is that heading rather than `head_title`. That
+is an accurate title for those pages and is left as it is.
+
+### Four pages whose allauth base is not the spec's
+
+allauth's own split between its entrance and management bases does not match the spec's in four
+places:
+
+| Page | allauth's base | Spec |
+|---|---|---|
+| Sign-out (`account/logout.html:1`) | management | entrance (FR-002) |
+| Verified email required (`account/verified_email_required.html:1`) | management | entrance (FR-002) |
+| Re-authentication (`account/base_reauthenticate.html:1`) | entrance | management (FR-003) |
+| Phone verification (`account/base_confirm_code.html:1`) | entrance | management when signed in (FR-003), entrance during sign-up |
+
+**Decision**: override `account/base_entrance.html` so it extends the management layout for a
+signed-in person and the entrance layout otherwise, and override `account/logout.html` and
+`account/verified_email_required.html` as copies of allauth's pages whose parent is
+`allauth/layouts/entrance.html` directly.
+
+**Rationale**: `CONTEXT.md` defines an entrance page as one someone sees before they are signed
+in. Choosing the layout by whether the visitor is signed in applies that definition to every page
+allauth builds on its entrance base: re-authentication and phone verification after a change are
+always signed in and become management pages, while phone verification during sign-up, sign-in by
+code and password reset are signed out and stay entrance pages. It is a one-line override, and it
+also reaches the two-factor re-authentication pages, which extend the same base. Sign-out and
+"verified email required" are always seen signed in, yet the spec names them as entrance pages,
+so each needs its page copied with a different parent. They are 25 lines each. `{% extends %}`
+takes a filter expression, so the base can pick its parent with `user.is_authenticated|yesno`.
+
+**Alternatives**: copying `account/base_reauthenticate.html` and `account/base_confirm_code.html`
+(125 lines of allauth's markup to keep in step with each release, against one line).
 
 **Alternatives**: overriding each page template (about thirty files that would each need
 revisiting on every allauth release, and the thing Article XIII rules out), or a custom view
@@ -50,7 +84,10 @@ pages fill `content`, which replaces the layout's own `content` block, container
 survives is everything that matters for FR-003: the page is inside the shell with its sidebar,
 header and messages. The Account Center's navigation is drawn in the shell's sidebar since
 0.25.0, not in the page body, so the page keeps it whenever an `AccountCenterMenu` entry marks
-the page current (R5). What is lost is the container's padding. django-mvp#358 proposes the fix
+the page current (R5). The email, password-change and phone-change pages are claimed that way and
+draw the Account Center's menu, labelled "Account navigation". The other management pages (set
+password, change email, re-authentication, phone verification) are not in that menu and draw the
+shell's main menu. Both are the shell's navigation. What is lost is the container's padding. django-mvp#358 proposes the fix
 upstream (the layout claims `app.main` and leaves `content` free), and once it ships this layout
 needs no change. A test asserting the container is written now and skipped with that issue in
 its reason.
@@ -63,16 +100,20 @@ workaround the upstream issue exists to retire), or extending `page_view.html` (
 
 **Decision**: override the shared elements under `allauth/elements/` that the account app's
 pages use, building each from django-mvp's components: `alert`, `badge`, `button`,
-`button_group`, `details`, `field`, `fields`, `form`, `h1`, `h2`, `hr`, `img`, `p`, `panel`,
-and the table set (`table`, `thead`, `tbody`, `tr`, `th`, `td`). `provider` and
-`provider_list` belong to social accounts and are left to that feature.
+`button_group`, `details`, `field`, `fields`, `form`, `h1`, `h2`, `hr` and `p`. `img`, `panel`,
+the table set and `provider`/`provider_list` appear in no account-app page; they belong to the
+two-factor, sessions and social-account features and are left to them.
 
 **Rationale**: FR-004. A whole form goes through `fields`, which renders with django-mvp's
 `<c-form.render>`, so allauth's forms look like every other form on the site and field errors
-and non-field errors appear where the site's other forms show them. `field` is used directly for
-single hand-built inputs (the email radio list, code inputs) and is built on `<c-form.field>`
-where that component can carry what allauth passes, keeping the label, help text and errors
-associated with the input (FR-015). allauth's `unlabeled` hint is ignored: every field keeps a
+and non-field errors appear where the site's other forms show them. On that path each input
+carries `aria-describedby` naming its help text and error block, whose ids the templates render
+(`django/forms/boundfield.py:300-316`, `mvp/templates/tailwind/layout/help_text.html:18`,
+`field_errors_block.html`), so FR-015 holds. `field` is used directly for single hand-built
+inputs (the email radio list, the change-email and change-phone inputs) and is built on
+`<c-form.field>`. That component gives the label its `for`, but renders help text and errors
+without ids, so the input cannot reference them. That is django-mvp#412, and the test for it is
+written and skipped naming the issue. allauth's `unlabeled` hint is ignored: every field keeps a
 visible label.
 
 ## R5 — Where "Account" and "Sign out" come from
@@ -96,7 +137,8 @@ The entries' labels are django-mvp's ("Account Center", "Log out"). The spec cal
 package.
 
 **Consequence for FR-006/FR-008**: without allauth this package contributes no menu entry and no
-card, and its templates are never loaded. The Account Center and the stand-in sign-out that
+card. Its allauth templates are never loaded, and its `mvp/account/overview.html` loads but draws
+nothing, because none of its URLs resolve. The Account Center and the stand-in sign-out that
 django-mvp draws in a project without allauth are the shell's.
 
 ## R6 — Menu entries and cards appear only for what the project has on

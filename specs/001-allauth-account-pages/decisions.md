@@ -63,3 +63,41 @@ Reset by code or by link, and email verification by code or by link, are chosen 
 URLconf is imported, so one demo cannot show both halves of either. The demo runs the defaults
 (link) with code sign-in, phone numbers and re-authentication turned on. The tests rebuild the
 URLconf to reach the code halves. Research R6, R7.
+
+## Four pages change base, three by copying allauth's markup
+
+Sign-out and "verified email required" sit on allauth's management base, and re-authentication
+and phone verification on its entrance base, the opposite of the spec's split. The entrance base
+is overridden to follow the visitor, management when signed in, which settles re-authentication
+and phone verification in one line and matches `CONTEXT.md`'s definition of an entrance page.
+Sign-out and "verified email required" are copies of allauth 65.19.4's pages with the parent
+switched, because they are always seen signed in and the spec still makes them entrance pages.
+Those two copies are what has to be compared against allauth's on each release. Research R1.
+
+## What "offers" means when sign-up is closed
+
+allauth's sign-in page links to sign-up whether sign-up is open or not, and following the link
+shows allauth's "sign-up closed" page. FR-005 forbids this package adding or removing what allauth
+renders, so the link stays. SC-004's sign-up case is read as: the package offers nothing extra,
+and the sign-up page is the closed page. Removing allauth's link would mean overriding its
+sign-in page, which is a request to allauth.
+
+## The spec's "no account menu entry" without allauth means this package's entries
+
+A project without allauth that includes `mvp.urls` still has django-mvp's Account Center, its
+user-menu entry and a development-only sign-out. Those are the shell's, drawn whether or not this
+package is installed. US3 scenario 5 and SC-003 are read as this package contributing no entry,
+no card and no route, which the no-allauth test asserts.
+
+## FR-012 is met by the demo and the tests together
+
+The pages behind reset by code and email verification by code cannot exist in the same
+configuration as their by-link counterparts. The demo reaches the by-link halves and the tests
+reach the rest.
+
+## Watch items from the design review
+
+- An element override never passes an attribute value through `|safe`. allauth hands elements
+  values such as `href=alt.url`, and autoescaping is the control.
+- `tests/test_apps.py` mirrors `mvp_accounts/apps.py`, and `tests/test_app.py` covers the
+  installed app's on-disk layout. Each module's docstring says which it is.

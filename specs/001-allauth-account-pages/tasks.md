@@ -31,6 +31,10 @@ method, mandatory verification by link, sign-in by code, `"phone"` in the sign-u
 re-authentication required. A demo adapter storing phone numbers in a demo `PhoneNumber` model
 (one-to-one to the user, `verbose_name`/`help_text` on each field) and printing SMS codes.
 `seed_demo` creates a verified primary `EmailAddress` for each account, still idempotent.
+`tests/factories.py` gains one factory per model the tests build: the user, allauth's
+`EmailAddress` (verified and primary by default) and the demo's `PhoneNumber`. `tests/conftest.py`
+gains a thin `signed_in_client` fixture over them. Later tasks use these instead of constructing
+objects inline (Article X). The `PhoneNumber` number is `unique=True`.
 Tests: the sign-in page responds at allauth's URL; a seeded account signs in with `password`.
 
 ### T002 — The URLconf-rebuilding fixture
@@ -45,12 +49,17 @@ teardown. A test proving it: with `ACCOUNT_LOGIN_BY_CODE_ENABLED=False`,
 ### T003 — Entrance layout
 
 **Files**: `mvp_accounts/templates/allauth/layouts/base.html`,
-`mvp_accounts/templates/allauth/layouts/entrance.html`, `tests/test_entrance_pages.py`,
+`mvp_accounts/templates/allauth/layouts/entrance.html`,
+`mvp_accounts/templates/account/logout.html`, `tests/test_entrance_pages.py`,
 `pyproject.toml` (`non-mirror-paths`)
 
-Research R1, R2. Page tests per the plan's four assertions for sign-in, sign-up, sign-out
+Research R1, R2. allauth's sign-out page extends its management base, and the spec makes it an
+entrance page, so `account/logout.html` is a copy of allauth 65.19.4's page with its parent
+switched to `allauth/layouts/entrance.html` and nothing else changed; a comment at its top says
+so and names the allauth version it was copied from. Page tests per the plan's four assertions for sign-in, sign-up, sign-out
 (signed in), request code and confirm code (after requesting one), sign-up closed (demo adapter
-or an override closing sign-up), and account inactive. The title carries allauth's `head_title`.
+or an override closing sign-up), and account inactive. The title carries allauth's `head_title` on pages that do not fill their own `title` block (the
+code-entry pages do, research R1).
 Messages render on an entrance page. Sign-out's message appears on the page that follows.
 
 ### T004 — Elements
@@ -63,8 +72,12 @@ Built from django-mvp components. Tests:
   non-field error on the page (SC-005, US1 scenario 2);
 - a wrong-password sign-in shows allauth's non-field error;
 - every rendered input on sign-in and sign-up has a `<label for>` matching its id, and its help
-  text and errors are referenced from its `aria-describedby` (FR-015). If django-mvp's form
-  rendering cannot do this, the test is skipped naming the upstream issue filed for it;
+  text and errors are referenced from its `aria-describedby` by ids present on the page (FR-015).
+  This is the whole-form path and must pass;
+- the same assertion on a single-field input rendered through the `field` element, submitted with
+  an error (the change-email form with `ACCOUNT_CHANGE_EMAIL=True`, through T002's fixture). The
+  label's `for` must pass. The help-text and error association is written in full and **skipped**,
+  with a reason naming django-mvp#412;
 - buttons render as the theme's buttons, and a `href` button renders as a link.
 
 ### T005 — What a project turned off is not offered
@@ -72,8 +85,11 @@ Built from django-mvp components. Tests:
 **Files**: `tests/test_entrance_pages.py`
 
 With T002's fixture: sign-in by code off → the sign-in page offers no code; sign-up closed →
-the sign-up page is allauth's closed page. (Code reset and code verification belong to US2,
-phone to US3.)
+the sign-up page is allauth's closed page. allauth's sign-in page still links to sign-up when
+it is closed; that link is allauth's own, and the test asserts only that the package adds no
+other. Closing sign-up is an adapter decision in allauth, so the test uses a test adapter whose
+`is_open_for_signup` returns False, set with `override_settings(ACCOUNT_ADAPTER=...)`. (Code
+reset and code verification belong to US2, phone to US3.)
 
 ### T006 — A host project's own override wins
 
@@ -115,7 +131,12 @@ code.
 
 ### T010 — Email verification
 
-**Files**: `tests/test_recovery_pages.py`
+**Files**: `mvp_accounts/templates/account/verified_email_required.html`,
+`tests/test_recovery_pages.py`
+
+allauth's "verified email required" page extends its management base, and the spec makes it an
+entrance page, so the override is a copy of allauth 65.19.4's page with its parent switched to
+`allauth/layouts/entrance.html`, commented as T003's sign-out copy is.
 
 Sign-up under mandatory verification: "verification sent", the confirmation page from the emailed
 link, and "verified email required" (a view decorated with allauth's `verified_email_required`,
@@ -135,10 +156,9 @@ Issue: #12. Delivers FR-006, FR-007, FR-008, FR-014, and US3's part of SC-003 an
 
 Research R5, R6. `ready()` imports `menus` only when `allauth.account` is installed. Entries
 "Email" (`account_email`), "Password" (`account_change_password`), "Phone number"
-(`account_change_phone`), labels translatable, icons registered in the demo's `EASY_ICONS`.
-Tests on the rendered Account Center page: all three entries with phone on; no phone entry with
-phone off (fixture). The email page is claimed by the Account Center, so its sidebar draws
-`AccountCenterMenu`.
+(`account_change_phone`), labels translatable, icons `email`, `password` and `phone`, which
+django-mvp's icon pack already names (no project registration needed). Tests on the rendered
+Account Center page: all three entries with phone on; no phone entry with phone off (fixture).
 
 ### T012 — Account overview cards
 
@@ -148,8 +168,10 @@ Research R5. Extends `mvp/account/overview.html`, adds to `account.cards` throug
 `{{ block.super }}`: one card per management page (email, password, phone), each resolving its
 URL with `{% url … as %}` and drawn only when it resolves. Password card links to
 `account_change_password` (allauth redirects a person without a password to set one). Tests:
-cards present for a signed-in person; no phone card with phone off; a template in
-`tests/templates/` that chains onto the same block shows beside this package's cards (FR-007).
+cards present for a signed-in person; no phone card with phone off; a template in its own
+directory, `tests/templates_chained_card/mvp/account/overview.html`, put first in
+`TEMPLATES[0]["DIRS"]` by `override_settings` in that one test, chains onto the same block and
+shows beside this package's cards (FR-007).
 
 ### T013 — The user menu
 
@@ -182,9 +204,16 @@ Issue: #13. Delivers FR-003 and US4's scenarios.
 ### T016 — Management layout
 
 **Files**: `mvp_accounts/templates/allauth/layouts/manage.html`,
-`tests/test_management_pages.py`
+`mvp_accounts/templates/account/base_entrance.html`, `tests/test_management_pages.py`
 
-Research R3. Extends `mvp/account/base.html`, maps allauth's blocks. Page tests (shell and its
+Research R3, and R1's *Four pages*. `manage.html` extends `mvp/account/base.html` and maps
+allauth's blocks. `account/base_entrance.html` extends
+`user.is_authenticated|yesno:"allauth/layouts/manage.html,allauth/layouts/entrance.html"`, so
+re-authentication and phone verification after a change render as management pages, while the
+same code page during sign-up stays an entrance page (assert both). The email page is claimed
+by the Account Center, so its sidebar draws `AccountCenterMenu` (moved here from T011).
+Navigation is asserted by the sidebar's navigation menu, not by a label (plan, *What every page
+test asserts*). Page tests (shell and its
 navigation present, bare layout absent, allauth's form present) for: email with several
 addresses (verified and primary shown, allauth's actions present); change email with
 `ACCOUNT_CHANGE_EMAIL=True` through the fixture; password change; password set for an account

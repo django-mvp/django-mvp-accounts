@@ -7,7 +7,7 @@
 allauth's account pages render inside the host project's django-mvp shell because this package
 overrides allauth's three layout templates and its shared elements. Entrance pages extend
 django-mvp's entrance page, management pages extend the Account Center's layout, and allauth's
-forms, buttons, alerts and panels are rebuilt from django-mvp's components. The package adds an
+forms, fields, buttons and alerts are rebuilt from django-mvp's components. The package adds an
 entry per management page to the Account Center's menu and a card per management page to its
 landing page, both only when allauth is installed and only for pages allauth has turned on. No
 Python runs at request time apart from the menu entries, allauth is a development dependency, and
@@ -22,7 +22,7 @@ nothing checks how a project configured it.
 **Target Platform**: any Django project built on django-mvp
 **Project Type**: reusable Django app (templates plus one menu module)
 **Constraints**: no runtime import of allauth outside code that runs only when it is installed (Article XIV applied to allauth); every added string translatable
-**Scale/Scope**: about 30 allauth pages, 20 element overrides, 3 layouts, 3 menu entries, 3 cards
+**Scale/Scope**: about 30 allauth pages, 12 element overrides, 3 layouts, 3 page-level overrides, 3 menu entries, 3 cards
 
 ## Constitution Check
 
@@ -60,6 +60,10 @@ mvp_accounts/
     │   ├── layouts/entrance.html    # extends mvp/entrance.html (R2)
     │   ├── layouts/manage.html      # extends mvp/account/base.html (R3)
     │   └── elements/*.html          # built on django-mvp components (R4)
+    ├── account/
+    │   ├── base_entrance.html       # management layout when signed in (R1)
+    │   ├── logout.html              # allauth's page, entrance parent (R1)
+    │   └── verified_email_required.html  # allauth's page, entrance parent (R1)
     └── mvp/account/overview.html    # cards chained onto account.cards (R5)
 ```
 
@@ -92,15 +96,20 @@ status code proves nothing (SC-001). Each page test asserts, on the rendered res
 
 1. the shell is present: django-mvp's stylesheet link;
 2. entrance pages: the shell's navigation is absent (`aria-label="Main navigation"` not in the
-   page). Management pages: it is present;
+   page, and no sidebar). Management pages: the sidebar's navigation menu is present, which is
+   the Account Center's ("Account navigation") on the pages its menu claims and the main menu on
+   the others (research R3). The assertion looks for the sidebar's navigation, not a label;
 3. allauth's bare layout is absent: its `<strong>Menu:</strong>` block;
 4. allauth's form for that page is present, by a field name or action URL specific to it.
 
 ### Behaviours a project can turn off (SC-004)
 
 A shared fixture rebuilds allauth's URLconf under changed settings (R6). For each of code
-sign-in, code reset, code verification, phone numbers and sign-up, a test turns it off and
-asserts that nothing on the sign-in page, the Account Center menu or its cards offers it.
+sign-in, code reset, code verification and phone numbers, a test turns it off and asserts that
+nothing on the sign-in page, the Account Center menu or its cards offers it. Sign-up closed is
+checked by the sign-up page rendering allauth's closed page. allauth's sign-in page links to
+sign-up whether or not it is open (`account/login.html:11-19`), and the package adds nothing to
+that link (decisions, *What "offers" means when sign-up is closed*).
 
 ### Story order
 

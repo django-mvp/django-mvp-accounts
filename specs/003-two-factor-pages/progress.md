@@ -126,3 +126,10 @@ Did: page test for `mfa_reauthenticate_webauthn` with a stored security key and 
 Verified: `uv run pytest tests/test_security_key_pages.py::TestReauthenticateWithSecurityKey -q` 1 passed; passed on first run since the page already renders through existing elements, and failed when the button element's `id` output was removed (restored afterwards).
 Next: T017.
 Watch: none.
+
+## 2026-09-26T23:50:00Z · Implementer US3 · T017
+
+Did: tests with `MFA_SUPPORTED_TYPES=["totp", "recovery_codes"]` (URLs rebuilt): the overview names no security key or passkey and links to no security-key page; the second-factor step, for a person who has a stored key, shows only the code form, with no `webauthn_form` or security-key button.
+Verified: `uv run pytest tests/test_security_key_pages.py::TestSecurityKeysTurnedOff -q` 2 passed; both failed with `webauthn` added back to the supported types, then restored.
+Next: T018.
+Watch: none.

@@ -240,3 +240,41 @@ class TestReauthenticateWithSecurityKey(ManagementPageAssertions):
 
         html = self.assert_management_page(response, 'id="mfa_webauthn_reauthenticate"')
         assert assert_script_hooks(html) >= 1
+
+
+class TestSecurityKeysTurnedOff(ManagementPageAssertions):
+    """A project that leaves ``webauthn`` out of MFA_SUPPORTED_TYPES offers no key."""
+
+    TYPES = ["totp", "recovery_codes"]
+
+    def test_the_overview_names_no_security_key_and_links_to_no_key_page(
+        self, fresh_client, rebuild_urls
+    ) -> None:
+        key_pages = reverse("mfa_list_webauthn")
+        with rebuild_urls(MFA_SUPPORTED_TYPES=self.TYPES):
+            response = fresh_client.get(reverse("mfa_index"))
+
+        html = self.assert_management_page(response, "Authenticator App")
+        assert "Security Key" not in html
+        assert "Passkey" not in html
+        assert key_pages not in html
+
+    def test_the_second_factor_step_offers_no_security_key(
+        self, client, db, rebuild_urls
+    ) -> None:
+        address = EmailAddressFactory()
+        AuthenticatorFactory(user=address.user)
+        AuthenticatorFactory(user=address.user, webauthn=True)
+
+        with rebuild_urls(MFA_SUPPORTED_TYPES=self.TYPES):
+            client.post(
+                reverse("account_login"),
+                {"login": address.email, "password": "password"},
+            )
+            response = client.get(reverse("mfa_authenticate"))
+
+        html = response.content.decode()
+        assert response.status_code == 200
+        assert 'name="code"' in html
+        assert "webauthn_form" not in html
+        assert "mfa_webauthn_authenticate" not in html

@@ -14,6 +14,9 @@ from allauth.account.models import EmailAddress
 from django.core.management import call_command
 from django.urls import NoReverseMatch, reverse
 
+from demo.adapter import DemoAccountAdapter
+from tests.factories import PhoneNumberFactory
+
 
 class TestOverviewPage:
     def test_it_responds(self, client, db) -> None:
@@ -95,3 +98,18 @@ class TestUrlconfRebuild:
             pass
 
         assert reverse("account_request_login_code")
+
+
+class TestDemoAccountAdapter:
+    """The demo keeps phone numbers where allauth's change flow expects them."""
+
+    def test_a_verified_change_stores_the_new_number(self, db) -> None:
+        """allauth finishes a change by marking the new number verified.
+
+        It never calls ``set_phone`` for the new number first, so marking it
+        verified has to store it, or the change is confirmed on the page and
+        lost from the account.
+        """
+        phone = PhoneNumberFactory(number="+4915112345678", verified=True)
+        DemoAccountAdapter().set_phone_verified(phone.user, "+4915187654321")
+        assert DemoAccountAdapter().get_phone(phone.user) == ("+4915187654321", True)

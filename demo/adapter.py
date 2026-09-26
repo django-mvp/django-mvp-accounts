@@ -25,7 +25,9 @@ class DemoAccountAdapter(DefaultAccountAdapter):
         return stored.number, stored.verified
 
     def set_phone_verified(self, user, phone):
-        PhoneNumber.objects.filter(user=user, number=phone).update(verified=True)
+        # allauth finishes a change by calling this with the new number, which
+        # it has not stored first, so marking it verified stores it too.
+        self.set_phone(user, phone, verified=True)
 
     def get_user_by_phone(self, phone):
         stored = PhoneNumber.objects.filter(number=phone).select_related("user").first()

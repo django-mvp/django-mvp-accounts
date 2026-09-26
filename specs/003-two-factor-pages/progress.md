@@ -14,3 +14,10 @@ Did: Installed allauth.mfa with the mfa extra in the demo (all factors except pa
 Verified: uv run pytest tests/test_demo.py::TestDemoTwoFactor: 4 passed; entrance, social entrance and recovery page tests: 48 passed; pre-commit clean.
 Next: next task.
 Watch: none.
+
+## 2026-09-26T21:14:38Z · Implementer US1 · T002
+
+Did: Added the Two-factor authentication entry (last child of the Account group, lock icon) and a card linking to mfa_index, drawn when the page resolves.
+Verified: uv run pytest tests/test_menus.py tests/test_account_center.py: 31 passed.
+Next: next task.
+Watch: none.

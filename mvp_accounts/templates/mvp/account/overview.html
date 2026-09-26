@@ -44,4 +44,13 @@
       </c-slot>
     </c-card>
   {% endif %}
+  {% url "mfa_index" as two_factor_url %}
+  {% if two_factor_url %}
+    <c-card title="{% trans "Two-factor authentication" %}" icon="lock">
+      <c-text>{% trans "Protect your account with an authenticator app, recovery codes or a security key, so a stolen password is not enough to sign in." %}</c-text>
+      <c-slot name="footer">
+        <c-button href="{{ two_factor_url }}" variant="primary" size="sm">{% trans "Manage two-factor authentication" %}</c-button>
+      </c-slot>
+    </c-card>
+  {% endif %}
 {% endblock account.cards %}

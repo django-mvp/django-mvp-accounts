@@ -71,8 +71,9 @@
         },
         {
           "id": "T002",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "uv run pytest tests/test_menus.py tests/test_account_center.py: 31 passed."
         },
         {
           "id": "T003",

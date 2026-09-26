@@ -5,9 +5,9 @@ starts, so this module cannot rely on being imported only when it is wanted.
 It adds its "Account" group only when allauth is installed, so a project
 without it never builds entries that could only be dropped again. An entry
 whose page allauth has not routed, the phone number page with phone numbers
-turned off, or the connected accounts page without the social account app, is
-left out of the rendered menu by django-mvp itself, so nothing here checks
-settings.
+turned off, the connected accounts page without the social account app, or the
+two-factor page without the multi-factor app, is left out of the rendered menu
+by django-mvp itself, so nothing here checks settings.
 """
 
 from django.apps import apps
@@ -41,6 +41,14 @@ if apps.is_installed("allauth"):
                     name="connections",
                     view_name="socialaccount_connections",
                     extra_context={"label": _("Connected accounts"), "icon": "link"},
+                ),
+                MenuItem(
+                    name="two_factor",
+                    view_name="mfa_index",
+                    extra_context={
+                        "label": _("Two-factor authentication"),
+                        "icon": "lock",
+                    },
                 ),
             ],
         )

@@ -37,3 +37,9 @@ Did: `tests/templates_host_override/account/login.html` and a test that, with th
 Verified: `uv run pytest tests/test_entrance_pages.py` — 13 passed. Without the settings change the same test fails, so the directory is what puts the page there.
 Next: T007.
 Watch: none.
+
+## 2026-09-26T10:55Z · Implementer US1 · T007
+Did: README installation section (install both packages, the supported allauth range, `mvp_accounts` ahead of `allauth` and `mvp` and why, both URL includes, nothing checked or configured); CHANGELOG entries under Unreleased; `CONTEXT.md` **Account** no longer says closing an account is provided. There is no `docs/` page describing this behaviour, so none changed.
+Verified: `uv run pre-commit run --all-files` — all hooks pass.
+Next: full verify, then the report.
+Watch: the README's scope section still names the package it supersedes, a line that was on main before this story.

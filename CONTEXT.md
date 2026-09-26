@@ -18,9 +18,8 @@ _Avoid_: consumer, client, downstream.
 
 **Account**:
 A person's identity on the host project — the user record, the email addresses
-attached to it, and the ways they can prove it is theirs. Creating, changing and
-closing an account is what the authentication package provides and this
-package presents.
+attached to it, and the ways they can prove it is theirs. Creating and changing an
+account is what the authentication package provides and this package presents.
 _Avoid_: profile (the host project's own data about a person, which this
 package does not own), user (fine in code, where it means the Django model, but
 not as a synonym for the whole account).

@@ -4,8 +4,8 @@ Sign-up, sign-in, account management and API access for
 [django-mvp](https://github.com/django-mvp/django-mvp) projects, assembled from
 the third-party packages that already do each of those jobs well.
 
-It is not usable yet. Nothing has been released, and the package does nothing
-beyond installing cleanly.
+It is not released yet. So far it puts django-allauth's sign-in, sign-up and
+sign-out pages inside django-mvp's application shell.
 
 ## Scope & philosophy
 
@@ -43,23 +43,51 @@ which will be retired once everything it provides is available here.
 
 ## Installation
 
+Install the package and [django-allauth](https://allauth.org), which renders
+the account pages this package restyles:
+
 ```bash
-pip install django-mvp-accounts
+pip install django-mvp-accounts "django-allauth>=65.19.4,<66"
 ```
 
-Then add it to `INSTALLED_APPS`, after `mvp`:
+This package works with django-allauth 65.19.4 up to, but not including, 66. It
+requires [django-mvp](https://github.com/django-mvp/django-mvp) as well, since
+it renders inside django-mvp's layout and reads its colours from the theme
+django-mvp supplies.
+
+Add it to `INSTALLED_APPS` ahead of both `allauth` and `mvp`:
 
 ```python
 INSTALLED_APPS = [
     # ...
-    "mvp",
     "mvp_accounts",
+    "allauth",
+    "allauth.account",
+    "mvp",
 ]
 ```
 
-This package requires [django-mvp](https://github.com/django-mvp/django-mvp).
-It renders inside django-mvp's layout and reads its colours from the theme
-django-mvp supplies, so it does nothing useful on its own.
+The order matters. This package replaces templates that allauth and django-mvp
+each ship, and Django takes a template from the first installed app that has
+one by that name. Listed after either of them, this package's version is never
+reached and the pages look as they did before.
+
+Then include allauth's URLs and django-mvp's, and set allauth up as its own
+[quickstart](https://docs.allauth.org/en/latest/installation/quickstart.html)
+describes:
+
+```python
+from django.urls import include, path
+
+urlpatterns = [
+    path("accounts/", include("allauth.urls")),
+    path("", include("mvp.urls")),
+]
+```
+
+Nothing about that setup is checked or configured for you. This package adds no
+system check and sets no default, so allauth's middleware, authentication
+backend and settings are yours to choose.
 
 ## Quickstart
 

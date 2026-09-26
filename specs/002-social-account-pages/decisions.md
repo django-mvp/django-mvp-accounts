@@ -70,3 +70,11 @@ The clarification and edge case said a missing icon raises unless `EASY_ICONS_FA
 set. The setting defaults to `DEBUG`, so it is silent in development and raises in production. The
 answer, "whatever django-easy-icons does", is unchanged, and so is every requirement. Only the
 description of that behaviour was wrong, so the sentences were corrected rather than re-gated.
+
+## US2: two existing tests assert the state this story changes
+
+**Decision**: Left tests/test_apps.py::TestStartup::test_entries_are_on_the_menu_after_startup (expects menu names `["email", "password", "phone"]`) and tests/test_demo.py::TestDemoSignIn::test_seeding_twice_leaves_one_verified_primary_address_each (expects 3 verified primary addresses) unchanged and red.
+
+**Why**: Both were written before this story. T006 adds a fourth menu entry and T010 adds a fourth seeded account with a verified primary address, as the brief requires. Editing a test authored outside this story is prohibited, and tests/test_apps.py is outside this story's files.
+
+**Revisit if**: Forge updates both expectations (add "connections" to the names; count 4) in the acceptance step.

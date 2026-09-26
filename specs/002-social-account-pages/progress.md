@@ -39,3 +39,38 @@ Did: README section "Signing in with other accounts" and a CHANGELOG Added entry
 Verified: pre-commit clean; wording checked against the brief's acceptance list.
 Next: full verify, report.
 Watch: -
+
+## 2026-09-26T20:05:28+02:00 · Implementer US2 · T006
+
+Did: MenuItem for socialaccount_connections after Phone number in the Account group; docstring updated.
+Verified: uv run pytest tests/test_menus.py: 16 passed. Red first (entry absent).
+Next: Icon name `link` draws bi-link-45deg in django-mvp's pack.
+Watch: tests/test_apps.py still asserts exactly email, password, phone.
+
+## 2026-09-26T20:05:28+02:00 · Implementer US2 · T007
+
+Did: Connected accounts card after the phone card, drawn when the URL resolves.
+Verified: uv run pytest tests/test_account_center.py: 11 passed. Red first.
+Next: T008
+Watch: -
+
+## 2026-09-26T20:05:28+02:00 · Implementer US2 · T008
+
+Did: SocialAccountFactory; socialaccount/connections.html adds an error alert via block.super; tests/test_connections_page.py (9 tests).
+Verified: uv run pytest tests/test_connections_page.py: 9 passed. Refusal and required-field tests red before the template.
+Next: T009
+Watch: allauth's disconnect message reads 'The third-party account has been disconnected.'
+
+## 2026-09-26T20:05:28+02:00 · Implementer US2 · T009
+
+Did: Settings without allauth.socialaccount; runner lifted into the run_in_subprocess fixture in tests/conftest.py, test_without_allauth.py assertions untouched.
+Verified: uv run pytest tests/test_without_socialaccount.py tests/test_without_allauth.py: 11 passed; pointing the new module at tests.settings fails 3 tests, so it is not vacuous.
+Next: T010
+Watch: -
+
+## 2026-09-26T20:05:28+02:00 · Implementer US2 · T010
+
+Did: seed_demo: staff uid 1001, social.user with unusable password and uid 2002, idempotent, closing output names both; catalogue regenerated; README and CHANGELOG updated; seed_demo run against the demo database.
+Verified: uv run pytest tests/test_demo.py::TestSeededSocialAccounts: 4 passed. Full suite: 2 failed (see decisions.md).
+Next: Report.
+Watch: A fourth verified primary address breaks the existing count of three in test_demo.py.

@@ -123,28 +123,53 @@
       "tasks": [
         {
           "id": "T006",
-          "status": "todo",
-          "attempts": 0
+          "status": "blocked",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py: 16 passed; full suite leaves tests/test_apps.py::TestStartup::test_entries_are_on_the_menu_after_startup red (pre-existing test asserts three entries)"
+            ]
+          }
         },
         {
           "id": "T007",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_account_center.py: 11 passed"
+            ]
+          }
         },
         {
           "id": "T008",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_connections_page.py: 9 passed"
+            ]
+          }
         },
         {
           "id": "T009",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_socialaccount.py tests/test_without_allauth.py: 11 passed"
+            ]
+          }
         },
         {
           "id": "T010",
-          "status": "todo",
-          "attempts": 0
+          "status": "blocked",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestSeededSocialAccounts: 4 passed; full suite leaves tests/test_demo.py::TestDemoSignIn::test_seeding_twice_leaves_one_verified_primary_address_each red (pre-existing test asserts three addresses)"
+            ]
+          }
         }
       ]
     }

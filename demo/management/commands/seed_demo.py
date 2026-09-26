@@ -4,8 +4,9 @@ Three sign-ins, because the application shell renders differently for each: an
 ordinary account, one with access to the admin, and one with everything. A
 fourth, social.user@example.com, has no password and signs in only through the
 test provider. The staff account has a connected test provider account with uid
-1001, and social.user's has uid 2002, so the connections page shows one account
-that can be removed and one that allauth refuses to remove. A reviewer opening
+1001, and social.user's has uid 2002. Signed in as staff, the connections page
+shows an account that can be removed. Signed in as social.user, it shows one that
+allauth refuses to remove. A reviewer opening
 this project should not have to invent a login or read the code to find out
 what exists.
 
@@ -86,9 +87,9 @@ class Command(BaseCommand):
         The staff account has a second, unverified address, so the email page
         lists several with their badges and actions. The super account has a
         verified phone number, so the phone page shows one to change. The staff
-        account has a connected test provider account, and a fourth account
-        with no password has one too, so the connections page shows both a
-        removable account and allauth's refusal to remove the only way in.
+        account has a connected test provider account it can remove. A fourth
+        account with no password has one too, and allauth refuses to remove it,
+        because it is that account's only way in.
         """
         staff = user_model.objects.get(**{username_field: "staff.user@example.com"})
         EmailAddress.objects.get_or_create(

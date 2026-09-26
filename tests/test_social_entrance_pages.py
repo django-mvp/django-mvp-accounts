@@ -63,7 +63,10 @@ class TestProviderButtons(EntrancePageAssertions):
         assert icon(provider_id) in content
 
     def test_the_buttons_are_the_shells_buttons(self, page: str) -> None:
-        assert page.count('class="btn ') >= 2
+        links = re.findall(r'<a\b[^>]*href="/accounts/\w+/login/[^"]*"[^>]*>', page)
+
+        assert len(links) == len(PROVIDERS)
+        assert all('class="btn ' in link for link in links)
         assert "<ul>" not in page
 
     def test_no_provider_leaves_no_button_and_no_heading(

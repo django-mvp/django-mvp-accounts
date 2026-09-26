@@ -103,10 +103,12 @@ Connected accounts appears only with the social account app (`allauth.socialacco
 installed. Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
-change and verification, connected accounts, and re-authentication) render in the Account Center, inside the shell
-with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
+change and verification, connected accounts, and re-authentication) render in the Account
+Center, inside the shell with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
 for a signed-in person, so re-authentication and the phone verification that follows a change are
-management pages, while phone verification during sign-up stays an entrance page.
+management pages, while phone verification during sign-up stays an entrance page. The social
+sign-in pages, including the confirmation a signed-in person sees when connecting another
+account, always render as entrance pages.
 
 The Account Center itself, the "Account Center" and "Log out" entries in the user menu, and
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:

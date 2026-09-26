@@ -6,6 +6,7 @@ allauth off. The subject is that startup, so the module mirrors no source file.
 """
 
 import json
+import os
 import subprocess
 import sys
 import textwrap
@@ -57,6 +58,9 @@ def result() -> dict:
         text=True,
         check=False,
         env={
+            # Coverage passes its configuration to the subprocess through
+            # these, so the subprocess is measured along with the suite.
+            **{k: v for k, v in os.environ.items() if k.startswith("COVERAGE")},
             "DJANGO_SETTINGS_MODULE": "tests.settings_without_allauth",
             "PATH": "",
             "PYTHONPATH": ".",

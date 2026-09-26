@@ -51,6 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   under each id of a provider you configure. With `DEBUG` off a missing icon raises, as
   `EASY_ICONS_FAIL_SILENTLY` defaults to `DEBUG`. The package ships no provider icons. The demo
   installs allauth's test provider.
+- With allauth's social account app installed, django-mvp's Account Center gains a Connected
+  accounts menu entry, in the "Account" group after Phone number, and a card on its landing page.
+  The connections page renders in the Account Center, and shows allauth's errors above its
+  markup, including its refusal to disconnect the only way a person can sign in. Without the
+  social account app the entry and card do not appear. The demo seeds an account with a connected
+  test provider account and one with no password.
 
 ### Changed
 

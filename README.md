@@ -93,16 +93,17 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password and Phone number, listed under an "Account" heading
-  below its Overview entry.
+- **Menu entries** for Email, Password, Phone number and Connected accounts, listed under an
+  "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
-Without allauth installed the package adds nothing and raises nothing.
+Connected accounts appears only with the social account app (`allauth.socialaccount`)
+installed. Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
-change and verification, and re-authentication) render in the Account Center, inside the shell
+change and verification, connected accounts, and re-authentication) render in the Account Center, inside the shell
 with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
 for a signed-in person, so re-authentication and the phone verification that follows a change are
 management pages, while phone verification during sign-up stays an entrance page.

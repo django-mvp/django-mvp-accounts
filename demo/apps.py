@@ -34,11 +34,9 @@ class DemoConfig(AppConfig):
         navigation tree, and it has to happen here rather than at module import
         because the items name views.
 
-        The naming hook is hung off the sites app rather than this one. Django
-        skips post_migrate for an app with no models module, and this app has
-        none, so a hook registered against it would never fire. Running under
-        the sites app also guarantees the table exists by then, and registering
-        it here — before ``SiteConfig.ready()`` — means this runs first and the
+        The naming hook is hung off the sites app rather than this one. Running
+        under the sites app guarantees its table exists by then, and
+        registering it here — before ``SiteConfig.ready()`` — means this runs first and the
         packaged ``example.com`` row is never created.
         """
         from demo import menus  # noqa: F401

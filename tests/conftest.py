@@ -15,6 +15,8 @@ from django.template import Context
 from django.urls import reverse
 from django_cotton.compiler_regex import CottonCompiler
 
+from tests.factories import EmailAddressFactory
+
 
 @pytest.fixture(scope="session")
 def render():
@@ -36,3 +38,12 @@ def render():
 def overview_page(client, db):
     """The demo project's overview page, rendered, as a string."""
     return client.get(reverse("overview")).content.decode()
+
+
+@pytest.fixture
+def signed_in_client(client, db):
+    """A test client signed in as an account with a verified primary address."""
+    address = EmailAddressFactory()
+    client.force_login(address.user)
+    client.user = address.user
+    return client

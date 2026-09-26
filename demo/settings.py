@@ -32,7 +32,11 @@ CSRF_COOKIE_SECURE = False
 # silently, for every page in the demo.
 INSTALLED_APPS = [
     "demo",
+    # Ahead of allauth so its layouts and elements win, and ahead of mvp so its
+    # Account Center overview is the one Django finds first.
     "mvp_accounts",
+    "allauth",
+    "allauth.account",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -64,6 +68,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Last, because it rewrites the response body to insert its script tag and
     # anything that encodes or compresses the body has to run after it.
@@ -99,6 +104,25 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS: list[dict] = []
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# Codes and links are written to the console rather than sent anywhere.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# What a typical project runs: sign in by email, a link to verify it, a code as
+# an alternative to the password, phone numbers stored by the demo's adapter,
+# and a fresh sign-in before anything sensitive changes. The tests reach the
+# other halves of each choice by rebuilding allauth's URLconf.
+ACCOUNT_ADAPTER = "demo.adapter.DemoAccountAdapter"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "phone"]
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+ACCOUNT_REAUTHENTICATION_REQUIRED = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

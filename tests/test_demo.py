@@ -7,6 +7,10 @@ None of those raise, so the demo is asserted against its rendered pages rather
 than against the objects that built them.
 """
 
+from io import StringIO
+
+from allauth.account.models import EmailAddress
+from django.core.management import call_command
 from django.urls import reverse
 
 
@@ -37,3 +41,35 @@ class TestOverviewPage:
         is the assertion that would catch a moved or renamed template.
         """
         assert "It renders" in overview_page
+
+
+class TestDemoSignIn:
+    """The demo runs allauth, so its sign-in is allauth's page and flow."""
+
+    def test_allauths_sign_in_page_responds(self, client, db) -> None:
+        assert client.get(reverse("account_login")).status_code == 200
+
+    def test_a_seeded_account_signs_in_with_the_demo_password(
+        self, client, db, settings
+    ) -> None:
+        settings.DEBUG = True
+        call_command("seed_demo", stdout=StringIO())
+
+        response = client.post(
+            reverse("account_login"),
+            {"login": "regular.user@example.com", "password": "password"},
+        )
+
+        assert response.status_code == 302
+        overview = client.get(reverse("overview"))
+        assert overview.wsgi_request.user.is_authenticated
+
+    def test_seeding_twice_leaves_one_verified_primary_address_each(
+        self, db, settings
+    ) -> None:
+        settings.DEBUG = True
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+        addresses = EmailAddress.objects.filter(verified=True, primary=True)
+        assert addresses.count() == 3

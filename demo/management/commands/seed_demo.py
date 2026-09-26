@@ -10,6 +10,7 @@ are known passwords, and the only thing standing between them and a deployed
 site is that this command will not execute there.
 """
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
@@ -47,6 +48,13 @@ class Command(BaseCommand):
                 setattr(user, attribute, value)
             user.set_password(PASSWORD)
             user.save()
+            # allauth refuses to sign in an account whose address is not
+            # verified, so each account gets one that is, marked primary.
+            EmailAddress.objects.update_or_create(
+                user=user,
+                email=email,
+                defaults={"verified": True, "primary": True},
+            )
             self.stdout.write(f"  {'created' if created else 'updated'}  {email}")
 
         self.stdout.write(

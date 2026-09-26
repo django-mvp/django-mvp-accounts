@@ -61,6 +61,20 @@ sessions, and API tokens.
 _Avoid_: settings (Django settings), dashboard, admin (Django's admin site,
 which is for staff managing other people's accounts).
 
+**Second factor**:
+A proof of identity asked for in addition to the password, or a step-up before a
+sensitive change: an authenticator app code, a recovery code, a security key or a
+passkey. The host project decides which of these are on.
+_Avoid_: 2FA and MFA in prose (allauth's settings and URLs use them, the
+prose here does not), authenticator (allauth's word for one stored second factor).
+
+**Passkey**:
+A security key or device credential that can also be used to sign in without a
+password. allauth treats it as one kind of authenticator, stored and managed
+alongside security keys.
+_Avoid_: using it for every security key. A key that only serves as a second factor
+is a security key, not a passkey.
+
 **Entrance**:
 The pages someone sees before they are signed in: sign-in, sign-up, password
 reset and email verification. They render outside the application shell's

@@ -133,3 +133,10 @@ Did: tests with `MFA_SUPPORTED_TYPES=["totp", "recovery_codes"]` (URLs rebuilt):
 Verified: `uv run pytest tests/test_security_key_pages.py::TestSecurityKeysTurnedOff -q` 2 passed; both failed with `webauthn` added back to the supported types, then restored.
 Next: T018.
 Watch: none.
+
+## 2026-09-26T23:55:00Z · Implementer US3 · T018
+
+Did: CONTEXT.md defines Second factor and Passkey; README covers the security-key pages, passkey sign-in and sign-up as the host project's settings (with the email-verification requirement), the `django.contrib.humanize` requirement and HTTPS/localhost; CHANGELOG entry.
+Verified: documentation only, no test covers it; `uv run pre-commit run --all-files` clean, checked by reading the three files against the settings named.
+Next: full verify, report.
+Watch: the demo does not install `django.contrib.humanize`, so its security-key list page fails to render (D10); reported in concerns.

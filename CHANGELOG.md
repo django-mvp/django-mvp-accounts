@@ -72,6 +72,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The form element keeps the `id` allauth gives it, which the security-key button on the sign-in
   step needs to find its form. The demo seeds `mfa.user@example.com`, with the password `password`,
   an authenticator app and recovery codes; the demo's fixed code passes its second-factor step.
+- With `"webauthn"` in `MFA_SUPPORTED_TYPES`, allauth's security-key pages render as django-mvp
+  pages: the list, adding, renaming and removing a key, and re-authenticating with one in the
+  Account Center. With `MFA_PASSKEY_LOGIN_ENABLED` the sign-in page offers "Sign in with a
+  passkey", and with `MFA_PASSKEY_SIGNUP_ENABLED` the two passkey sign-up pages are entrance
+  pages. allauth's tables are drawn with django-mvp's table class. Every page keeps the ids and
+  data attributes allauth's JavaScript looks for. The security-key list needs
+  `django.contrib.humanize` in `INSTALLED_APPS`. Browsers only allow security keys and passkeys
+  over HTTPS or on `localhost`. The demo leaves passkey sign-up off, because allauth requires
+  mandatory email verification by code for it.
 
 ### Changed
 

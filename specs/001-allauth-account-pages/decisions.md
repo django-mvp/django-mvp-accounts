@@ -199,3 +199,21 @@ management layout lands.
 **Why:** the page is this package's concern and the stored number is the demo adapter's. The adapter has its own test that a verified change is stored (`tests/test_demo.py::TestDemoAccountAdapter`).
 
 **ADR:** none — test detail
+
+## D22 — A signed-in person opening password reset gets the management layout
+
+FR-002 lists password reset among the entrance pages. allauth builds it on its entrance base, which
+this package sends to the management layout for a signed-in person (D9). A signed-in person
+resetting their password is still signed in, and `CONTEXT.md` defines an entrance page as one seen
+before signing in, so the management layout is kept and pinned by a test. Signed out, which is how
+password reset is used, it is an entrance page as FR-002 says.
+
+**ADR:** docs/adr/0001-reskin-allauth-through-its-templates.md
+
+## D23 — The review fixes were made directly, without a dispatch
+
+Three one-line changes and their tests: the "Request new code" button's default type, a test that
+verification by link offers no code, and a test pinning D22. Dispatching an Implementer for each
+would have cost more than the change.
+
+**ADR:** none — a note on how this run worked

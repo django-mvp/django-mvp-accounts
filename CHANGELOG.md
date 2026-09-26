@@ -38,6 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   entries and a card for each page on its landing page. Phone number appears only when phone
   numbers are on. Without allauth the package adds nothing. An English translation catalogue is
   included.
+- allauth's account management pages (email, change email, password change and set, phone change
+  and phone verification, re-authentication) render in django-mvp's Account Center, inside the
+  shell with its sidebar and messages. Pages allauth builds on its entrance base render as
+  management pages for a signed-in person, so phone verification after a change is one, and the
+  same page during sign-up stays an entrance page. Until django-mvp#358 ships, these pages do not
+  get the Account Center's container padding.
 
 ### Changed
 

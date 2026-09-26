@@ -1,0 +1,8 @@
+{% extends user.is_authenticated|yesno:"allauth/layouts/manage.html,allauth/layouts/entrance.html" %}
+{% comment %}
+  An entrance page is one seen before signing in. allauth builds re-authentication
+  and the phone verification that follows a change on its entrance base, yet
+  a person seeing them is signed in, so they are drawn as management pages.
+  The same code page during sign-up, and every page that is only ever seen
+  signed out, keeps the entrance layout.
+{% endcomment %}

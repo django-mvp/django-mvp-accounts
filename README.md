@@ -100,6 +100,12 @@ A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Without allauth installed the package adds nothing and raises nothing.
 
+allauth's account management pages (email, change email, password change and set, phone
+change and verification, and re-authentication) render in the Account Center, inside the shell
+with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
+for a signed-in person, so re-authentication and the phone verification that follows a change are
+management pages, while phone verification during sign-up stays an entrance page.
+
 The Account Center itself, the "Account Center" and "Log out" entries in the user menu, and
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`

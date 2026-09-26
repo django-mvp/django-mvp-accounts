@@ -17,6 +17,7 @@ from django.urls import reverse
 
 from tests.factories import AuthenticatorFactory, EmailAddressFactory
 from tests.test_entrance_pages import EntrancePageAssertions
+from tests.test_management_pages import ManagementPageAssertions
 
 
 @pytest.fixture(autouse=True)
@@ -203,3 +204,50 @@ class TestTrustThisBrowser(EntrancePageAssertions):
         assert response.status_code == 302
         overview = at_trust_prompt.get(reverse("overview"))
         assert overview.wsgi_request.user == two_factor_user
+
+
+class TestReauthenticateWithACode(ManagementPageAssertions):
+    @pytest.fixture
+    def stale_client(self, client, two_factor_user):
+        """Signed in, but not recently: ``force_login`` records no sign-in method."""
+        client.force_login(two_factor_user)
+        return client
+
+    @pytest.fixture
+    def code_page_url(self) -> str:
+        return f"{reverse('mfa_reauthenticate')}?next={reverse('mfa_deactivate_totp')}"
+
+    def test_the_password_page_offers_a_code_instead(self, stale_client) -> None:
+        response = stale_client.get(reverse("mfa_deactivate_totp"), follow=True)
+
+        assert reverse("mfa_reauthenticate") in response.content.decode()
+
+    def test_the_code_page_is_a_management_page(
+        self, stale_client, code_page_url
+    ) -> None:
+        response = stale_client.get(code_page_url)
+
+        self.assert_management_page(response, 'name="code"')
+
+    def test_a_wrong_code_shows_allauths_error(
+        self, stale_client, code_page_url
+    ) -> None:
+        response = stale_client.post(code_page_url, {"code": "000000"})
+
+        html = self.assert_management_page(response, 'name="code"')
+        assert "Incorrect code." in html
+
+    def test_a_correct_code_continues_to_the_page_asked_for(
+        self, stale_client, two_factor_user, totp_code, code_page_url
+    ) -> None:
+        response = stale_client.post(
+            code_page_url,
+            {
+                "code": totp_code(two_factor_user.secret),
+                "next": reverse("mfa_deactivate_totp"),
+            },
+            follow=True,
+        )
+
+        assert response.redirect_chain[-1][0] == reverse("mfa_deactivate_totp")
+        self.assert_management_page(response, "Deactivate")

@@ -77,3 +77,10 @@ Did: page tests for the "trust this browser" prompt: an entrance page with the t
 Verified: `uv run pytest tests/test_two_factor_sign_in.py -q` passed; the prompt tests errored with NoReverseMatch before the reload was added.
 Next: T010.
 Watch: none.
+
+## 2026-09-26T22:00:00Z · Implementer US2 · T010
+
+Did: page tests for re-authentication with a code. allauth's own re-authentication page asks for the password and offers the code page as an alternative; `mfa_reauthenticate` renders as a management page, shows the error on a wrong code and continues to the page asked for on a correct one.
+Verified: `uv run pytest tests/test_two_factor_sign_in.py -q` 15 passed. The first version of these tests assumed the sensitive page redirects straight to `mfa_reauthenticate`; it redirects to the password page, so the tests open the code page with `?next=`.
+Next: T011.
+Watch: none.

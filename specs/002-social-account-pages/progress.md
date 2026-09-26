@@ -74,3 +74,8 @@ Did: seed_demo: staff uid 1001, social.user with unusable password and uid 2002,
 Verified: uv run pytest tests/test_demo.py::TestSeededSocialAccounts: 4 passed. Full suite: 2 failed (see decisions.md).
 Next: Report.
 Watch: A fourth verified primary address breaks the existing count of three in test_demo.py.
+
+## 2026-09-26 · Forge · S5 converge
+
+Did: every FR and SC traced to a delivered task; no migrations on the branch; the provider-icon
+decision graduated to ADR 0003; every decision carries its ADR verdict. Next: code review.

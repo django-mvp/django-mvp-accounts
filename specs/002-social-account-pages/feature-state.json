@@ -2,7 +2,7 @@
   "feature": "002-social-account-pages",
   "branch": "002-social-account-pages",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "IMPLEMENT",
+  "state": "CONVERGE",
   "state_history": [
     {
       "state": "QUEUED",
@@ -23,6 +23,11 @@
       "state": "IMPLEMENT",
       "at": "2026-09-26T17:56:19Z",
       "note": "US1 then US2, sequentially in the feature worktree"
+    },
+    {
+      "state": "CONVERGE",
+      "at": "2026-09-26T18:07:13Z",
+      "note": "both stories done"
     }
   ],
   "gates": {
@@ -176,7 +181,7 @@
   ],
   "budgets": {
     "converge_cycles": {
-      "used": 0,
+      "used": 1,
       "max": 2
     },
     "review_cycles": {

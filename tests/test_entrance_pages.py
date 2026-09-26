@@ -100,3 +100,40 @@ class TestMessages(EntrancePageAssertions):
         response = signed_in_client.post(reverse("account_logout"), follow=True)
 
         assert "You have signed out." in response.content.decode()
+
+
+class TestWhatAProjectTurnedOff:
+    """A behaviour the project has off is not offered on any page."""
+
+    def test_sign_in_offers_a_code_when_the_project_allows_it(self, client, db) -> None:
+        html = client.get(reverse("account_login")).content.decode()
+
+        assert reverse("account_request_login_code") in html
+
+    def test_sign_in_offers_no_code_when_the_project_turns_it_off(
+        self, client, db, rebuild_urls
+    ) -> None:
+        with rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False):
+            html = client.get(reverse("account_login")).content.decode()
+
+        assert "/login/code/" not in html
+        assert "sign-in code" not in html
+
+    def test_a_closed_sign_up_adds_no_link_of_the_packages_own(
+        self, client, db, settings
+    ) -> None:
+        """allauth links sign-in to sign-up whether or not sign-up is open.
+
+        That link is allauth's and stays. The package adds none beside it, and
+        following it lands on the closed page.
+        """
+        signup = reverse("account_signup")
+        settings.ACCOUNT_ADAPTER = "tests.adapters.ClosedSignupAdapter"
+
+        response = client.get(reverse("account_login"))
+
+        # The one in allauth's own sentence, "please sign up first".
+        assert response.content.decode().count(signup) == 1
+        closed = client.get(signup)
+        assert "Sign Up Closed" in closed.content.decode()
+        assert 'name="password1"' not in closed.content.decode()

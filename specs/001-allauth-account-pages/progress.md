@@ -25,3 +25,9 @@ Did: the twelve elements (alert, badge, button, button_group, details, field, fi
 Verified: `uv run pytest tests/test_elements.py tests/test_demo.py` — 26 passed, 1 skipped (the single-field help-text and error association, django-mvp#412; with the skip removed it fails on the missing `aria-describedby`, as the issue describes). 12 tests failed against allauth's bare elements first. Swapping `fields` for a plain `as_div` render fails the field-error test.
 Next: T005.
 Watch: the failed-sign-up test covers field errors only. Nothing in the demo's sign-up produces a non-field error, and the wrong-password sign-in covers allauth's non-field error.
+
+## 2026-09-26T10:40Z · Implementer US1 · T005
+Did: tests that a project's choices show on the sign-in page: an emailed-code option only while `ACCOUNT_LOGIN_BY_CODE_ENABLED` is on (through `rebuild_urls`), and, with the closed-sign-up adapter, allauth's one sign-up link and nothing added beside it, ending on the closed page.
+Verified: `uv run pytest tests/test_entrance_pages.py` — 12 passed. The behaviour is allauth's and the tests passed on first run, so each was probed by adding a hard-coded link to the entrance layout: the code test and the link-count test then fail.
+Next: T006.
+Watch: none.

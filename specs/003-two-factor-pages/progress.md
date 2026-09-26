@@ -98,3 +98,10 @@ Did: table, thead, tbody, tr, th and td elements draw django-mvp's `table` class
 Verified: `uv run pytest tests/test_elements.py tests/test_security_key_pages.py -q` 40 passed, 1 skipped (a skip already in test_elements.py). Page tests failed first on the missing factory trait, then on `humanize` not being installed (D10), and the element tests failed on the bare markup.
 Next: T013.
 Watch: the demo's own list page needs `django.contrib.humanize` (D10).
+
+## 2026-09-26T23:10:00Z · Implementer US3 · T013
+
+Did: page tests for `mfa_add_webauthn`: a management page, the `mfa_webauthn_add` button, the passkey checkbox and credential input, the script-hook check, and a test that the helper catches a missing id.
+Verified: `uv run pytest tests/test_security_key_pages.py::TestAddSecurityKey -q` 2 passed. The page already renders through existing elements, so the tests pass on first run; probed by removing the button element's `id` output, which failed the test, then restored.
+Next: T014.
+Watch: none.

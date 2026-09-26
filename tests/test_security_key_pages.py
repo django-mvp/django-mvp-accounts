@@ -135,3 +135,23 @@ class TestStoredKeysSurviveAuthentication(ManagementPageAssertions):
         response = fresh_client.get(reverse("mfa_reauthenticate_webauthn"))
 
         assert response.status_code == 200
+
+
+class TestAddSecurityKey(ManagementPageAssertions):
+    def test_the_page_carries_every_hook_the_script_looks_for(
+        self, fresh_client, assert_script_hooks
+    ) -> None:
+        response = fresh_client.get(reverse("mfa_add_webauthn"))
+
+        html = self.assert_management_page(response, 'id="mfa_webauthn_add"')
+        assert assert_script_hooks(html) >= 1
+        soup = BeautifulSoup(html, "html.parser")
+        assert soup.find(id="id_passwordless"), "the passkey checkbox is missing"
+        assert soup.find(id="id_credential"), "the credential input is missing"
+        assert soup.find("input", attrs={"name": "name"})
+
+    def test_a_missing_hook_is_caught(self, fresh_client, assert_script_hooks) -> None:
+        html = fresh_client.get(reverse("mfa_add_webauthn")).content.decode()
+
+        with pytest.raises(AssertionError, match="mfa_webauthn_add"):
+            assert_script_hooks(html.replace('id="mfa_webauthn_add"', ""))

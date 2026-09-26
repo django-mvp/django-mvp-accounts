@@ -1,0 +1,13 @@
+{% load allauth %}
+{% if attrs.vertical %}
+  {% comment %} `collapse` is pinned off so the group cannot pick up the shell's sidebar variable of the same name. {% endcomment %}
+  <c-group class="my-4" :collapse="False" :row="False">
+    {% slot %}
+    {% endslot %}
+  </c-group>
+{% else %}
+  <c-group row wrap class="items-center my-4">
+    {% slot %}
+    {% endslot %}
+  </c-group>
+{% endif %}

@@ -1,0 +1,67 @@
+{% load allauth %}
+{% comment %}
+  One hand-built input: the radio list on the email page, and the change-email
+  and change-phone inputs. Whole forms go through `fields`.
+
+  It is drawn by <c-form.field>, which gives the label its `for`. That
+  component renders help text and errors without ids, so the input cannot
+  point at them (django-mvp#412).
+
+  Only the attributes allauth's account pages pass are handled. `checked` and
+  `disabled` pick the branch, since a Cotton attribute is always written out
+  and `checked="False"` would still tick the box.
+{% endcomment %}
+{% if attrs.disabled %}
+  <c-form.field type="{{ attrs.type }}"
+                id="{{ attrs.id }}"
+                name="{{ attrs.name }}"
+                value="{{ attrs.value|default_if_none:'' }}"
+                :errors="attrs.errors"
+                disabled>
+    <c-slot name="label">
+    {% slot label %}
+    {% endslot %}
+    </c-slot>
+    {% if slots.help_text %}
+      <c-slot name="help_text">
+      {% slot help_text %}
+      {% endslot %}
+      </c-slot>
+    {% endif %}
+  </c-form.field>
+{% elif attrs.checked %}
+  <c-form.field type="{{ attrs.type }}"
+                id="{{ attrs.id }}"
+                name="{{ attrs.name }}"
+                value="{{ attrs.value|default_if_none:'' }}"
+                :errors="attrs.errors"
+                checked>
+    <c-slot name="label">
+    {% slot label %}
+    {% endslot %}
+    </c-slot>
+    {% if slots.help_text %}
+      <c-slot name="help_text">
+      {% slot help_text %}
+      {% endslot %}
+      </c-slot>
+    {% endif %}
+  </c-form.field>
+{% else %}
+  <c-form.field type="{{ attrs.type }}"
+                id="{{ attrs.id }}"
+                name="{{ attrs.name }}"
+                value="{{ attrs.value|default_if_none:'' }}"
+                :errors="attrs.errors">
+    <c-slot name="label">
+    {% slot label %}
+    {% endslot %}
+    </c-slot>
+    {% if slots.help_text %}
+      <c-slot name="help_text">
+      {% slot help_text %}
+      {% endslot %}
+      </c-slot>
+    {% endif %}
+  </c-form.field>
+{% endif %}

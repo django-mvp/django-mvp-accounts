@@ -1,0 +1,8 @@
+{% load allauth %}
+{% comment %}
+  A whole Django form, drawn like every other form on the site. Each input
+  gets a label and points at its help text and errors, which is why a form
+  goes through here rather than through `field`. allauth's `unlabeled` hint is
+  ignored: every field keeps its visible label.
+{% endcomment %}
+<c-form.render :form="attrs.form" />

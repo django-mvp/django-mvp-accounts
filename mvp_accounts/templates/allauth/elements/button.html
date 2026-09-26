@@ -1,0 +1,39 @@
+{% load allauth %}
+{% comment %}
+  A theme button, or a link drawn as one when allauth gives it an `href`.
+
+  The three branches exist because a Cotton attribute is always written out: a
+  `form=""` on a plain submit button would detach it from the form around it.
+  Values go through `{{ }}` so they are escaped, never `|safe`.
+{% endcomment %}
+{% with tags=attrs.tags|default:"" %}
+  {% if attrs.href %}
+    <c-button href="{{ attrs.href }}"
+              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags %}link{% elif 'secondary' in tags %}ghost{% else %}primary{% endif %}"
+              class="{% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
+      {% slot %}
+      {% endslot %}
+    </c-button>
+  {% elif attrs.form %}
+    <c-button type="{{ attrs.type|default:'button' }}"
+              form="{{ attrs.form }}"
+              name="{{ attrs.name }}"
+              value="{{ attrs.value }}"
+              id="{{ attrs.id }}"
+              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags %}link{% elif 'secondary' in tags %}ghost{% else %}primary{% endif %}"
+              class="{% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
+      {% slot %}
+      {% endslot %}
+    </c-button>
+  {% else %}
+    <c-button type="{{ attrs.type|default:'submit' }}"
+              name="{{ attrs.name }}"
+              value="{{ attrs.value }}"
+              id="{{ attrs.id }}"
+              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags %}link{% elif 'secondary' in tags %}ghost{% else %}primary{% endif %}"
+              class="{% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
+      {% slot %}
+      {% endslot %}
+    </c-button>
+  {% endif %}
+{% endwith %}

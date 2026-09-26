@@ -1,0 +1,12 @@
+{% load allauth %}
+{% comment %}
+  Body copy. allauth writes the "sign in" and "sign up" links inside its
+  sentences through a translation block, so the anchor cannot carry a class.
+  `prose` is what styles a bare anchor, and it takes its colours from the theme.
+{% endcomment %}
+<div class="prose max-w-none">
+  <c-text>
+    {% slot %}
+    {% endslot %}
+  </c-text>
+</div>

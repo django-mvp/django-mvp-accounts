@@ -101,3 +101,20 @@ reach the rest.
   values such as `href=alt.url`, and autoescaping is the control.
 - `tests/test_apps.py` mirrors `mvp_accounts/apps.py`, and `tests/test_app.py` covers the
   installed app's on-disk layout. Each module's docstring says which it is.
+
+## The field element passes only the attributes the account pages use
+
+`allauth/elements/field.html` draws through `<c-form.field>` and forwards `type`, `id`, `name`,
+`value`, `errors`, `checked` and `disabled`, which are the attributes allauth's account pages give
+it. `required`, `readonly`, `placeholder`, `autocomplete` and `rows` are not forwarded. Cotton writes
+every attribute it is given, so a false value would still switch the control on (`checked="False"`
+ticks a box), and each attribute that has to be conditional doubles the branches in the template.
+`checked` and `disabled` already need a branch each. **Revisit if** an allauth page in the supported
+range passes one of the others to `field`.
+
+## `rebuild_urls` reloads allauth's views as well as its URLconf
+
+The email page's template is chosen by a class attribute of its view, read when the module is
+imported (`ACCOUNT_CHANGE_EMAIL` picks between two templates), so reloading only the URLconf left the
+old template in place. The fixture reloads `allauth.account.views` first. **Revisit if** a supported
+allauth release moves that choice to request time.

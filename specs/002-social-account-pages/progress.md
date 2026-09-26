@@ -18,3 +18,10 @@ Did: provider and provider_list elements (c-button with the provider id as icon,
 Verified: `uv run pytest tests/test_social_entrance_pages.py` red first (icon, shell-button assertions failed on allauth's bare list), then 13 passed; pre-commit clean.
 Next: T003
 Watch: -
+
+## 2026-09-26T19:58:37+02:00 · Implementer US1 · T003
+
+Did: TestSocialEntrancePages: confirmation page, test provider's form, extra sign-up step with a field error, cancelled page (via redirect), failed page (by URL), completed sign-in.
+Verified: `uv run pytest tests/test_social_entrance_pages.py` 20 passed. These pages already render through FS-001's layouts, so the tests passed on first run; probed by removing allauth/layouts/entrance.html: 8 failed, then restored.
+Next: T004
+Watch: allauth answers the failed page with 401, so that test makes the shared assertions inline (the helper wants 200).

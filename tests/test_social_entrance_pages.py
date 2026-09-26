@@ -11,7 +11,12 @@ import pytest
 from django.urls import reverse
 from easy_icons import icon
 
-from tests.test_entrance_pages import EntrancePageAssertions
+from tests.test_entrance_pages import (
+    ALLAUTH_BARE_MENU,
+    NAVIGATION,
+    STYLESHEET,
+    EntrancePageAssertions,
+)
 
 PROVIDERS = {
     "github": "GitHub",
@@ -72,3 +77,79 @@ class TestProviderButtons(EntrancePageAssertions):
             assert not LOGIN_LINK.findall(html)
             assert "Or use a third-party" not in html
             assert "<hr" not in html
+
+
+class TestSocialEntrancePages(EntrancePageAssertions):
+    """The pages of a social sign-in, reached through the test provider."""
+
+    @pytest.fixture
+    def authenticate_url(self, client, db) -> str:
+        """Where the test provider's own form lives, for a sign-in in progress."""
+        response = client.post(reverse("dummy_login"), {"process": "login"})
+        assert response.status_code == 302
+        return response["location"]
+
+    def test_the_confirmation_page(self, client, db) -> None:
+        response = client.get(reverse("dummy_login"), {"process": "login"})
+
+        html = self.assert_entrance_page(response, "Sign In Via Dummy")
+        assert "Continue" in html
+
+    def test_the_test_providers_form(self, client, authenticate_url: str) -> None:
+        response = client.get(authenticate_url)
+
+        html = self.assert_entrance_page(response, "Dummy Provider Login")
+        assert 'name="id"' in html
+
+    def test_the_extra_sign_up_step(self, client, authenticate_url: str) -> None:
+        response = client.post(authenticate_url, {"id": "1001"}, follow=True)
+
+        self.assert_entrance_page(response, 'name="email"')
+        assert response.redirect_chain[-1][0] == reverse("socialaccount_signup")
+
+    def test_the_extra_sign_up_step_shows_a_field_error(
+        self, client, authenticate_url: str
+    ) -> None:
+        client.post(authenticate_url, {"id": "1002"})
+
+        response = client.post(reverse("socialaccount_signup"), {"email": "not-mail"})
+
+        html = self.assert_entrance_page(response, 'name="email"')
+        assert "Enter a valid email address." in html
+
+    def test_the_cancelled_page(self, client, authenticate_url: str) -> None:
+        response = client.post(authenticate_url, {"action": "cancel"}, follow=True)
+
+        self.assert_entrance_page(response, "Login Cancelled")
+        assert response.redirect_chain[-1][0] == reverse(
+            "socialaccount_login_cancelled"
+        )
+
+    def test_the_failed_page(self, client, db) -> None:
+        """allauth answers this page 401, so the shared assertion, which wants 200, is
+        not used and its other three checks are made here."""
+        response = client.get(reverse("socialaccount_login_error"))
+        html = response.content.decode()
+
+        assert response.status_code == 401
+        assert STYLESHEET in html, "the shell's stylesheet is not on the page"
+        assert NAVIGATION not in html, "an entrance page draws no navigation"
+        assert ALLAUTH_BARE_MENU not in html, "allauth's bare layout rendered"
+        assert "Third-Party Login Failure" in html
+
+    def test_a_completed_sign_in_ends_signed_in(
+        self, client, authenticate_url: str
+    ) -> None:
+        response = client.post(
+            authenticate_url,
+            {
+                "id": "1003",
+                "email": "social.person@example.com",
+                "email_verified": "on",
+            },
+        )
+
+        assert response.status_code == 302
+        page = client.get(reverse("overview"))
+        assert page.wsgi_request.user.is_authenticated
+        assert page.wsgi_request.user.email == "social.person@example.com"

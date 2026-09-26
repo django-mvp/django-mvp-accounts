@@ -170,3 +170,36 @@ class TestActivateThenSignIn(EntrancePageAssertions):
         )
         client.post(reverse("mfa_authenticate"), {"code": totp_code(secret)})
         assert client.get(reverse("overview")).wsgi_request.user == address.user
+
+
+class TestTrustThisBrowser(EntrancePageAssertions):
+    @pytest.fixture
+    def at_trust_prompt(self, client, two_factor_user, rebuild_urls, totp_code):
+        # The prompt's route exists only when the setting is on as allauth's
+        # URLconf is imported.
+        with rebuild_urls(MFA_TRUST_ENABLED=True):
+            sign_in(client, two_factor_user)
+            response = client.post(
+                reverse("mfa_authenticate"),
+                {"code": totp_code(two_factor_user.secret)},
+            )
+            assert response["Location"] == reverse("mfa_trust")
+            yield client
+
+    def test_passing_the_step_leads_to_the_prompt(self, at_trust_prompt) -> None:
+        response = at_trust_prompt.get(reverse("mfa_trust"))
+
+        html = self.assert_entrance_page(response, 'value="trust"')
+        assert 'value="skip"' in html
+        assert "Trust this Browser?" in html
+        assert "Don't Trust" in html
+
+    @pytest.mark.parametrize("choice", ["trust", "skip"])
+    def test_either_choice_finishes_signing_in(
+        self, at_trust_prompt, two_factor_user, choice
+    ) -> None:
+        response = at_trust_prompt.post(reverse("mfa_trust"), {"action": choice})
+
+        assert response.status_code == 302
+        overview = at_trust_prompt.get(reverse("overview"))
+        assert overview.wsgi_request.user == two_factor_user

@@ -70,3 +70,10 @@ Did: `form` element writes `id` when allauth gives one; `tests/test_two_factor_s
 Verified: `uv run pytest tests/test_two_factor_sign_in.py tests/test_elements.py::TestFormId -q` 10 passed; the id tests and the webauthn test failed first.
 Next: T009.
 Watch: the step tests turn MFA_TRUST_ENABLED off so a correct code finishes the sign-in; T009 covers the trust prompt.
+
+## 2026-09-26T21:55:00Z · Implementer US2 · T009
+
+Did: page tests for the "trust this browser" prompt: an entrance page with the trust and don't-trust choices, and either choice finishes sign-in. The suite's URL rebuild now also reloads allauth's multi-factor routes, since the prompt's route exists only when the setting is on as they are imported.
+Verified: `uv run pytest tests/test_two_factor_sign_in.py -q` passed; the prompt tests errored with NoReverseMatch before the reload was added.
+Next: T010.
+Watch: none.

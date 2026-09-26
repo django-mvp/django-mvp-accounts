@@ -67,43 +67,71 @@
           "id": "T001",
           "status": "done",
           "attempts": 1,
-          "evidence": "uv run pytest tests/test_demo.py::TestDemoTwoFactor: 4 passed; entrance, social entrance and recovery page tests: 48 passed; pre-commit clean."
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestDemoTwoFactor: 4 passed; entrance, social entrance and recovery page tests: 48 passed; pre-commit clean."
+            ]
+          }
         },
         {
           "id": "T002",
           "status": "done",
           "attempts": 1,
-          "evidence": "uv run pytest tests/test_menus.py tests/test_account_center.py: 31 passed."
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py tests/test_account_center.py: 31 passed."
+            ]
+          }
         },
         {
           "id": "T003",
           "status": "done",
           "attempts": 1,
-          "evidence": "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 27 passed, 1 skipped (existing)."
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 27 passed, 1 skipped (existing)."
+            ]
+          }
         },
         {
           "id": "T004",
           "status": "done",
           "attempts": 1,
-          "evidence": "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 38 passed, 1 skipped (existing)."
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 38 passed, 1 skipped (existing)."
+            ]
+          }
         },
         {
           "id": "T005",
           "status": "done",
           "attempts": 1,
-          "evidence": "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py tests/test_management_pages.py tests/test_entrance_pages.py: 71 passed, 2 skipped (existing)."
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py tests/test_management_pages.py tests/test_entrance_pages.py: 71 passed, 2 skipped (existing)."
+            ]
+          }
         },
         {
           "id": "T006",
           "status": "done",
           "attempts": 1,
-          "evidence": "uv run pytest tests/test_without_mfa.py: 6 passed."
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_mfa.py: 6 passed."
+            ]
+          }
         },
         {
           "id": "T007",
           "status": "done",
           "attempts": 1,
-          "evidence": "makemessages -l en: three new msgids; pre-commit run below."
+          "evidence": {
+            "commands": [
+              "makemessages -l en: three new msgids; pre-commit run below."
+            ]
+          }
         }
       ]
     },

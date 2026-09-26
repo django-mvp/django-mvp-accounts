@@ -1,0 +1,102 @@
+"""allauth's entrance pages render inside django-mvp's shell.
+
+A page that falls back to allauth's bare markup still answers 200 and still
+shows its form, so the status code proves nothing. Every page is asserted on
+what it renders: the shell's stylesheet, no navigation, none of allauth's own
+menu, and the form the page exists for.
+"""
+
+from django.urls import reverse
+from django.utils.html import escape
+
+from tests.factories import EmailAddressFactory
+
+STYLESHEET = "css/django-mvp.css"
+NAVIGATION = 'aria-label="Main navigation"'
+ALLAUTH_BARE_MENU = "<strong>Menu:</strong>"
+
+
+class EntrancePageAssertions:
+    """The four things every entrance page is asserted to be."""
+
+    def assert_entrance_page(self, response, form_marker: str) -> str:
+        html = response.content.decode()
+
+        assert response.status_code == 200
+        assert STYLESHEET in html, "the shell's stylesheet is not on the page"
+        assert NAVIGATION not in html, "an entrance page draws no navigation"
+        assert ALLAUTH_BARE_MENU not in html, "allauth's bare layout rendered"
+        assert form_marker in html, "the page's own form is missing"
+        return html
+
+
+class TestEntrancePages(EntrancePageAssertions):
+    def test_sign_in(self, client, db) -> None:
+        response = client.get(reverse("account_login"))
+
+        html = self.assert_entrance_page(response, 'name="login"')
+        assert "<title>" in html
+        assert "Sign In" in html.split("</title>")[0]
+
+    def test_sign_up(self, client, db) -> None:
+        response = client.get(reverse("account_signup"))
+
+        self.assert_entrance_page(response, 'name="password1"')
+
+    def test_sign_out(self, signed_in_client) -> None:
+        response = signed_in_client.get(reverse("account_logout"))
+
+        self.assert_entrance_page(response, f'action="{reverse("account_logout")}"')
+
+    def test_request_a_sign_in_code(self, client, db) -> None:
+        response = client.get(reverse("account_request_login_code"))
+
+        self.assert_entrance_page(response, 'name="email"')
+
+    def test_confirm_a_sign_in_code(self, client, db) -> None:
+        address = EmailAddressFactory()
+
+        response = client.post(
+            reverse("account_request_login_code"),
+            {"email": address.email},
+            follow=True,
+        )
+
+        self.assert_entrance_page(response, 'name="code"')
+
+    def test_sign_up_closed(self, client, db, settings) -> None:
+        settings.ACCOUNT_ADAPTER = "tests.adapters.ClosedSignupAdapter"
+
+        response = client.get(reverse("account_signup"))
+
+        html = self.assert_entrance_page(response, "Sign Up Closed")
+        assert 'name="password1"' not in html
+
+    def test_account_inactive(self, client, db) -> None:
+        response = client.get(reverse("account_inactive"))
+
+        self.assert_entrance_page(response, "Account Inactive")
+
+
+class TestMessages(EntrancePageAssertions):
+    def test_a_message_shows_on_an_entrance_page(self, client, db) -> None:
+        """Signing up under mandatory verification lands on an entrance page."""
+        response = client.post(
+            reverse("account_signup"),
+            {
+                "email": "new.person@example.com",
+                "password1": "a-long-unusual-passphrase",
+                "password2": "a-long-unusual-passphrase",
+            },
+            follow=True,
+        )
+
+        html = self.assert_entrance_page(response, "verification")
+        assert escape("Confirmation email sent to new.person@example.com.") in html
+
+    def test_the_sign_out_message_shows_on_the_page_that_follows(
+        self, signed_in_client
+    ) -> None:
+        response = signed_in_client.post(reverse("account_logout"), follow=True)
+
+        assert "You have signed out." in response.content.decode()

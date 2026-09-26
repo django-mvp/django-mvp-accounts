@@ -13,3 +13,9 @@ Did: `rebuild_urls` fixture in `tests/conftest.py`, a context manager that appli
 Verified: `uv run pytest tests/test_demo.py` — 9 passed. With `ACCOUNT_LOGIN_BY_CODE_ENABLED=False` the code route does not resolve, and it resolves again afterwards. The tests failed on the missing fixture first.
 Next: T003.
 Watch: it is used as `with rebuild_urls(...):`, so the restore happens at the end of the block, not at test teardown.
+
+## 2026-09-26T09:50Z · Implementer US1 · T003
+Did: the entrance layout (`allauth/layouts/entrance.html` on django-mvp's entrance page, messages drawn above a medium card), the base layout that falls through to it, and `account/logout.html` as a copy of allauth 65.19.4's page with its parent switched. Page tests for sign-in, sign-up, sign-out, request and confirm code, sign-up closed and account inactive, plus messages on an entrance page and after sign-out. `tests/test_entrance_pages.py` is declared in `non-mirror-paths`.
+Verified: `uv run pytest tests/test_entrance_pages.py` — 9 passed; eight failed against allauth's bare layout first. Removing the messages line or the title mapping makes the tests fail.
+Next: T004.
+Watch: `tests/adapters.py` holds the closed-sign-up adapter T005 uses.

@@ -135,8 +135,13 @@ ignore_missing_model_attributes = "True"
 [tool.forge.conformance]
 # Test files whose subject is not a Python module, so there is nothing for them
 # to mirror. test_app.py covers the installed app and its on-disk layout;
-# test_demo.py covers the demo project, which is not distributed.
-non-mirror-paths = ["tests/test_app.py", "tests/test_demo.py"]
+# test_demo.py covers the demo project, which is not distributed. The page tests
+# assert what a template renders, so their subject is a template.
+non-mirror-paths = [
+    "tests/test_app.py",
+    "tests/test_demo.py",
+    "tests/test_entrance_pages.py",
+]
 
 [tool.deptry]
 extend_exclude = ["tests/", "demo/", "docs/"]

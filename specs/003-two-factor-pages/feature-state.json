@@ -95,8 +95,9 @@
         },
         {
           "id": "T006",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": "uv run pytest tests/test_without_mfa.py: 6 passed."
         },
         {
           "id": "T007",

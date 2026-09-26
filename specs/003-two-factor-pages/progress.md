@@ -42,3 +42,10 @@ Did: Added the textarea branch to the field element (id, readonly, rows, value s
 Verified: uv run pytest tests/test_two_factor_pages.py tests/test_elements.py tests/test_management_pages.py tests/test_entrance_pages.py: 71 passed, 2 skipped (existing).
 Next: next task.
 Watch: none.
+
+## 2026-09-26T21:19:34Z · Implementer US1 · T006
+
+Did: Added tests/settings_without_mfa.py and a subprocess test: with allauth.mfa removed the Account Center has no two-factor entry or card, the sign-in and password pages render, nothing raises; the same script under tests.settings sees the entry, card and passkey button.
+Verified: uv run pytest tests/test_without_mfa.py: 6 passed.
+Next: next task.
+Watch: none.

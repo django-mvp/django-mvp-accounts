@@ -153,6 +153,7 @@ non-mirror-paths = [
     "tests/test_social_entrance_pages.py",
     "tests/test_two_factor_pages.py",
     "tests/test_without_allauth.py",
+    "tests/test_without_mfa.py",
     "tests/test_without_socialaccount.py",
 ]
 

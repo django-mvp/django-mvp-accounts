@@ -67,6 +67,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the multi-factor app the entry and card do not appear. The demo installs it with the
   authenticator app, recovery codes, security keys, passkey sign-in and trusted browsers turned
   on, and accepts a fixed code (`123456`) for the authenticator app while `DEBUG` is on.
+- The second-factor step of signing in, the "trust this browser" prompt and re-authentication with a
+  code render as django-mvp pages: the first two as entrance pages, the last in the Account Center.
+  The form element keeps the `id` allauth gives it, which the security-key button on the sign-in
+  step needs to find its form. The demo seeds `mfa.user@example.com`, with the password `password`,
+  an authenticator app and recovery codes; the demo's fixed code passes its second-factor step.
 
 ### Changed
 

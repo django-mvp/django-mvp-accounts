@@ -84,3 +84,10 @@ Did: page tests for re-authentication with a code. allauth's own re-authenticati
 Verified: `uv run pytest tests/test_two_factor_sign_in.py -q` 15 passed. The first version of these tests assumed the sensitive page redirects straight to `mfa_reauthenticate`; it redirects to the password page, so the tests open the code page with `?next=`.
 Next: T011.
 Watch: none.
+
+## 2026-09-26T22:20:00Z · Implementer US2 · T011
+
+Did: `seed_demo` adds mfa.user@example.com (password `password`, verified primary address, authenticator app with a fixed secret, recovery codes), built through allauth's own activation and skipped when a factor already exists; the closing output names the account and the demo's fixed code as a demo convenience. Tests for the factors, idempotence, the sign-in landing on the second-factor step and the output. README names the account and the code; CHANGELOG entry.
+Verified: `uv run pytest tests/test_demo.py -q` 32 passed; new tests failed first.
+Next: docs check, full verify, report.
+Watch: `TestDemoSignIn::test_seeding_twice_leaves_one_verified_primary_address_each` counted four addresses and now counts five; the minimal change, named in the report.

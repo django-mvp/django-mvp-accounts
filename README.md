@@ -211,6 +211,14 @@ uv run python manage.py seed_demo
 uv run python manage.py runserver
 ```
 
+`seed_demo` creates accounts you can sign in with, all with the password `password`:
+`regular.user@example.com`, `staff.user@example.com`, `super.user@example.com` and
+`mfa.user@example.com`. The last one has an authenticator app and recovery codes, so
+signing in ends at the second-factor step. The demo sets `MFA_TOTP_INSECURE_BYPASS_CODE`
+to `123456`, so that code passes the step without a phone. That is a convenience for
+this demo only: allauth refuses the setting when `DEBUG` is off, and a project of your
+own should not copy it.
+
 ## License
 
 MIT. See [LICENSE](https://github.com/django-mvp/django-mvp-accounts/blob/main/LICENSE).

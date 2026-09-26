@@ -15,6 +15,7 @@ from tests.factories import EmailAddressFactory
 from tests.test_entrance_pages import EntrancePageAssertions
 
 LINK = re.compile(r"https?://[^/\s]+(/\S+)")
+CODE = re.compile(r"^[A-Z0-9]{4}-[A-Z0-9]{4}$", re.MULTILINE)
 NEW_PASSWORD = "a-long-unusual-passphrase"
 
 
@@ -81,3 +82,43 @@ class TestPasswordResetByLink(EntrancePageAssertions):
 
         html = self.assert_entrance_page(response, "Bad Token")
         assert 'name="password1"' not in html
+
+
+def code_in_mail() -> str:
+    """The code in the newest message in the outbox."""
+    return CODE.search(mail.outbox[-1].body).group(0)
+
+
+class TestPasswordResetByCode(EntrancePageAssertions):
+    def test_code_page(self, client, db, rebuild_urls) -> None:
+        address = EmailAddressFactory()
+
+        with rebuild_urls(ACCOUNT_PASSWORD_RESET_BY_CODE_ENABLED=True):
+            response = client.post(
+                reverse("account_reset_password"),
+                {"email": address.email},
+                follow=True,
+            )
+
+        self.assert_entrance_page(response, 'name="code"')
+
+    def test_new_password_page_after_the_code(self, client, db, rebuild_urls) -> None:
+        address = EmailAddressFactory()
+
+        with rebuild_urls(ACCOUNT_PASSWORD_RESET_BY_CODE_ENABLED=True):
+            client.post(reverse("account_reset_password"), {"email": address.email})
+            response = client.post(
+                reverse("account_confirm_password_reset_code"),
+                {"code": code_in_mail()},
+                follow=True,
+            )
+
+        self.assert_entrance_page(response, 'name="password1"')
+
+    def test_request_page_offers_no_code_when_the_project_turns_it_off(
+        self, client, db
+    ) -> None:
+        response = client.get(reverse("account_reset_password"))
+
+        html = self.assert_entrance_page(response, 'name="email"')
+        assert not re.search(r"\bcode\b", html, re.IGNORECASE)

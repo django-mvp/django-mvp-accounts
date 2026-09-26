@@ -64,3 +64,14 @@ entirely through allauth's elements, so allauth's pages keep their own markup, s
 JSON configuration, which is where every id its scripts look up is named.
 
 **ADR:** docs/adr/0001-reskin-allauth-through-its-templates.md
+
+## D9 — Design review: approved, seven findings folded into the plan
+
+No blocking finding. The spec-level one (FR-010 and SC-001 ask for passkey sign-up in the demo,
+which allauth refuses with optional email verification) stays as D5: the demo's settings are kept,
+and the pages are reached in tests. The rest were edits to research.md and tasks.md: the URL
+rebuild must reload allauth's multi-factor URLconfs (T015), the recovery-codes hook check runs
+under show-once (T005), a test security key must be a parseable registration response (T012), the
+TOTP code helper (T004), the `.bg-white` rule (T004), and repeated panel actions (R2).
+
+**ADR:** none — local to this feature

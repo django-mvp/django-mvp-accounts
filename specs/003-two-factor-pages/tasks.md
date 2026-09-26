@@ -31,6 +31,8 @@ off because allauth only allows it with mandatory email verification, which the 
 refuses it without `DEBUG` (D6); security keys and passkeys need HTTPS or `localhost` (D3).
 `tests/settings.py` sets `MFA_TOTP_INSECURE_BYPASS_CODE = None` with a comment saying every test
 enters a real code. Tests: `mfa_index` resolves in the demo; the suite's bypass code is `None`.
+Re-run FS-001's and FS-002's entrance-page tests: the sign-in page now carries the passkey button
+and script, and any test counting its buttons needs a look.
 
 ### T002 — The Account Center entry and card
 
@@ -66,10 +68,11 @@ Research R4, R7. `img` draws the image with `src` and `alt` escaped, on `bg-whit
 and passes through nothing else allauth does not give it. Factory: `AuthenticatorFactory` with
 TOTP and recovery-code traits built through allauth's own `TOTP.activate` and
 `RecoveryCodes.activate`. Page tests on `mfa_activate_totp` as a management page: the QR `<img>`
-carries `bg-white` and its SVG (decoded from the data URI) fills its path with a dark colour
-(acceptance 3, SC-003); the secret is shown in the disabled `authenticator_secret` input; a wrong
-code re-renders with allauth's error on the page (acceptance 4, FR-008); a correct code (computed
-with `hotp_value`) activates and allauth's message appears in the shell. `mfa_deactivate_totp`
+carries `bg-white`, the stylesheet django-mvp serves defines `.bg-white`, and the image's SVG
+(decoded from the data URI) fills its path with a dark colour (acceptance 3, SC-003); the secret is shown in the disabled `authenticator_secret` input; a wrong
+code re-renders with allauth's error on the page (acceptance 4, FR-008); a correct code (a `tests/conftest.py`
+helper computing `format_hotp_value(hotp_value(secret, next(yield_hotp_counters_from_time())))`,
+reused by T008 and T010) activates and allauth's message appears in the shell. `mfa_deactivate_totp`
 renders as a management page and deactivating shows allauth's message; with no other factor left,
 allauth's message that two-factor authentication is off appears (edge case).
 
@@ -81,10 +84,10 @@ allauth's message that two-factor authentication is off appears (edge case).
 Research R3. `field` gains a `textarea` branch drawing `<c-form.field type="textarea">` with `id`,
 `readonly`, `rows` and the `value` slot as its content, keeping the label. Page tests:
 `mfa_view_recovery_codes` is a management page listing every unused code inside
-`<textarea id="recovery_codes" … readonly>`; the script-hook helper passes (add it to
-`tests/conftest.py` here: for every `script[data-allauth-onload]`, every id in its JSON is an
-element id on the page); with `MFA_RECOVERY_CODES_SHOW_ONCE=True` the `codes_saved` checkbox is
-present. `mfa_download_recovery_codes` answers allauth's text file with the codes (acceptance 5).
+`<textarea id="recovery_codes" … readonly>`. Add the script-hook helper to `tests/conftest.py`
+here (for every `script[data-allauth-onload]`, every id in its JSON is an element id on the page),
+and run it on this page under `MFA_RECOVERY_CODES_SHOW_ONCE=True`, on the first view, where
+`codes_saved` is drawn too (research R3). `mfa_download_recovery_codes` answers allauth's text file with the codes (acceptance 5).
 `mfa_generate_recovery_codes` renders as a management page, and posting it replaces the codes and
 shows allauth's message.
 
@@ -152,7 +155,7 @@ re-authentication; `mfa_reauthenticate` renders as a management page with allaut
 
 `mfa.user@example.com`, password `password`, verified primary address, an authenticator app with a
 fixed secret and a set of recovery codes. Idempotent. The docstring and the closing output name the
-account and say the demo's bypass code passes its second-factor step. Tests: the account exists
+account and say the demo's bypass code passes its second-factor step. The README names the bypass code as a demo convenience only, never a setting a host project copies. Tests: the account exists
 after seeding, has both factors, and seeding twice leaves one of each; update any count of seeded
 accounts. README names the account where it lists the demo's sign-ins.
 
@@ -170,7 +173,8 @@ Issue: #21. Delivers FR-005, FR-012, US3's part of FR-001, FR-007 and FR-008, an
 
 Research R2, R7. The table elements draw django-mvp's table styling; `td` keeps `align` as a class
 rather than the obsolete attribute. `AuthenticatorFactory` gains a WebAuthn trait whose `data`
-matches what allauth stores, with `name` and a passwordless flag. Page tests: with two keys,
+carries a `name` and a registration response `parse_registration_response` accepts, with
+`credProps.rk` choosing passkey or security key (research R7). Page tests: with two keys,
 `mfa_list_webauthn` is a management page listing both names with allauth's edit and remove links
 and each key's passkey or security-key badge (acceptance 1); `mfa_edit_webauthn` renders the name
 form and saving renames the key; `mfa_remove_webauthn` renders allauth's confirmation and removing
@@ -195,9 +199,11 @@ URLs), none of those is on the page.
 
 ### T015 — Passkey sign-up
 
-**Files**: `tests/test_security_key_pages.py`
+**Files**: `tests/conftest.py`, `tests/test_security_key_pages.py`
 
-Under `MFA_PASSKEY_SIGNUP_ENABLED=True`, `ACCOUNT_EMAIL_VERIFICATION="mandatory"` and
+`URLCONF_MODULES` gains `allauth.mfa.webauthn.urls` and `allauth.mfa.urls`, in that order, ahead of
+`allauth.urls` (research R6); without them `mfa_signup_webauthn` never appears. Under
+`MFA_PASSKEY_SIGNUP_ENABLED=True`, `ACCOUNT_EMAIL_VERIFICATION="mandatory"` and
 `ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED=True` (rebuild the URLs; the demo leaves these off,
 D5): `account_signup_by_passkey` renders as an entrance page with allauth's form; posting it and
 passing email verification by code reaches `mfa_signup_webauthn`, which renders as an entrance page

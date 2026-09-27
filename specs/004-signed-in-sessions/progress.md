@@ -22,3 +22,10 @@ which pins the Account group's children to four names; the new entry makes it fi
 deptry and build clean.
 Next: Forge decides how the pre-existing test in `tests/test_apps.py` is updated; it is outside this story's files.
 Watch: SC-001 probe (manage layout removed) failed one page test, then restored; not committed.
+
+## 2026-09-27 · Implementer US2 · T009–T011
+
+Did: tests for signing out the other sessions with three clients (T009), for the single-session "Sign Out" going through account_logout (T010), the demo walk-through test, and the README and CHANGELOG sentence that no confirmation is asked (T011). No template changed.
+Verified: each new test passed first time because allauth's page and FS-001's elements already do the work. Probes, not committed: removing the form's action failed the two button tests; removing the messages line from django-mvp's base template failed the confirmation test. Full suite `uv run pytest -n auto --dist loadscope`: 188 passed, 2 skipped. Lint, mypy, deptry and build clean.
+Next: acceptance.
+Watch: the messages probe edited django-mvp in .venv temporarily; restored byte-for-byte.

@@ -165,18 +165,47 @@
       "tasks": [
         {
           "id": "T009",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_sessions_page.py::TestSigningOutOtherSessions"
+            ],
+            "commands": [
+              "uv run pytest tests/test_sessions_page.py -q (14 passed; passed first time, allauth does the work)",
+              "probe: form action removed -> 2 failed, restored",
+              "probe: messages line removed from mvp base.html -> 1 failed, restored",
+              "commit 80a6d22"
+            ]
+          }
         },
         {
           "id": "T010",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_sessions_page.py::TestSigningOutTheLastSession"
+            ],
+            "commands": [
+              "uv run pytest tests/test_sessions_page.py -q (passed first time; form-action probe failed it, restored)",
+              "commit 80a6d22"
+            ]
+          }
         },
         {
           "id": "T011",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestSeededSessionsWalkthrough"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py -q -k Walkthrough (1 passed)",
+              "commit 2bfb757"
+            ]
+          }
         }
       ]
     }

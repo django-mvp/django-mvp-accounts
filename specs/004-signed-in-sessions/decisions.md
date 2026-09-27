@@ -71,3 +71,9 @@ no-IP edge case is unreachable (DR-002, D8); demo sessions are seeded after the 
 ended rather than deleted (DR-003, T007); T011 no longer repeats T009's sign-out check (DR-004).
 
 **ADR:** none — plan corrections, local to this feature.
+
+## D10 — The seeded sessions are keyed by their fixed IP addresses
+
+**Decision:** `seed_demo` finds its earlier sessions for regular.user by the two fixed IP addresses and ends them with `UserSession.end()` before creating two new ones.
+**Why:** a real sign-in by regular.user has another address, so it is left alone, and `end()` removes the Django session as well as the row.
+**Revisit if:** a second seeded account needs sessions, or a sign-in from one of those documentation addresses becomes possible.

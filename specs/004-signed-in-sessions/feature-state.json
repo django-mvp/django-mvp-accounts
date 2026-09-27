@@ -62,43 +62,96 @@
       "tasks": [
         {
           "id": "T001",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestDemoUserSessions -x -q (red: failed before settings change; green: 1 passed)"
+            ],
+            "commit": "b3253c9b98ce322b83a092e759599217a158b7ea"
+          }
         },
         {
           "id": "T002",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_elements.py::TestTableElements -q (red: 2 failed with elements removed; green: 3 passed)",
+              "diff against git show origin/003-two-factor-pages: identical x6"
+            ],
+            "commit": "b68e3e73028755cbcefbe3c3d874c9739c151954"
+          }
         },
         {
           "id": "T003",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py::TestSessionsEntry -q (red: 3 failed; green: 19 passed in module)"
+            ],
+            "commit": "db22f9dbf7e30b73fbec098066f6a4bae61c8886"
+          }
         },
         {
           "id": "T004",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_account_center.py -q (red: 2 failed; green: 13 passed)"
+            ],
+            "commit": "3643840dff4725ab18f281f18d318c2141a9c962"
+          }
         },
         {
           "id": "T005",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_sessions_page.py -q (8 passed)",
+              "probe: layout removed -> 1 failed, restored",
+              "probe: table.html removed -> 1 failed, restored"
+            ],
+            "commit": "b36b0c50428b40c2fe50fc0f92e18c9da7e703bf"
+          }
         },
         {
           "id": "T006",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_usersessions.py -q (5 passed)",
+              "probe: middleware kept -> ImproperlyConfigured, restored"
+            ],
+            "commit": "92f559437deaac4070fde97c1b78d23a2f030542"
+          }
         },
         {
           "id": "T007",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestSeededSessions -q (red: 3 failed; green: 4 passed)",
+              "manage.py migrate; seed_demo run twice OK"
+            ],
+            "commit": "09e60934a7cd5a3ebbd2967e3d1e66bd5b8bb2b6"
+          }
         },
         {
           "id": "T008",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run python ../manage.py makemessages -l en (from mvp_accounts/)"
+            ],
+            "commit": "72ff097d6deb177afb877d9aa00941e2ebbdbc87"
+          }
         }
       ]
     },

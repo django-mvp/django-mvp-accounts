@@ -2,12 +2,17 @@
   "feature": "004-signed-in-sessions",
   "branch": "004-signed-in-sessions",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "QUEUED",
+  "state": "PLAN",
   "state_history": [
     {
       "state": "QUEUED",
       "at": "2026-09-26T17:54:18Z",
       "note": "specification merged to main in PR #24, merge commit 0f5d62caffcbef1e738b41ce5505ccb8f35f11df; epic #8, stories #25-#26"
+    },
+    {
+      "state": "PLAN",
+      "at": "2026-09-27T04:36:37Z",
+      "note": "plan.md, research.md, tasks.md"
     }
   ],
   "gates": {

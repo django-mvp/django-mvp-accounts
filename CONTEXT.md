@@ -61,6 +61,12 @@ sessions, and API tokens.
 _Avoid_: settings (Django settings), dashboard, admin (Django's admin site,
 which is for staff managing other people's accounts).
 
+**Signed-in session**:
+One browser or device where a person is currently signed in to their account.
+The sessions page lists them, and can sign out all but the one being used.
+_Avoid_: login (allauth's URL names use it, the prose here does not), device
+(a browser is what is recorded, and one device can hold several).
+
 **Entrance**:
 The pages someone sees before they are signed in: sign-in, sign-up, password
 reset and email verification. They render outside the application shell's

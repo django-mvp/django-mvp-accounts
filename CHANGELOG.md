@@ -57,6 +57,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   markup, including its refusal to disconnect the only way a person can sign in. Without the
   social account app the entry and card do not appear. The demo seeds an account with a connected
   test provider account and one with no password.
+- With allauth's user sessions app installed, django-mvp's Account Center gains a Sessions menu
+  entry, in the "Account" group after Connected accounts, and a card on its landing page. allauth's
+  sessions page renders in the Account Center and lists each browser a person is signed in from,
+  with its address, browser and the "Current" marker, and a "Last seen at" column when
+  `USERSESSIONS_TRACK_ACTIVITY` is on. The table scrolls sideways inside its own area on a narrow
+  screen. To use it, install `allauth.usersessions`, its middleware and `django.contrib.humanize`.
+  Without the app the entry and card do not appear. The demo signs `regular.user@example.com` in
+  from two more browsers.
 
 ### Changed
 

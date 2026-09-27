@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 20:04+0200\n"
+"POT-Creation-Date: 2026-09-26 23:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,6 +40,10 @@ msgstr ""
 
 #: menus.py:43 templates/mvp/account/overview.html:40
 msgid "Connected accounts"
+msgstr ""
+
+#: menus.py:48 templates/mvp/account/overview.html:49
+msgid "Sessions"
 msgstr ""
 
 #: templates/account/logout.html:10 templates/account/logout.html:14
@@ -123,6 +127,16 @@ msgstr ""
 
 #: templates/mvp/account/overview.html:43
 msgid "Manage connected accounts"
+msgstr ""
+
+#: templates/mvp/account/overview.html:50
+msgid ""
+"See the browsers and devices signed in to your account, and sign out the "
+"others."
+msgstr ""
+
+#: templates/mvp/account/overview.html:52
+msgid "Manage sessions"
 msgstr ""
 
 #: templates/socialaccount/login_redirect.html:11

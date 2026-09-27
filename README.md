@@ -93,17 +93,18 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password, Phone number and Connected accounts, listed under an
-  "Account" heading below its Overview entry.
+- **Menu entries** for Email, Password, Phone number, Connected accounts and Sessions, listed under
+  an "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Connected accounts appears only with the social account app (`allauth.socialaccount`)
-installed. Without allauth installed the package adds nothing and raises nothing.
+installed, and Sessions only with the user sessions app (`allauth.usersessions`) installed.
+Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
-change and verification, connected accounts, and re-authentication) render in the Account
+change and verification, connected accounts, sessions, and re-authentication) render in the Account
 Center, inside the shell with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
 for a signed-in person, so re-authentication and the phone verification that follows a change are
 management pages, while phone verification during sign-up stays an entrance page. The social
@@ -114,6 +115,43 @@ The Account Center itself, the "Account Center" and "Log out" entries in the use
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
+## Signed-in sessions
+
+allauth's sessions page lists the browsers and devices a person is signed in from,
+and it renders in the Account Center like the other management pages. This
+package adds a Sessions entry and card for it, and draws its table with
+django-mvp's table class inside a wrapper that scrolls sideways on a narrow
+screen. To turn the page on, install allauth's user sessions app, its
+middleware and `django.contrib.humanize`, which allauth's page loads its date
+filters from, as
+[allauth documents](https://docs.allauth.org/en/latest/usersessions/index.html):
+
+```python
+INSTALLED_APPS = [
+    # ...
+    "allauth.usersessions",
+    "django.contrib.humanize",
+]
+
+MIDDLEWARE = [
+    # ...
+    "allauth.account.middleware.AccountMiddleware",
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
+]
+```
+
+Set `USERSESSIONS_TRACK_ACTIVITY = True` to add a "Last seen at" column. The
+package leaves the setting to the project.
+
+Only sessions allauth has recorded are listed. A browser that was already signed
+in before the app was installed appears after its next sign-in, or after its
+next request when activity tracking is on. The page offers one action: signing
+out every session except the current one. Signing out one chosen session is not
+offered, because allauth does not offer it.
+
+Without the user sessions app the Account Center has no Sessions entry or card,
+and nothing else changes.
 
 ## Signing in with other accounts
 

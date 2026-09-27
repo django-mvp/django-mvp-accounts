@@ -2,7 +2,7 @@
   "feature": "004-signed-in-sessions",
   "branch": "004-signed-in-sessions",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "REVIEW",
+  "state": "PR_READY",
   "state_history": [
     {
       "state": "QUEUED",
@@ -33,6 +33,11 @@
       "state": "REVIEW",
       "at": "2026-09-27T04:53:24Z",
       "note": "one reviewer correctness+spec+docs, one security lens"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-09-27T04:59:14Z",
+      "note": "review fixed and recorded; PR ready; walkthrough sent"
     }
   ],
   "gates": {
@@ -250,6 +255,6 @@
   },
   "pr": {
     "number": 29,
-    "draft": true
+    "draft": false
   }
 }

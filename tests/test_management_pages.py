@@ -61,10 +61,22 @@ class ManagementPageAssertions:
 
         assert response.status_code == 200
         assert STYLESHEET in html, "the shell's stylesheet is not on the page"
-        assert sidebar_menus(html), "the sidebar draws no navigation menu"
+        assert sidebar_menus(html)[:1] == ["Account navigation"], (
+            "the sidebar does not draw the Account Center's menu"
+        )
         assert ALLAUTH_BARE_MENU not in html, "allauth's bare layout rendered"
         assert form_marker in html, "the page's own form is missing"
         return html
+
+
+class TestEntrancePagesBelongToNoArea:
+    def test_password_reset_signed_out_is_not_named_as_the_account_center(
+        self, client, db
+    ) -> None:
+        html = client.get(reverse("account_reset_password")).content.decode()
+        title = re.search(r"<title>(.*?)</title>", html, re.S).group(1)
+
+        assert "Account Center" not in title
 
 
 class TestManagementPages(ManagementPageAssertions):

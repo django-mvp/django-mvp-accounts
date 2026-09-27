@@ -235,3 +235,10 @@ class TestSeededSocialAccounts:
         assert "1001" in text
         assert "2002" in text
         assert "All three sign in with the password" not in text
+
+
+class TestDemoUserSessions:
+    """The demo installs allauth's user sessions app so the sessions page exists."""
+
+    def test_the_sessions_page_resolves(self) -> None:
+        assert reverse("usersessions_list")

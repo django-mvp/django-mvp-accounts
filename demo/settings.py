@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    # Records where each account is signed in, which is what allauth's
+    # sessions page lists.
+    "allauth.usersessions",
     # allauth's test provider: it completes a sign-in on this machine, so every
     # social account page can be reached without credentials from a real one.
     "allauth.socialaccount.providers.dummy",
@@ -48,6 +51,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    # allauth's sessions page loads its date filters from it, and fails to
+    # render without it.
+    "django.contrib.humanize",
     "mvp",
     "easy_icons",
     "crispy_forms",
@@ -73,6 +79,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # Keeps each recorded session's address and browser current on every
+    # request, and its last-seen time when tracking is on.
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Last, because it rewrites the response body to insert its script tag and
     # anything that encodes or compresses the body has to run after it.
@@ -128,6 +137,10 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "phone"]
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_REAUTHENTICATION_REQUIRED = True
+
+# The sessions page can show when each session was last used. The demo turns
+# it on so that column can be seen; the package leaves it to the project.
+USERSESSIONS_TRACK_ACTIVITY = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

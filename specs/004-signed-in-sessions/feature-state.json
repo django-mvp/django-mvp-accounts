@@ -59,6 +59,16 @@
         "DR-003 low: demo sessions seeded after the password is set, ended not deleted (T007)",
         "DR-004 low: T011 trimmed to the seeded three-session view"
       ]
+    },
+    "review": {
+      "approved_by": "review-panel",
+      "at": "2026-09-27T04:57:58Z",
+      "self_resolved": [
+        "COR-001 low: seeded sessions' two-week expiry stated, re-run restores them \u2014 fixed",
+        "COR-002 low: seed_demo reads the session store from SESSION_ENGINE \u2014 fixed",
+        "SEC-001 low: hostile browser string renders as text, pinned by a test that fails when unescaped \u2014 fixed",
+        "note: middleware comment corrected; allauth's unlabelled Current column is upstream markup, kept"
+      ]
     }
   },
   "stories": [

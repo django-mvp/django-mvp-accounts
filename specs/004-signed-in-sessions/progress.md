@@ -29,3 +29,8 @@ Did: tests for signing out the other sessions with three clients (T009), for the
 Verified: each new test passed first time because allauth's page and FS-001's elements already do the work. Probes, not committed: removing the form's action failed the two button tests; removing the messages line from django-mvp's base template failed the confirmation test. Full suite `uv run pytest -n auto --dist loadscope`: 188 passed, 2 skipped. Lint, mypy, deptry and build clean.
 Next: acceptance.
 Watch: the messages probe edited django-mvp in .venv temporarily; restored byte-for-byte.
+
+## 2026-09-27 · Forge · S4–S6
+
+Did: US1 and US2 accepted after independent verify and tamper-check (D11 for the startup test);
+converge green; code review approve with three low findings, all fixed (D12). Next: walkthrough.

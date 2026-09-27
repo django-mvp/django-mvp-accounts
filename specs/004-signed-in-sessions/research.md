@@ -86,9 +86,17 @@ pack, so the demo needs no icon of its own.
 
 ## R5 — Tests
 
-- Sessions for a test are real Django sessions: sign a client in (`force_login` saves a session)
-  and create its `UserSession` from the session key, or build further sessions with
-  `SessionStore` so `purge_and_list` keeps them. One factory, `UserSessionFactory`, owns that.
+- The suite inherits the demo's settings, so `UserSessionsMiddleware` and activity tracking are
+  on in every test. A signed-in client's `UserSession` is created by the middleware on its first
+  request after `force_login` (`usersessions/middleware.py`, `models.py:54-56`), and every later
+  request rewrites its IP address and user-agent from that request (`models.py:58-74`). Each
+  client is therefore built with its own `REMOTE_ADDR` and `HTTP_USER_AGENT` defaults and makes
+  one request after signing in, and rows are told apart by those values. Creating a row for a
+  client's session key by hand would collide with the middleware's (`session_key` is unique).
+- `UserSessionFactory` is for sessions no client holds: a saved `SessionStore` session carrying
+  the user's id, backend and auth hash, so `purge_and_list` keeps it, and a `UserSession` on its
+  key. It is used where the middleware creates nothing, and for rows with values a client cannot
+  send.
 - Three browsers are three `Client` instances signed in as the same account. After "Sign Out Other
   Sessions" on one, the other two are answered by the Account Center with a redirect to sign-in
   (SC-003).

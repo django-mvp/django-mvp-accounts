@@ -30,7 +30,7 @@ Python in the package beyond one menu entry.
 |---|---|
 | I Test-first | Each element, entry, card and page state gets a failing render test first |
 | II Simplicity | Templates and one menu entry. No page override, no guard for the user sessions app (R1, R4) |
-| III Anti-abstraction | No tags, helpers or base classes. The elements are FS-003's, shared rather than duplicated (R2) |
+| III Anti-abstraction | No tags, helpers or base classes. The elements are copied from FS-003, identical, so the two branches add the same files (R2) |
 | IV Integration-first | Tests drive allauth's real list view and sign-out flow with real Django sessions (R5) |
 | V Security | Session fields reach the page through allauth's `{{ }}`, escaped. No flow is modified. The demo's seeded sessions are behind `seed_demo`'s DEBUG guard |
 | VI Documentation | README sessions section and Account Center list, `CONTEXT.md` term, CHANGELOG, each in the story that introduces it |

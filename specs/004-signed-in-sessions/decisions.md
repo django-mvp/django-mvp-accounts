@@ -54,3 +54,20 @@ Django session is gone before it draws the list. `seed_demo` replaces them on ev
 signing out the others can be tried more than once.
 
 **ADR:** none — demo data, never distributed.
+
+## D8 — A session with no IP address cannot occur
+
+The spec's edge cases include a session with no recorded IP address. allauth stores the address in
+a required field and refuses to record a session without one, so no such row is ever written. The
+edge case holds for the user-agent, which can be empty, and the tests cover that half.
+
+**ADR:** none — a fact about allauth, nothing is designed here.
+
+## D9 — Design review, one round, approved
+
+Four findings, all applied to the plan: client-backed sessions come from allauth's middleware and
+are told apart by each client's own address and browser (DR-001, research R5, T005, T009); the
+no-IP edge case is unreachable (DR-002, D8); demo sessions are seeded after the password is set and
+ended rather than deleted (DR-003, T007); T011 no longer repeats T009's sign-out check (DR-004).
+
+**ADR:** none — plan corrections, local to this feature.

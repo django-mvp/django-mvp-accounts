@@ -138,6 +138,67 @@ class TestSessionsPage(ManagementPageAssertions):
         assert len(rows) == 2
 
 
+class TestSigningOutOtherSessions:
+    """The page's one action ends every session but the asking browser's."""
+
+    def test_the_button_posts_to_the_sessions_page(self, three_browsers) -> None:
+        soup = BeautifulSoup(
+            three_browsers[0].get(reverse("usersessions_list")).content.decode(),
+            "html.parser",
+        )
+
+        button = soup.find("button", string=lambda t: t and "Sign Out Other" in t)
+        assert button.get_text(strip=True) == "Sign Out Other Sessions"
+        assert button.find_parent("form")["action"] == reverse("usersessions_list")
+
+    def test_posting_it_leaves_only_the_posting_browsers_session(
+        self, three_browsers
+    ) -> None:
+        response = three_browsers[1].post(reverse("usersessions_list"), follow=True)
+
+        rows = rows_of(response)
+        assert len(rows) == 1
+        assert rows[0][1] == "198.51.100.24"
+        assert "Signed out of all other sessions." in response.content.decode()
+
+    def test_the_other_browsers_are_sent_to_sign_in(self, three_browsers) -> None:
+        three_browsers[1].post(reverse("usersessions_list"))
+
+        for other in (three_browsers[0], three_browsers[2]):
+            response = other.get(reverse("account-center"))
+            assert response.status_code == 302
+            assert response["Location"].startswith(reverse("account_login"))
+
+    def test_the_posting_browser_stays_signed_in(self, three_browsers) -> None:
+        three_browsers[1].post(reverse("usersessions_list"))
+
+        assert three_browsers[1].get(reverse("account-center")).status_code == 200
+
+
+class TestSigningOutTheLastSession:
+    """With one session the button is the site's own sign-out."""
+
+    def test_the_button_posts_to_sign_out(self, person) -> None:
+        client = browser(person, "192.0.2.10", FIREFOX)
+
+        soup = BeautifulSoup(
+            client.get(reverse("usersessions_list")).content.decode(), "html.parser"
+        )
+
+        button = soup.find("button", string=lambda t: t and "Sign Out" in t)
+        assert button.get_text(strip=True) == "Sign Out"
+        assert button.find_parent("form")["action"] == reverse("account_logout")
+
+    def test_posting_it_signs_the_person_out(self, person) -> None:
+        client = browser(person, "192.0.2.10", FIREFOX)
+
+        client.post(reverse("account_logout"))
+
+        response = client.get(reverse("account-center"))
+        assert response.status_code == 302
+        assert response["Location"].startswith(reverse("account_login"))
+
+
 class TestHostProjectOverride:
     """A sessions page the host project writes for itself wins over allauth's."""
 

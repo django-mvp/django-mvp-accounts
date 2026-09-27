@@ -147,8 +147,9 @@ package leaves the setting to the project.
 Only sessions allauth has recorded are listed. A browser that was already signed
 in before the app was installed appears after its next sign-in, or after its
 next request when activity tracking is on. The page offers one action: signing
-out every session except the current one. Signing out one chosen session is not
-offered, because allauth does not offer it.
+out every session except the current one, without asking first, as allauth's
+does. Signing out one chosen session is not offered, because allauth does not
+offer it.
 
 Without the user sessions app the Account Center has no Sessions entry or card,
 and nothing else changes.

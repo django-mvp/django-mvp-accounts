@@ -292,3 +292,23 @@ class TestSeededSessions:
             key in out.getvalue()
             for key in Session.objects.values_list("session_key", flat=True)
         )
+
+
+class TestSeededSessionsWalkthrough:
+    """Signing in as regular.user shows the seeded sessions and the action."""
+
+    def test_signing_in_lists_three_sessions_and_offers_to_sign_out_the_others(
+        self, client, db, settings
+    ) -> None:
+        settings.DEBUG = True
+        call_command("seed_demo", stdout=StringIO())
+        client.post(
+            reverse("account_login"),
+            {"login": "regular.user@example.com", "password": "password"},
+        )
+
+        html = client.get(reverse("usersessions_list")).content.decode()
+
+        assert html.count("<tbody") == 1
+        assert html.split("<tbody", 1)[1].count("<tr") == 3
+        assert "Sign Out Other Sessions" in html

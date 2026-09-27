@@ -79,8 +79,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    # Keeps each recorded session's address and browser current on every
-    # request, and its last-seen time when tracking is on.
+    # With activity tracking on, keeps each recorded session's address,
+    # browser and last-seen time current on every request.
     "allauth.usersessions.middleware.UserSessionsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Last, because it rewrites the response body to insert its script tag and

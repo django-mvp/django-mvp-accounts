@@ -18,6 +18,7 @@ site is that this command will not execute there.
 """
 
 from datetime import timedelta
+from importlib import import_module
 
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
@@ -29,7 +30,6 @@ from django.contrib.auth import (
     SESSION_KEY,
     get_user_model,
 )
-from django.contrib.sessions.backends.db import SessionStore
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
@@ -147,6 +147,8 @@ class Command(BaseCommand):
         read from the saved user, since setting the password changes it and
         allauth drops a session whose hash no longer matches. The earlier ones
         are ended rather than deleted, so their Django sessions go with them.
+        Like any Django session they expire after two weeks, and running the
+        command again brings them back.
         """
         earlier = UserSession.objects.filter(
             user=user, ip__in=[ip for ip, _agent, _days in OTHER_BROWSERS]
@@ -154,7 +156,7 @@ class Command(BaseCommand):
         for session in earlier:
             session.end()
         for ip, user_agent, days_ago in OTHER_BROWSERS:
-            store = SessionStore()
+            store = import_module(settings.SESSION_ENGINE).SessionStore()
             store[SESSION_KEY] = user._meta.pk.value_to_string(user)
             store[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
             store[HASH_SESSION_KEY] = user.get_session_auth_hash()

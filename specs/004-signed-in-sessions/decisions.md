@@ -93,3 +93,13 @@ ended rather than deleted (DR-003, T007); T011 no longer repeats T009's sign-out
 the test changes. FS-003 makes the same one-line edit for its own entry.
 
 **ADR:** none — a test tracking a specified menu entry.
+
+## D12 — Code review, one round, approved
+
+Three low findings, all fixed: `seed_demo` reads the session store from `SESSION_ENGINE`, as allauth
+and the test factory do (COR-002); its docstring says the seeded sessions expire after two weeks and
+a re-run restores them (COR-001); a test pins that a hostile browser string renders as text, and
+fails when the cell is marked safe (SEC-001). The middleware comment in the demo settings now says
+it acts only with tracking on.
+
+**ADR:** none — review fixes, local to this feature.

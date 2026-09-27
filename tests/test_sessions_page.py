@@ -125,6 +125,19 @@ class TestSessionsPage(ManagementPageAssertions):
         table = soup.select_one("div.overflow-x-auto > table")
         assert "table" in table["class"]
 
+    def test_a_browser_string_is_shown_as_text(self, person) -> None:
+        # Whoever signs in chooses the browser string the owner later reads.
+        hostile = "<script>alert(1)</script>"
+        client = browser(person, "192.0.2.10", FIREFOX)
+        UserSessionFactory(user=person, ip="198.51.100.24", user_agent=hostile)
+
+        response = client.get(reverse("usersessions_list"))
+
+        soup = BeautifulSoup(response.content.decode(), "html.parser")
+        assert soup.select("tbody script") == []
+        cells = next(row for row in rows_of(response) if row[1] == "198.51.100.24")
+        assert cells[2] == hostile
+
     def test_a_session_with_no_user_agent_is_still_listed(self, person) -> None:
         client = browser(person, "192.0.2.10", FIREFOX)
         UserSessionFactory(user=person, ip="198.51.100.24", user_agent="")

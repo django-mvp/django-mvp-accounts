@@ -44,4 +44,13 @@
       </c-slot>
     </c-card>
   {% endif %}
+  {% url "usersessions_list" as sessions_url %}
+  {% if sessions_url %}
+    <c-card title="{% trans "Sessions" %}" icon="login">
+      <c-text>{% trans "See the browsers and devices signed in to your account, and sign out the others." %}</c-text>
+      <c-slot name="footer">
+        <c-button href="{{ sessions_url }}" variant="primary" size="sm">{% trans "Manage sessions" %}</c-button>
+      </c-slot>
+    </c-card>
+  {% endif %}
 {% endblock account.cards %}

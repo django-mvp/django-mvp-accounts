@@ -27,13 +27,23 @@
       "self_resolved": []
     },
     "plan": {
-      "approved_by": null,
-      "at": null,
+      "approved_by": "notified",
+      "at": "2026-09-27T04:40:37Z",
       "self_resolved": []
     },
     "merge": {
       "approved_by": null,
       "at": null
+    },
+    "design_review": {
+      "approved_by": "design-panel",
+      "at": "2026-09-27T04:40:37Z",
+      "self_resolved": [
+        "DR-001 medium: client sessions come from the middleware, told apart by each client's address and browser (R5, T005, T009)",
+        "DR-002 low: a session with no IP address cannot occur (D8)",
+        "DR-003 low: demo sessions seeded after the password is set, ended not deleted (T007)",
+        "DR-004 low: T011 trimmed to the seeded three-session view"
+      ]
     }
   },
   "stories": [

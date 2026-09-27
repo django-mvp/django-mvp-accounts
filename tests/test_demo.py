@@ -12,6 +12,8 @@ from io import StringIO
 import pytest
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
+from allauth.usersessions.models import UserSession
+from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import call_command
 from django.urls import NoReverseMatch, reverse
@@ -242,3 +244,51 @@ class TestDemoUserSessions:
 
     def test_the_sessions_page_resolves(self) -> None:
         assert reverse("usersessions_list")
+
+
+class TestSeededSessions:
+    """regular.user is signed in from two other browsers, and nobody else is."""
+
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        """The demo's development-only pages exist only with DEBUG on."""
+        settings.DEBUG = True
+
+    def test_seeding_twice_leaves_exactly_two_sessions_for_regular_user(
+        self, db
+    ) -> None:
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="regular.user@example.com").user
+        sessions = UserSession.objects.filter(user=user)
+        assert sorted(session.ip for session in sessions) == [
+            "192.0.2.10",
+            "198.51.100.24",
+        ]
+        assert all(session.user_agent for session in sessions)
+        assert Session.objects.count() == 2
+
+    def test_allauth_keeps_both_when_it_lists_them(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="regular.user@example.com").user
+        assert len(UserSession.objects.purge_and_list(user)) == 2
+
+    def test_no_other_account_has_a_session(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="regular.user@example.com").user
+        assert not UserSession.objects.exclude(user=user).exists()
+
+    def test_the_output_describes_them_without_a_session_key(self, db) -> None:
+        out = StringIO()
+        call_command("seed_demo", stdout=out)
+
+        assert "regular.user@example.com" in out.getvalue()
+        assert "two other browsers" in out.getvalue()
+        assert not any(
+            key in out.getvalue()
+            for key in Session.objects.values_list("session_key", flat=True)
+        )

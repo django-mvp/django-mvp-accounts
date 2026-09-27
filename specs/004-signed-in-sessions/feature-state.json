@@ -2,7 +2,7 @@
   "feature": "004-signed-in-sessions",
   "branch": "004-signed-in-sessions",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "IMPLEMENT",
+  "state": "CONVERGE",
   "state_history": [
     {
       "state": "QUEUED",
@@ -23,6 +23,11 @@
       "state": "IMPLEMENT",
       "at": "2026-09-27T04:40:48Z",
       "note": "US1 then US2, sequentially in the feature worktree"
+    },
+    {
+      "state": "CONVERGE",
+      "at": "2026-09-27T04:52:08Z",
+      "note": "both stories done"
     }
   ],
   "gates": {
@@ -212,7 +217,7 @@
   ],
   "budgets": {
     "converge_cycles": {
-      "used": 0,
+      "used": 1,
       "max": 2
     },
     "review_cycles": {

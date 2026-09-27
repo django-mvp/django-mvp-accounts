@@ -6,11 +6,11 @@ fourth, social.user@example.com, has no password and signs in only through the
 test provider. The staff account has a connected test provider account with uid
 1001, and social.user's has uid 2002. Signed in as staff, the connections page
 shows an account that can be removed. Signed in as social.user, it shows one that
-allauth refuses to remove. regular.user is also signed in from two
-other browsers, so signing in as that account shows three sessions on the
-sessions page and offers to sign out the others; any other account shows one.
-A reviewer opening this project should not have to invent a login or read the code to find out
-what exists.
+allauth refuses to remove. regular.user is also signed in from two other
+browsers, so signing in as that account shows three sessions on the sessions
+page and offers to sign out the others. Any other account shows one. A reviewer
+opening this project should not have to invent a login or read the code to find
+out what exists.
 
 Safe to run repeatedly, and refuses to run at all unless DEBUG is on — these
 are known passwords, and the only thing standing between them and a deployed

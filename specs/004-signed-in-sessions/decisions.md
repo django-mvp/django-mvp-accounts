@@ -8,17 +8,23 @@ in allauth's headless API. Article XIII says a feature upstream lacks is raised 
 building it here is an ADR. The spec therefore delivers what allauth's page does and records
 single-session sign-out as an upstream gap for the maintainer to raise.
 
+**ADR:** none — nothing is built. Single-session sign-out is left to allauth, and an ADR is needed only if this package ever builds it.
+
 ## D2 — The browser column shows allauth's raw user-agent
 
 A user-agent string is hard to read, and turning it into "Firefox on macOS" would help a person
 recognise a session. allauth shows the raw string and has no parser, and adding one here would be a
 feature allauth does not have. The column shows what allauth records.
 
+**ADR:** none — the package shows what allauth records and adds no behaviour of its own.
+
 ## D3 — The table scrolls, the page does not
 
 allauth's list has up to five columns (started, IP address, browser, last seen, current marker),
 more than a phone screen fits. Hiding a column would hide information a person needs to recognise a
 session, so the table keeps every column and scrolls sideways inside its own area.
+
+**ADR:** none — the table elements FS-003 already defines do this. Nothing new is designed here.
 
 ## D4 — FS-004 read against FS-002, delivered since this spec landed
 
@@ -78,7 +84,9 @@ ended rather than deleted (DR-003, T007); T011 no longer repeats T009's sign-out
 **Why:** a real sign-in by regular.user has another address, so it is left alone, and `end()` removes the Django session as well as the row.
 **Revisit if:** a second seeded account needs sessions, or a sign-in from one of those documentation addresses becomes possible.
 
-## D10 — The startup test lists the Sessions entry
+**ADR:** none — demo data, never distributed.
+
+## D11 — The startup test lists the Sessions entry
 
 `tests/test_apps.py` pins the Account group's children by name, so adding the Sessions entry
 (FR-004) makes it list five. The expected list gains `"sessions"` at the end, and nothing else in

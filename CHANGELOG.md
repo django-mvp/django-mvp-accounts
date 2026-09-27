@@ -61,9 +61,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   entry, in the "Account" group after Connected accounts, and a card on its landing page. allauth's
   sessions page renders in the Account Center and lists each browser a person is signed in from,
   with its address, browser and the "Current" marker, and a "Last seen at" column when
-  `USERSESSIONS_TRACK_ACTIVITY` is on. The page's button signs out every other session without asking first, and the
-  confirmation appears in the shell. With one session the button is "Sign Out" and uses the site's
-  own sign-out. The table scrolls sideways inside its own area on a narrow
+  `USERSESSIONS_TRACK_ACTIVITY` is on. The page's button signs out every other session without
+  asking first, and the confirmation appears in the shell. With one session the button is "Sign
+  Out" and uses the site's own sign-out. The table scrolls sideways inside its own area on a narrow
   screen. To use it, install `allauth.usersessions`, its middleware and `django.contrib.humanize`.
   Without the app the entry and card do not appear. The demo signs `regular.user@example.com` in
   from two more browsers.

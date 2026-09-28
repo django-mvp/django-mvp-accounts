@@ -1,3 +1,5 @@
+"""Models the demo keeps phone numbers and sent messages in."""
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -30,6 +32,7 @@ class PhoneNumber(models.Model):
         verbose_name_plural = _("phone numbers")
 
     def __str__(self) -> str:
+        """Return the number."""
         return self.number
 
 
@@ -68,4 +71,5 @@ class SentMessage(models.Model):
         verbose_name_plural = _("sent messages")
 
     def __str__(self) -> str:
+        """Return the subject and the recipient."""
         return f"{self.subject} → {self.recipient}"

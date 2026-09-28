@@ -25,11 +25,9 @@ ALLOWED_HOSTS = ["*"]
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
-# This project's own apps come first so its templates win over any the
-# libraries ship under the same name, which is how demo/templates/base.html
-# reaches the pages that extend "base.html". Take care adding to that
-# directory: a file named after one django-mvp ships replaces it everywhere,
-# silently, for every page in the demo.
+# First, so demo/templates/base.html wins over any library template of that
+# name. A file there named after one django-mvp ships silently replaces it on
+# every page.
 INSTALLED_APPS = [
     "demo",
     # Ahead of allauth so its layouts and elements win, and ahead of mvp so its
@@ -127,11 +125,8 @@ AUTHENTICATION_BACKENDS = [
 # Codes and links are kept for the outbox page rather than sent anywhere.
 EMAIL_BACKEND = "demo.mail.OutboxEmailBackend"
 
-# What a typical project runs: sign in by email, a verification link that is
-# sent but never required, a code as an alternative to the password, phone
-# numbers stored by the demo's adapter, and a fresh sign-in before anything
-# sensitive changes. The tests reach the other halves of each choice by
-# overriding the setting, and rebuilding allauth's URLconf where it needs to.
+# What a typical project runs. The tests reach the other half of each choice
+# by overriding the setting, and rebuild allauth's URLconf where needed.
 ACCOUNT_ADAPTER = "demo.adapter.DemoAccountAdapter"
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "phone"]
@@ -139,13 +134,9 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_REAUTHENTICATION_REQUIRED = True
 
-# Two-factor authentication with every factor on except passkey sign-up.
-# allauth only allows passkey sign-up with mandatory email verification by
-# code, which the demo does not use, so it stays off here. Security keys and
-# passkeys need HTTPS or `localhost`; over any other host the browser refuses
-# them. The fixed code lets the authenticator app pages be walked through
-# without a phone. allauth refuses it unless DEBUG is on, and the demo is
-# never deployed.
+# Passkey sign-up stays off: allauth allows it only with mandatory email
+# verification by code. Security keys and passkeys need HTTPS or `localhost`.
+# The fixed code is accepted only with DEBUG on, and the demo is never deployed.
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_TRUST_ENABLED = True
@@ -161,8 +152,6 @@ LOGOUT_REDIRECT_URL = "/"
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["tailwind"]
 CRISPY_TEMPLATE_PACK = "tailwind"
 
-# Which class draws the sidebar tree declared in demo/menus.py, and which draws
-# the dock shown below the sidebar breakpoint.
 FLEX_MENUS = {
     "renderers": {
         "sidebar": "mvp.renderers.SidebarRenderer",

@@ -13,6 +13,7 @@ class OutboxEmailBackend(BaseEmailBackend):
     """
 
     def send_messages(self, email_messages):
+        """Keep each message in the outbox instead of sending it."""
         for message in email_messages:
             SentMessage.objects.create(
                 recipient=", ".join(message.to),

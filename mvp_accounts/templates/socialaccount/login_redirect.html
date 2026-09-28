@@ -1,11 +1,9 @@
 {% extends "socialaccount/base_entrance.html" %}
 {% load i18n allauth %}
 {% comment %}
-  The page allauth answers a sign-in callback with when the session cookie is
-  `SameSite=Strict`: the browser withheld the cookie from the cross-site
-  request, so this page sends it back to the same address from this site.
-  allauth's version is a bare document that extends nothing, so it is drawn
-  here as an entrance page, keeping its refresh and its "Continue" link.
+  allauth serves this after a sign-in callback when the session cookie is
+  `SameSite=Strict`. Its own version is a bare document, so it is redrawn as
+  an entrance page, keeping the refresh and the link. See FS-002.
 {% endcomment %}
 {% block head_title %}
   {% translate "Sign In" %} | {{ provider }}

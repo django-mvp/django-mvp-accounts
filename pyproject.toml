@@ -11,10 +11,8 @@ authors = [
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
-# django-mvp is a hard dependency rather than an integration: this package's
-# markup sits inside django-mvp's layout primitives and reads its colours from
-# the theme django-mvp supplies. Without it, whatever this renders arrives on
-# an unstyled page.
+# A hard dependency, not an integration: this package's markup sits in
+# django-mvp's layout and theme, and arrives unstyled without it.
 dependencies = ["django>=5.2", "django-mvp>=0.25.0"]
 keywords = ["django", "django-mvp", "allauth", "authentication", "accounts", "api-tokens"]
 classifiers = [
@@ -105,10 +103,8 @@ include = "H006,H013,H020,H021,H023,H025,H030,H031"
 ignore = "H017"
 extension = "html"
 
-# Lint and format are both ruff's: it replaces black (formatting), isort (the I
-# rules) and pyupgrade (the UP rules), so those three do not appear here. The
-# shared rule set lives in ruff-base.toml, copied in rather than referenced
-# remotely — `extend` only accepts a local path.
+# The shared rule set is copied into ruff-base.toml because `extend` only
+# accepts a local path.
 [tool.ruff]
 extend = "ruff-base.toml"
 
@@ -137,10 +133,9 @@ django_settings_module = "tests.settings"
 ignore_missing_model_attributes = "True"
 
 [tool.forge.conformance]
-# Test files whose subject is not a Python module, so there is nothing for them
-# to mirror. test_app.py covers the installed app and its on-disk layout;
-# test_demo.py covers the demo project, which is not distributed. The page tests
-# assert what a template renders, so their subject is a template.
+# Test files with no Python module to mirror: test_app.py covers the
+# installed app, test_demo.py the undistributed demo, and the page tests a
+# template.
 non-mirror-paths = [
     "tests/test_account_center.py",
     "tests/test_app.py",
@@ -165,14 +160,9 @@ non-mirror-paths = [
 extend_exclude = ["tests/", "demo/", "docs/"]
 
 [tool.deptry.per_rule_ignores]
-# django-mvp is a real runtime dependency that no Python module here imports.
-# The dependency is at the template and theme level: this package's markup
-# renders inside django-mvp's layout and reads its colours from the theme
-# django-mvp supplies. Dropping it would leave every page unstyled while every
-# import still resolved.
+# No module imports django-mvp: the dependency is at template and theme level
+# (see [project] dependencies).
 DEP002 = ["django-mvp"]
-# menus.py builds MenuItem objects with flex_menu, the menu library django-mvp
-# itself is built on and requires. The classes a project appends to
-# django-mvp's menus come from that library, so django-mvp's own requirement is
-# the version pin that matters.
+# flex_menu comes in through django-mvp, which builds its menus on it, so
+# django-mvp's requirement is the pin that matters.
 DEP003 = ["flex_menu"]

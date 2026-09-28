@@ -1,11 +1,7 @@
 {% extends "mvp/entrance.html" %}
 {% comment %}
-  The layout allauth's sign-in, sign-up and recovery pages extend, drawn as
-  django-mvp's entrance page: no sidebar, one centred card. allauth's pages
-  fill four blocks, and each is mapped onto the shell's own below.
-
-  django-mvp's entrance page does not draw messages, and allauth adds them
-  here ("Confirmation email sent"), so they are drawn above the card.
+  django-mvp's entrance page draws no messages, and allauth adds them here
+  ("Confirmation email sent"), so they are drawn above the card.
 {% endcomment %}
 {% block title %}
   {% block head_title %}

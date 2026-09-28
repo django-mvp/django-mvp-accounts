@@ -77,9 +77,12 @@ ACCOUNTS = [
 
 
 class Command(BaseCommand):
+    """Create the demo's sign-in accounts and the states they show."""
+
     help = "Create the demo sign-in accounts."
 
     def handle(self, *args, **options):
+        """Refuse to run without DEBUG, then seed every account."""
         if not settings.DEBUG:
             raise CommandError(
                 "seed_demo creates accounts with a known password and only "

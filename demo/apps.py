@@ -5,12 +5,7 @@ from django.db.models.signals import post_migrate
 
 
 def name_the_site(sender, **kwargs):
-    """Give the example site this project's name.
-
-    The application shell puts the site's name in every page title, and
-    ``django.contrib.sites`` seeds a row reading ``example.com``. There is no
-    setting for the name, so it is written once the tables exist.
-    """
+    """Name the example site after the project, for the shell's page titles."""
     from django.conf import settings
     from django.contrib.sites.models import Site
 
@@ -28,17 +23,9 @@ class DemoConfig(AppConfig):
     verbose_name = "Demo"
 
     def ready(self):
-        """Register the sidebar entries and the site-naming hook.
-
-        Importing ``demo.menus`` is what puts the entries into the shell's
-        navigation tree, and it has to happen here rather than at module import
-        because the items name views.
-
-        The naming hook is hung off the sites app rather than this one. Running
-        under the sites app guarantees its table exists by then, and
-        registering it here — before ``SiteConfig.ready()`` — means this runs first and the
-        packaged ``example.com`` row is never created.
-        """
+        """Register the sidebar entries and the site-naming hook."""
         from demo import menus  # noqa: F401
 
+        # Hung off the sites app so its table exists, and connected before
+        # SiteConfig.ready() so the packaged example.com row is never created.
         post_migrate.connect(name_the_site, sender=apps.get_app_config("sites"))

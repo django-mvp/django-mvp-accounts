@@ -10,8 +10,6 @@ from mvp.menus import AccountCenterMenu
 
 
 class TestStartup:
-    """Starting the app adds this package's entries to the Account Center menu."""
-
     def test_entries_are_on_the_menu_after_startup(self) -> None:
         groups = [c for c in AccountCenterMenu.children if c.name == "account"]
         assert len(groups) == 1

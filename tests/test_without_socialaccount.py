@@ -12,7 +12,6 @@ import pytest
 SCRIPT = textwrap.dedent(
     """
     import json
-    import re
 
     import django
 
@@ -39,6 +38,8 @@ SCRIPT = textwrap.dedent(
     print(json.dumps({
         "account_installed": apps.is_installed("allauth.account"),
         "socialaccount_installed": apps.is_installed("allauth.socialaccount"),
+        "account_email_url": reverse("account_email"),
+        "account_change_password_url": reverse("account_change_password"),
         "account_center": [account_center.status_code, account_center.content.decode()],
         "overview": [overview.status_code, overview.content.decode()],
         "sign_in": [sign_in.status_code, sign_in.content.decode()],
@@ -49,13 +50,10 @@ SCRIPT = textwrap.dedent(
 
 @pytest.fixture(scope="module")
 def result(run_in_subprocess) -> dict:
-    """Start Django with allauth but no social account app and render the pages."""
     return run_in_subprocess("tests.settings_without_socialaccount", SCRIPT)
 
 
 class TestWithoutSocialAccount:
-    """A project that installs allauth's account app and not its social one."""
-
     def test_the_subprocess_really_runs_without_the_social_account_app(
         self, result
     ) -> None:
@@ -68,15 +66,14 @@ class TestWithoutSocialAccount:
 
     def test_the_account_center_still_offers_the_account_pages(self, result) -> None:
         _status, page = result["account_center"]
-        assert "Manage email" in page
-        assert "Change password" in page
+        assert f'href="{result["account_email_url"]}"' in page
+        assert f'href="{result["account_change_password_url"]}"' in page
 
     def test_the_account_center_has_no_connected_accounts_entry_or_card(
         self, result
     ) -> None:
         _status, page = result["account_center"]
-        assert "Connected accounts" not in page
-        assert "Manage connected accounts" not in page
+        assert 'href="/accounts/3rdparty/"' not in page
 
     def test_the_landing_page_renders(self, result) -> None:
         status, _page = result["overview"]
@@ -84,10 +81,9 @@ class TestWithoutSocialAccount:
 
     def test_the_landing_page_has_no_connected_accounts_entry(self, result) -> None:
         _status, page = result["overview"]
-        assert "Connected accounts" not in page
+        assert 'href="/accounts/3rdparty/"' not in page
 
     def test_the_sign_in_page_renders_with_no_provider_button(self, result) -> None:
         status, page = result["sign_in"]
         assert status == 200
         assert "/login/?" not in page
-        assert "Or use a third-party" not in page

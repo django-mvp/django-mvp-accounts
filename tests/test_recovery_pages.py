@@ -38,7 +38,8 @@ class TestPasswordResetByLink(EntrancePageAssertions):
             reverse("account_reset_password"), {"email": address.email}, follow=True
         )
 
-        self.assert_entrance_page(response, "We have sent you an email")
+        assert response.redirect_chain[-1][0] == reverse("account_reset_password_done")
+        self.assert_entrance_page(response, "<h1")
 
     def test_new_password_page_from_the_emailed_link(self, client, db) -> None:
         address = EmailAddressFactory()
@@ -59,14 +60,19 @@ class TestPasswordResetByLink(EntrancePageAssertions):
             follow=True,
         )
 
-        self.assert_entrance_page(response, "Your password is now changed.")
+        assert response.redirect_chain[-1][0] == reverse(
+            "account_reset_password_from_key_done"
+        )
+        self.assert_entrance_page(response, "<h1")
 
     def test_invalid_link_page(self, client, db) -> None:
         response = client.get(
             reverse("account_reset_password_from_key", args=["abc", "not-a-token"])
         )
 
-        html = self.assert_entrance_page(response, "Bad Token")
+        html = self.assert_entrance_page(
+            response, f'href="{reverse("account_reset_password")}"'
+        )
         assert 'name="password1"' not in html
 
     def test_used_link_page(self, client, db) -> None:
@@ -81,7 +87,9 @@ class TestPasswordResetByLink(EntrancePageAssertions):
 
         response = client.get(link, follow=True)
 
-        html = self.assert_entrance_page(response, "Bad Token")
+        html = self.assert_entrance_page(
+            response, f'href="{reverse("account_reset_password")}"'
+        )
         assert 'name="password1"' not in html
 
 
@@ -128,10 +136,6 @@ class TestPasswordResetByCode(EntrancePageAssertions):
 class TestEmailVerification(EntrancePageAssertions):
     @pytest.fixture(autouse=True)
     def verification_required(self, settings):
-        """These are the pages of a project that requires email verification.
-
-        The demo only offers verification, so each test turns the requirement on.
-        """
         settings.ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
     def sign_up(self, client, email: str):
@@ -153,14 +157,18 @@ class TestEmailVerification(EntrancePageAssertions):
     def test_verification_sent_page(self, client, db) -> None:
         response = self.sign_up(client, "sent@example.com")
 
-        self.assert_entrance_page(response, "Verify Your Email Address")
+        assert response.redirect_chain[-1][0] == reverse(
+            "account_email_verification_sent"
+        )
+        self.assert_entrance_page(response, "<h1")
 
     def test_confirmation_page_from_the_emailed_link(self, client, db) -> None:
         self.sign_up(client, "confirm@example.com")
+        link = first_link_in_mail()
 
-        response = client.get(first_link_in_mail(), follow=True)
+        response = client.get(link, follow=True)
 
-        self.assert_entrance_page(response, "Confirm Email Address")
+        self.assert_entrance_page(response, f'action="{link}"')
 
     def test_verified_email_required_page(self, client, db) -> None:
         address = EmailAddressFactory(verified=False)
@@ -168,8 +176,7 @@ class TestEmailVerification(EntrancePageAssertions):
 
         response = client.get(reverse("members_only"))
 
-        html = self.assert_entrance_page(response, "Verify Your Email Address")
-        assert reverse("account_email") in html
+        self.assert_entrance_page(response, f'href="{reverse("account_email")}"')
 
     def test_code_page(self, client, db, rebuild_urls) -> None:
         with rebuild_urls(
@@ -181,8 +188,10 @@ class TestEmailVerification(EntrancePageAssertions):
         self.assert_entrance_page(response, 'name="code"')
 
     def test_no_code_is_offered_when_verification_is_by_link(self, client, db) -> None:
-        """Verification by link, the default, asks for no code."""
         response = self.sign_up(client, "link@example.com")
 
-        html = self.assert_entrance_page(response, "Verify Your Email Address")
+        assert response.redirect_chain[-1][0] == reverse(
+            "account_email_verification_sent"
+        )
+        html = self.assert_entrance_page(response, "<h1")
         assert 'name="code"' not in html

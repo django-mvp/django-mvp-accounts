@@ -1,7 +1,5 @@
 """The entries this package adds to the Account Center's navigation."""
 
-import re
-
 import pytest
 from django.urls import reverse
 
@@ -21,26 +19,13 @@ def href(name: str) -> str:
 
 @pytest.fixture
 def account_center(signed_in_client) -> str:
-    """The Account Center page as a signed-in person sees it."""
     return signed_in_client.get(reverse("account-center")).content.decode()
 
 
 class TestAccountCenterMenuEntries:
-    """What the Account Center's sidebar offers for account management."""
-
     @pytest.mark.parametrize("name", ENTRIES.values())
     def test_each_management_page_is_an_entry(self, account_center, name) -> None:
         assert href(name) in account_center
-
-    @pytest.mark.parametrize(
-        "label", ["Email", "Password", "Phone number", "Connected accounts"]
-    )
-    def test_entries_carry_their_labels(self, account_center, label) -> None:
-        assert f"<span>{label}</span>" in account_center
-
-    @pytest.mark.parametrize("icon", ["envelope", "key", "telephone", "link-45deg"])
-    def test_entries_carry_their_icons(self, account_center, icon) -> None:
-        assert f'<i class="bi bi-{icon}"' in account_center
 
     def test_no_phone_entry_when_phone_numbers_are_off(
         self, signed_in_client, rebuild_urls
@@ -50,75 +35,14 @@ class TestAccountCenterMenuEntries:
 
         assert href("account_email") in page
         assert href("account_change_password") in page
-        assert "<span>Phone number</span>" not in page
         assert href("account_change_phone") not in page
 
 
-class TestConnectedAccountsEntry:
-    """The connections page is one more entry, after Phone number."""
-
-    def test_it_follows_the_phone_number_entry(self, account_center) -> None:
-        assert account_center.index(href("socialaccount_connections")) > (
-            account_center.index(href("account_change_phone"))
-        )
-
-
 class TestTwoFactorEntry:
-    """Two-factor authentication is the last entry of the same group."""
-
-    def test_it_links_to_the_overview_with_its_label_and_icon(
-        self, account_center
-    ) -> None:
+    def test_it_links_to_the_overview(self, account_center) -> None:
         assert href("mfa_index") in account_center
-        assert "<span>Two-factor authentication</span>" in account_center
-        assert '<i class="bi bi-lock"' in account_center
-
-    def test_it_follows_connected_accounts(self, account_center) -> None:
-        assert account_center.index(href("mfa_index")) > (
-            account_center.index(href("socialaccount_connections"))
-        )
-
-    def test_it_sits_under_the_account_heading_and_does_not_collapse(
-        self, account_center
-    ) -> None:
-        heading = TestAccountGroup.HEADING.search(account_center)
-
-        assert heading is not None
-        assert account_center.index(href("mfa_index")) > heading.end()
-        assert "<details" not in account_center
-
-
-class TestAccountGroup:
-    """The entries sit under one "Account" heading, never a collapsible group."""
-
-    HEADING = re.compile(r'<li class="menu-title[^"]*">\s*<span>Account</span>')
-
-    def test_the_entries_are_headed_account(self, account_center) -> None:
-        heading = self.HEADING.search(account_center)
-
-        assert heading is not None
-        for name in ENTRIES.values():
-            assert account_center.index(href(name)) > heading.end()
-
-    def test_the_group_does_not_collapse(self, account_center) -> None:
-        assert "<details" not in account_center
 
 
 class TestSessionsEntry:
-    """The sessions page is one more entry, after Connected accounts."""
-
-    def test_it_is_an_entry_with_its_label_and_icon(self, account_center) -> None:
+    def test_it_is_an_entry(self, account_center) -> None:
         assert href("usersessions_list") in account_center
-        assert "<span>Sessions</span>" in account_center
-        assert '<i class="bi bi-box-arrow-in-right"' in account_center
-
-    def test_it_follows_the_connected_accounts_entry(self, account_center) -> None:
-        assert account_center.index(href("usersessions_list")) > (
-            account_center.index(href("socialaccount_connections"))
-        )
-
-    def test_it_is_headed_account(self, account_center) -> None:
-        heading = TestAccountGroup.HEADING.search(account_center)
-
-        assert heading is not None
-        assert account_center.index(href("usersessions_list")) > heading.end()

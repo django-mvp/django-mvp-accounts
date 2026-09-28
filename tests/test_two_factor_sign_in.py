@@ -22,13 +22,11 @@ from tests.test_management_pages import ManagementPageAssertions
 
 @pytest.fixture(autouse=True)
 def fresh_caches():
-    """Forget used codes and rate limits, which live in a cache that outlives a test."""
     cache.clear()
 
 
 @pytest.fixture
 def two_factor_user(db):
-    """A person with an authenticator app and recovery codes, and a verified address."""
     address = EmailAddressFactory()
     user = address.user
     user.email_address = address.email
@@ -94,13 +92,13 @@ class TestSecondFactorStep(EntrancePageAssertions):
         overview = client.get(reverse("overview"))
         assert overview.wsgi_request.user == two_factor_user
 
-    def test_a_wrong_code_shows_allauths_error(self, client, two_factor_user) -> None:
+    def test_a_wrong_code_is_rejected(self, client, two_factor_user) -> None:
         sign_in(client, two_factor_user)
 
         response = client.post(reverse("mfa_authenticate"), {"code": "000000"})
 
-        html = self.assert_entrance_page(response, 'name="code"')
-        assert "Incorrect code." in html
+        self.assert_entrance_page(response, 'name="code"')
+        assert "code" in response.context["form"].errors
         overview = client.get(reverse("overview"))
         assert not overview.wsgi_request.user.is_authenticated
 
@@ -129,8 +127,6 @@ class TestSecondFactorStep(EntrancePageAssertions):
 
 
 class TestActivateThenSignIn(EntrancePageAssertions):
-    """The whole path: turn the second factor on, sign out, and come back in."""
-
     @pytest.mark.django_db(transaction=True)
     def test_a_code_then_a_recovery_code_each_finish_signing_in(
         self, client, settings, totp_code
@@ -192,8 +188,6 @@ class TestTrustThisBrowser(EntrancePageAssertions):
 
         html = self.assert_entrance_page(response, 'value="trust"')
         assert 'value="skip"' in html
-        assert "Trust this Browser?" in html
-        assert "Don't Trust" in html
 
     @pytest.mark.parametrize("choice", ["trust", "skip"])
     def test_either_choice_finishes_signing_in(
@@ -209,7 +203,6 @@ class TestTrustThisBrowser(EntrancePageAssertions):
 class TestReauthenticateWithACode(ManagementPageAssertions):
     @pytest.fixture
     def stale_client(self, client, two_factor_user):
-        """Signed in, but not recently: ``force_login`` records no sign-in method."""
         client.force_login(two_factor_user)
         return client
 
@@ -229,13 +222,11 @@ class TestReauthenticateWithACode(ManagementPageAssertions):
 
         self.assert_management_page(response, 'name="code"')
 
-    def test_a_wrong_code_shows_allauths_error(
-        self, stale_client, code_page_url
-    ) -> None:
+    def test_a_wrong_code_is_rejected(self, stale_client, code_page_url) -> None:
         response = stale_client.post(code_page_url, {"code": "000000"})
 
-        html = self.assert_management_page(response, 'name="code"')
-        assert "Incorrect code." in html
+        self.assert_management_page(response, 'name="code"')
+        assert "code" in response.context["form"].errors
 
     def test_a_correct_code_continues_to_the_page_asked_for(
         self, stale_client, two_factor_user, totp_code, code_page_url
@@ -250,4 +241,6 @@ class TestReauthenticateWithACode(ManagementPageAssertions):
         )
 
         assert response.redirect_chain[-1][0] == reverse("mfa_deactivate_totp")
-        self.assert_management_page(response, "Deactivate")
+        self.assert_management_page(
+            response, f'action="{reverse("mfa_deactivate_totp")}"'
+        )

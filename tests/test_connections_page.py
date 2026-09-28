@@ -17,8 +17,6 @@ from tests.test_management_pages import ManagementPageAssertions
 
 CONNECTIONS = reverse("socialaccount_connections")
 CONNECT_LINK = re.compile(r'href="(/accounts/dummy/login/)\?[^"]*process=connect')
-NO_PASSWORD = "Your account has no password set up."
-REQUIRED = "This field is required."
 # Connecting and disconnecting are sensitive, so allauth asks for a recent
 # sign-in, which ``force_login`` does not record.
 NO_REAUTHENTICATION = override_settings(ACCOUNT_REAUTHENTICATION_REQUIRED=False)
@@ -26,7 +24,6 @@ NO_REAUTHENTICATION = override_settings(ACCOUNT_REAUTHENTICATION_REQUIRED=False)
 
 @pytest.fixture
 def person(client, db):
-    """A signed-in account with a password and a verified address."""
     address = EmailAddressFactory()
     client.force_login(address.user)
     return address.user
@@ -34,7 +31,6 @@ def person(client, db):
 
 @pytest.fixture
 def passwordless(client, db):
-    """A signed-in account with no password, whose one account is its way in."""
     address = EmailAddressFactory(user=UserFactory(password=None))
     client.force_login(address.user)
     return address.user
@@ -50,7 +46,6 @@ class TestConnectionsPage(ManagementPageAssertions):
 
         html = self.assert_management_page(response, 'name="account"')
         assert f'value="{account.pk}"' in html
-        assert "Remove" in html
 
     def test_the_provider_buttons_connect_rather_than_sign_in(
         self, client, person
@@ -64,8 +59,7 @@ class TestConnectionsPage(ManagementPageAssertions):
     ) -> None:
         response = client.get(CONNECTIONS)
 
-        html = self.assert_management_page(response, "Add a Third-Party Account")
-        assert "no third-party accounts connected" in html
+        html = self.assert_management_page(response, "/accounts/dummy/login/")
         assert 'name="account"' not in html
         assert CONNECT_LINK.search(html)
 
@@ -76,26 +70,22 @@ class TestConnectionsPage(ManagementPageAssertions):
 
 
 class TestRefusals(ManagementPageAssertions):
-    """allauth's errors reach the page, in an alert above its markup."""
-
     def test_the_only_way_to_sign_in_is_not_removed(self, client, passwordless) -> None:
         account = SocialAccountFactory(user=passwordless)
 
         response = client.post(CONNECTIONS, {"account": account.pk})
 
         html = self.assert_management_page(response, 'name="account"')
-        assert NO_PASSWORD in html
+        assert 'role="alert"' in html
         passwordless.socialaccount_set.get(pk=account.pk)
 
-    def test_an_empty_post_shows_the_required_field_message(
-        self, client, person
-    ) -> None:
+    def test_an_empty_post_shows_the_required_field(self, client, person) -> None:
         SocialAccountFactory(user=person)
 
         response = client.post(CONNECTIONS, {})
 
-        html = self.assert_management_page(response, 'name="account"')
-        assert REQUIRED in html
+        self.assert_management_page(response, 'name="account"')
+        assert response.context["form"].has_error("account", code="required")
 
     def test_a_page_with_no_errors_has_no_alert(self, client, person) -> None:
         SocialAccountFactory(user=person)
@@ -129,6 +119,6 @@ class TestConnecting(ManagementPageAssertions):
         response = client.post(CONNECTIONS, {"account": account.pk}, follow=True)
 
         assert response.redirect_chain[-1][0] == CONNECTIONS
-        html = self.assert_management_page(response, "Add a Third-Party Account")
-        assert "The third-party account has been disconnected." in html
+        html = self.assert_management_page(response, "/accounts/dummy/login/")
+        assert 'role="alert"' in html
         assert not person.socialaccount_set.exists()

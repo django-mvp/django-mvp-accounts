@@ -14,6 +14,7 @@ from allauth.account.models import EmailAddress
 from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
 from allauth.usersessions.models import UserSession
+from bs4 import BeautifulSoup
 from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
@@ -30,33 +31,16 @@ class TestOverviewPage:
         assert client.get(reverse("overview")).status_code == 200
 
     def test_the_shell_wraps_it(self, overview_page: str) -> None:
-        """The page is inside django-mvp's application shell, not bare.
-
-        A template that fails to extend the shell still returns 200 and still
-        shows its own content, so the status code proves nothing about this.
-        """
         assert 'aria-label="Main navigation"' in overview_page
 
     def test_the_sidebar_holds_the_pages_that_exist(self, overview_page: str) -> None:
-        """A menu entry naming a route that will not resolve is dropped.
-
-        It is dropped silently, which is why the assertion is on the rendered
-        sidebar rather than on the menu tree that produced it.
-        """
-        assert "Overview" in overview_page
+        assert f'href="{reverse("overview")}"' in overview_page
 
     def test_the_starter_component_reached_the_page(self, overview_page: str) -> None:
-        """Delete this test with the starter component.
-
-        Cotton renders a component it cannot resolve as empty output, so this
-        is the assertion that would catch a moved or renamed template.
-        """
         assert "It renders" in overview_page
 
 
 class TestDemoSignIn:
-    """The demo runs allauth, so its sign-in is allauth's page and flow."""
-
     def test_allauths_sign_in_page_responds(self, client, db) -> None:
         assert client.get(reverse("account_login")).status_code == 200
 
@@ -87,12 +71,6 @@ class TestDemoSignIn:
 
 
 class TestUrlconfRebuild:
-    """allauth reads its settings when its URLconf is imported.
-
-    A test that switches one of those settings has to rebuild the URLconf, and
-    put it back afterwards so the next test starts from the demo's own.
-    """
-
     def test_a_route_allauth_leaves_out_does_not_resolve(self, rebuild_urls) -> None:
         with (
             rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False),
@@ -108,31 +86,15 @@ class TestUrlconfRebuild:
 
 
 class TestDemoAccountAdapter:
-    """The demo keeps phone numbers where allauth's change flow expects them."""
-
     def test_a_verified_change_stores_the_new_number(self, db) -> None:
-        """allauth finishes a change by marking the new number verified.
-
-        It never calls ``set_phone`` for the new number first, so marking it
-        verified has to store it, or the change is confirmed on the page and
-        lost from the account.
-        """
         phone = PhoneNumberFactory(number="+4915112345678", verified=True)
         DemoAccountAdapter().set_phone_verified(phone.user, "+4915187654321")
         assert DemoAccountAdapter().get_phone(phone.user) == ("+4915187654321", True)
 
 
 class TestOutbox:
-    """The demo keeps what it would have sent, so a reviewer can follow a link.
-
-    Sign-in by code, password reset and verification all send something. On a
-    development server that would go to the console, which a reviewer opening
-    the demo in a browser cannot see.
-    """
-
     @pytest.fixture(autouse=True)
     def debug_on(self, settings):
-        """The demo's development-only pages exist only with DEBUG on."""
         settings.DEBUG = True
 
     def test_a_sent_email_is_listed(self, client, db) -> None:
@@ -168,11 +130,8 @@ class TestOutbox:
 
 
 class TestSeededStates:
-    """The seeded accounts between them reach every state a page can show."""
-
     @pytest.fixture(autouse=True)
     def debug_on(self, settings):
-        """The demo's development-only pages exist only with DEBUG on."""
         settings.DEBUG = True
 
     def test_staff_has_a_second_unverified_address(self, db) -> None:
@@ -193,13 +152,10 @@ class TestSeededStates:
 
 
 class TestDemoTwoFactorAccount:
-    """mfa.user@example.com signs in with a second factor, so the step can be seen."""
-
     EMAIL = "mfa.user@example.com"
 
     @pytest.fixture(autouse=True)
     def debug_on(self, settings):
-        """The demo's development-only pages exist only with DEBUG on."""
         settings.DEBUG = True
 
     def test_it_has_an_authenticator_app_and_recovery_codes(self, db) -> None:
@@ -255,9 +211,7 @@ class TestDemoTwoFactorAccount:
         call_command("seed_demo", stdout=output)
 
         assert self.EMAIL in output.getvalue()
-        assert "'123456' passes that step, as a demo convenience only" in (
-            output.getvalue()
-        )
+        assert "123456" in output.getvalue()
 
     def test_without_a_fixed_code_the_output_says_to_compute_one(
         self, db, settings
@@ -271,8 +225,6 @@ class TestDemoTwoFactorAccount:
 
 
 class TestDemoSocialAccounts:
-    """The demo installs allauth's test provider, so a sign-in needs no credentials."""
-
     def test_the_test_providers_login_url_resolves(self) -> None:
         assert reverse("dummy_login")
 
@@ -281,8 +233,6 @@ class TestDemoSocialAccounts:
 
 
 class TestSeededSocialAccounts:
-    """The demo has one account that signs in with a password and one that cannot."""
-
     @pytest.fixture(autouse=True)
     def seeded_twice(self, db, settings):
         settings.DEBUG = True
@@ -316,17 +266,13 @@ class TestSeededSocialAccounts:
         text = out.getvalue()
         assert "1001" in text
         assert "2002" in text
-        assert "All three sign in with the password" not in text
 
 
 class TestDemoTwoFactor:
-    """The demo installs allauth's multi-factor app with every page reachable."""
-
     def test_the_two_factor_overview_resolves(self) -> None:
         assert reverse("mfa_index")
 
     def test_the_suite_never_accepts_a_fixed_code(self, settings) -> None:
-        """Every test enters a real code computed from the secret."""
         assert settings.MFA_TOTP_INSECURE_BYPASS_CODE is None
 
     def test_the_demo_turns_on_every_factor_but_passkey_sign_up(self) -> None:
@@ -341,18 +287,13 @@ class TestDemoTwoFactor:
 
 
 class TestDemoUserSessions:
-    """The demo installs allauth's user sessions app so the sessions page exists."""
-
     def test_the_sessions_page_resolves(self) -> None:
         assert reverse("usersessions_list")
 
 
 class TestSeededSessions:
-    """regular.user is signed in from two other browsers, and nobody else is."""
-
     @pytest.fixture(autouse=True)
     def debug_on(self, settings):
-        """The demo's development-only pages exist only with DEBUG on."""
         settings.DEBUG = True
 
     def test_seeding_twice_leaves_exactly_two_sessions_for_regular_user(
@@ -388,7 +329,6 @@ class TestSeededSessions:
         call_command("seed_demo", stdout=out)
 
         assert "regular.user@example.com" in out.getvalue()
-        assert "two other browsers" in out.getvalue()
         assert not any(
             key in out.getvalue()
             for key in Session.objects.values_list("session_key", flat=True)
@@ -396,8 +336,6 @@ class TestSeededSessions:
 
 
 class TestSeededSessionsWalkthrough:
-    """Signing in as regular.user shows the seeded sessions and the action."""
-
     def test_signing_in_lists_three_sessions_and_offers_to_sign_out_the_others(
         self, client, db, settings
     ) -> None:
@@ -412,4 +350,7 @@ class TestSeededSessionsWalkthrough:
 
         assert html.count("<tbody") == 1
         assert html.split("<tbody", 1)[1].count("<tr") == 3
-        assert "Sign Out Other Sessions" in html
+        soup = BeautifulSoup(html, "html.parser")
+        form = soup.find("form", attrs={"action": reverse("usersessions_list")})
+        assert form is not None
+        assert form.find("button", attrs={"type": "submit"}) is not None

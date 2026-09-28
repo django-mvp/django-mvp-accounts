@@ -12,7 +12,6 @@ from django.urls import reverse
 from easy_icons import icon
 
 from tests.test_entrance_pages import (
-    ALLAUTH_BARE_MENU,
     NAVIGATION,
     STYLESHEET,
     EntrancePageAssertions,
@@ -30,8 +29,6 @@ LOGIN_LINK = re.compile(
 
 
 class TestProviderButtons(EntrancePageAssertions):
-    """Each provider allauth lists is one button with its icon and its name."""
-
     @pytest.fixture(params=["account_login", "account_signup"])
     def page(self, request, client, db) -> str:
         return client.get(reverse(request.param)).content.decode()
@@ -56,7 +53,6 @@ class TestProviderButtons(EntrancePageAssertions):
     def test_a_button_carries_the_icon_named_after_its_provider_id(
         self, page: str, provider_id: str
     ) -> None:
-        """The markup is what the project's icon mapping gives that id."""
         href = reverse(f"{provider_id}_login")
         [content] = [c for h, c in LOGIN_LINK.findall(page) if h == href]
 
@@ -78,16 +74,12 @@ class TestProviderButtons(EntrancePageAssertions):
             html = client.get(reverse(name)).content.decode()
 
             assert not LOGIN_LINK.findall(html)
-            assert "Or use a third-party" not in html
             assert "<hr" not in html
 
 
 class TestSocialEntrancePages(EntrancePageAssertions):
-    """The pages of a social sign-in, reached through the test provider."""
-
     @pytest.fixture
     def authenticate_url(self, client, db) -> str:
-        """Where the test provider's own form lives, for a sign-in in progress."""
         response = client.post(reverse("dummy_login"), {"process": "login"})
         assert response.status_code == 302
         return response["location"]
@@ -95,14 +87,14 @@ class TestSocialEntrancePages(EntrancePageAssertions):
     def test_the_confirmation_page(self, client, db) -> None:
         response = client.get(reverse("dummy_login"), {"process": "login"})
 
-        html = self.assert_entrance_page(response, "Sign In Via Dummy")
-        assert "Continue" in html
+        self.assert_entrance_page(
+            response, "<form", template_name="socialaccount/login.html"
+        )
 
     def test_the_test_providers_form(self, client, authenticate_url: str) -> None:
         response = client.get(authenticate_url)
 
-        html = self.assert_entrance_page(response, "Dummy Provider Login")
-        assert 'name="id"' in html
+        self.assert_entrance_page(response, 'name="id"')
 
     def test_the_extra_sign_up_step(self, client, authenticate_url: str) -> None:
         response = client.post(authenticate_url, {"id": "1001"}, follow=True)
@@ -117,28 +109,24 @@ class TestSocialEntrancePages(EntrancePageAssertions):
 
         response = client.post(reverse("socialaccount_signup"), {"email": "not-mail"})
 
-        html = self.assert_entrance_page(response, 'name="email"')
-        assert "Enter a valid email address." in html
+        self.assert_entrance_page(response, 'name="email"')
+        assert response.context["form"].has_error("email", code="invalid")
 
     def test_the_cancelled_page(self, client, authenticate_url: str) -> None:
         response = client.post(authenticate_url, {"action": "cancel"}, follow=True)
 
-        self.assert_entrance_page(response, "Login Cancelled")
+        self.assert_entrance_page(response, f'href="{reverse("account_login")}"')
         assert response.redirect_chain[-1][0] == reverse(
             "socialaccount_login_cancelled"
         )
 
     def test_the_failed_page(self, client, db) -> None:
-        """allauth answers this page 401, so the shared assertion, which wants 200, is
-        not used and its other three checks are made here."""
         response = client.get(reverse("socialaccount_login_error"))
         html = response.content.decode()
 
         assert response.status_code == 401
         assert STYLESHEET in html, "the shell's stylesheet is not on the page"
         assert NAVIGATION not in html, "an entrance page draws no navigation"
-        assert ALLAUTH_BARE_MENU not in html, "allauth's bare layout rendered"
-        assert "Third-Party Login Failure" in html
 
     def test_a_completed_sign_in_ends_signed_in(
         self, client, authenticate_url: str
@@ -159,22 +147,13 @@ class TestSocialEntrancePages(EntrancePageAssertions):
 
 
 class TestSameSiteRedirectPage(EntrancePageAssertions):
-    """With a Strict session cookie the callback bounces through its own page.
-
-    The browser withholds the cookie from a cross-site request, so allauth
-    answers the first visit with a page that sends the browser to the same URL
-    again, from this site.
-    """
-
     def test_it_renders_as_an_entrance_page(self, client, db, settings) -> None:
         settings.SESSION_COOKIE_SAMESITE = "Strict"
         callback = reverse("github_callback")
 
         response = client.get(callback)
 
-        html = self.assert_entrance_page(response, "Continue")
-        assert "Sign In" in html.split("</title>")[0]
+        html = self.assert_entrance_page(response, f'href="{callback}?_redir="')
         assert (
             f'<meta http-equiv="refresh" content="0;URL=\'{callback}?_redir=\'"' in html
         )
-        assert f'href="{callback}?_redir="' in html

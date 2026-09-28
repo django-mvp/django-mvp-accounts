@@ -1,0 +1,260 @@
+{
+  "feature": "004-signed-in-sessions",
+  "branch": "004-signed-in-sessions",
+  "repo": "django-mvp/django-mvp-accounts",
+  "state": "PR_READY",
+  "state_history": [
+    {
+      "state": "QUEUED",
+      "at": "2026-09-26T17:54:18Z",
+      "note": "specification merged to main in PR #24, merge commit 0f5d62caffcbef1e738b41ce5505ccb8f35f11df; epic #8, stories #25-#26"
+    },
+    {
+      "state": "PLAN",
+      "at": "2026-09-27T04:36:37Z",
+      "note": "plan.md, research.md, tasks.md"
+    },
+    {
+      "state": "DESIGN_REVIEW",
+      "at": "2026-09-27T04:37:39Z",
+      "note": "design reviewer dispatched, three lenses, one round"
+    },
+    {
+      "state": "IMPLEMENT",
+      "at": "2026-09-27T04:40:48Z",
+      "note": "US1 then US2, sequentially in the feature worktree"
+    },
+    {
+      "state": "CONVERGE",
+      "at": "2026-09-27T04:52:08Z",
+      "note": "both stories done"
+    },
+    {
+      "state": "REVIEW",
+      "at": "2026-09-27T04:53:24Z",
+      "note": "one reviewer correctness+spec+docs, one security lens"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-09-27T04:59:14Z",
+      "note": "review fixed and recorded; PR ready; walkthrough sent"
+    }
+  ],
+  "gates": {
+    "spec": {
+      "approved_by": "SamuelJennings",
+      "at": "2026-09-26T17:54:18Z",
+      "self_resolved": []
+    },
+    "plan": {
+      "approved_by": "notified",
+      "at": "2026-09-27T04:40:37Z",
+      "self_resolved": []
+    },
+    "merge": {
+      "approved_by": null,
+      "at": null
+    },
+    "design_review": {
+      "approved_by": "design-panel",
+      "at": "2026-09-27T04:40:37Z",
+      "self_resolved": [
+        "DR-001 medium: client sessions come from the middleware, told apart by each client's address and browser (R5, T005, T009)",
+        "DR-002 low: a session with no IP address cannot occur (D8)",
+        "DR-003 low: demo sessions seeded after the password is set, ended not deleted (T007)",
+        "DR-004 low: T011 trimmed to the seeded three-session view"
+      ]
+    },
+    "review": {
+      "approved_by": "review-panel",
+      "at": "2026-09-27T04:57:58Z",
+      "self_resolved": [
+        "COR-001 low: seeded sessions' two-week expiry stated, re-run restores them \u2014 fixed",
+        "COR-002 low: seed_demo reads the session store from SESSION_ENGINE \u2014 fixed",
+        "SEC-001 low: hostile browser string renders as text, pinned by a test that fails when unescaped \u2014 fixed",
+        "note: middleware comment corrected; allauth's unlabelled Current column is upstream markup, kept"
+      ]
+    }
+  },
+  "stories": [
+    {
+      "id": "US1",
+      "priority": "P1",
+      "issue": 25,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-004",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T001",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestDemoUserSessions -x -q (red: failed before settings change; green: 1 passed)",
+              "commit b3253c9b98ce322b83a092e759599217a158b7ea"
+            ]
+          }
+        },
+        {
+          "id": "T002",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_elements.py::TestTableElements -q (red: 2 failed with elements removed; green: 3 passed)",
+              "diff against git show origin/003-two-factor-pages: identical x6",
+              "commit b68e3e73028755cbcefbe3c3d874c9739c151954"
+            ]
+          }
+        },
+        {
+          "id": "T003",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py::TestSessionsEntry -q (red: 3 failed; green: 19 passed in module)",
+              "commit db22f9dbf7e30b73fbec098066f6a4bae61c8886"
+            ]
+          }
+        },
+        {
+          "id": "T004",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_account_center.py -q (red: 2 failed; green: 13 passed)",
+              "commit 3643840dff4725ab18f281f18d318c2141a9c962"
+            ]
+          }
+        },
+        {
+          "id": "T005",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_sessions_page.py -q (8 passed)",
+              "probe: layout removed -> 1 failed, restored",
+              "probe: table.html removed -> 1 failed, restored",
+              "commit b36b0c50428b40c2fe50fc0f92e18c9da7e703bf"
+            ]
+          }
+        },
+        {
+          "id": "T006",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_usersessions.py -q (5 passed)",
+              "probe: middleware kept -> ImproperlyConfigured, restored",
+              "commit 92f559437deaac4070fde97c1b78d23a2f030542"
+            ]
+          }
+        },
+        {
+          "id": "T007",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestSeededSessions -q (red: 3 failed; green: 4 passed)",
+              "manage.py migrate; seed_demo run twice OK",
+              "commit 09e60934a7cd5a3ebbd2967e3d1e66bd5b8bb2b6"
+            ]
+          }
+        },
+        {
+          "id": "T008",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run python ../manage.py makemessages -l en (from mvp_accounts/)",
+              "commit 72ff097d6deb177afb877d9aa00941e2ebbdbc87"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US2",
+      "priority": "P1",
+      "issue": 26,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-004",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T009",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_sessions_page.py::TestSigningOutOtherSessions"
+            ],
+            "commands": [
+              "uv run pytest tests/test_sessions_page.py -q (14 passed; passed first time, allauth does the work)",
+              "probe: form action removed -> 2 failed, restored",
+              "probe: messages line removed from mvp base.html -> 1 failed, restored",
+              "commit 80a6d22"
+            ]
+          }
+        },
+        {
+          "id": "T010",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_sessions_page.py::TestSigningOutTheLastSession"
+            ],
+            "commands": [
+              "uv run pytest tests/test_sessions_page.py -q (passed first time; form-action probe failed it, restored)",
+              "commit 80a6d22"
+            ]
+          }
+        },
+        {
+          "id": "T011",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestSeededSessionsWalkthrough"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py -q -k Walkthrough (1 passed)",
+              "commit 2bfb757"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "converge_cycles": {
+      "used": 1,
+      "max": 2
+    },
+    "review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "design_review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "tokens": {
+      "used": 0,
+      "max": 120
+    }
+  },
+  "pr": {
+    "number": 29,
+    "draft": false
+  }
+}

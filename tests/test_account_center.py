@@ -19,6 +19,7 @@ CARDS = {
     "Password": "account_change_password",
     "Phone number": "account_change_phone",
     "Connected accounts": "socialaccount_connections",
+    "Sessions": "usersessions_list",
 }
 
 
@@ -74,6 +75,12 @@ class TestOverviewCards:
         assert cards.index("<span>Two-factor authentication</span>") > (
             cards.index("<span>Connected accounts</span>")
         )
+
+    def test_the_sessions_card_offers_its_button_and_icon(self, account_center) -> None:
+        cards = cards_of(account_center)
+
+        assert "Manage sessions" in cards
+        assert "bi-box-arrow-in-right" in cards
 
     def test_a_signed_out_visitor_is_sent_to_sign_in(self, client, db) -> None:
         response = client.get(reverse("account-center"))

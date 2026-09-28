@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.mfa",
+    # Records where each account is signed in, which is what allauth's
+    # sessions page lists.
+    "allauth.usersessions",
     # allauth's test provider: it completes a sign-in on this machine, so every
     # social account page can be reached without credentials from a real one.
     "allauth.socialaccount.providers.dummy",
@@ -49,7 +52,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
-    # allauth's security-key list loads its date filters from here.
+    # allauth's sessions page and security-key list load their date filters
+    # from here, and fail to render without it.
     "django.contrib.humanize",
     "mvp",
     "easy_icons",
@@ -76,6 +80,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # With activity tracking on, keeps each recorded session's address,
+    # browser and last-seen time current on every request.
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Last, because it rewrites the response body to insert its script tag and
     # anything that encodes or compresses the body has to run after it.
@@ -143,6 +150,10 @@ MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_TRUST_ENABLED = True
 MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
+
+# The sessions page can show when each session was last used. The demo turns
+# it on so that column can be seen; the package leaves it to the project.
+USERSESSIONS_TRACK_ACTIVITY = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

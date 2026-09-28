@@ -75,6 +75,12 @@ alongside security keys.
 _Avoid_: using it for every security key. A key that only serves as a second factor
 is a security key, not a passkey.
 
+**Signed-in session**:
+One browser or device where a person is currently signed in to their account.
+The sessions page lists them, and can sign out all but the one being used.
+_Avoid_: login (allauth's URL names use it, the prose here does not), device
+(a browser is what is recorded, and one device can hold several).
+
 **Entrance**:
 The pages someone sees before they are signed in: sign-in, sign-up, password
 reset and email verification. They render outside the application shell's

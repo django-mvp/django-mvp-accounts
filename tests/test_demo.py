@@ -13,6 +13,8 @@ import pytest
 from allauth.account.models import EmailAddress
 from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
+from allauth.usersessions.models import UserSession
+from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
 from django.urls import NoReverseMatch, reverse
@@ -336,3 +338,78 @@ class TestDemoTwoFactor:
         assert demo_settings.MFA_PASSKEY_LOGIN_ENABLED
         assert demo_settings.MFA_TRUST_ENABLED
         assert not getattr(demo_settings, "MFA_PASSKEY_SIGNUP_ENABLED", False)
+
+
+class TestDemoUserSessions:
+    """The demo installs allauth's user sessions app so the sessions page exists."""
+
+    def test_the_sessions_page_resolves(self) -> None:
+        assert reverse("usersessions_list")
+
+
+class TestSeededSessions:
+    """regular.user is signed in from two other browsers, and nobody else is."""
+
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        """The demo's development-only pages exist only with DEBUG on."""
+        settings.DEBUG = True
+
+    def test_seeding_twice_leaves_exactly_two_sessions_for_regular_user(
+        self, db
+    ) -> None:
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="regular.user@example.com").user
+        sessions = UserSession.objects.filter(user=user)
+        assert sorted(session.ip for session in sessions) == [
+            "192.0.2.10",
+            "198.51.100.24",
+        ]
+        assert all(session.user_agent for session in sessions)
+        assert Session.objects.count() == 2
+
+    def test_allauth_keeps_both_when_it_lists_them(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="regular.user@example.com").user
+        assert len(UserSession.objects.purge_and_list(user)) == 2
+
+    def test_no_other_account_has_a_session(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email="regular.user@example.com").user
+        assert not UserSession.objects.exclude(user=user).exists()
+
+    def test_the_output_describes_them_without_a_session_key(self, db) -> None:
+        out = StringIO()
+        call_command("seed_demo", stdout=out)
+
+        assert "regular.user@example.com" in out.getvalue()
+        assert "two other browsers" in out.getvalue()
+        assert not any(
+            key in out.getvalue()
+            for key in Session.objects.values_list("session_key", flat=True)
+        )
+
+
+class TestSeededSessionsWalkthrough:
+    """Signing in as regular.user shows the seeded sessions and the action."""
+
+    def test_signing_in_lists_three_sessions_and_offers_to_sign_out_the_others(
+        self, client, db, settings
+    ) -> None:
+        settings.DEBUG = True
+        call_command("seed_demo", stdout=StringIO())
+        client.post(
+            reverse("account_login"),
+            {"login": "regular.user@example.com", "password": "password"},
+        )
+
+        html = client.get(reverse("usersessions_list")).content.decode()
+
+        assert html.count("<tbody") == 1
+        assert html.split("<tbody", 1)[1].count("<tr") == 3
+        assert "Sign Out Other Sessions" in html

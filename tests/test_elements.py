@@ -342,18 +342,40 @@ class TestFormId:
 class TestTableElements:
     """allauth's tables are drawn with django-mvp's table class, not bare tags."""
 
-    SOURCE = (
+    TABLE = (
         "{% element table %}"
-        "{% element thead %}{% element th %}Key{% endelement %}{% endelement %}"
+        "{% element thead %}{% element tr %}"
+        "{% element th %}Started{% endelement %}"
+        '{% element th align="right" %}Size{% endelement %}'
+        "{% endelement %}{% endelement %}"
         "{% element tbody %}{% element tr %}"
-        '{% element td align="right" %}Edit{% endelement %}'
+        "{% element td %}Today{% endelement %}"
+        '{% element td align="right" %}4{% endelement %}'
         "{% endelement %}{% endelement %}"
         "{% endelement %}"
     )
 
-    def test_the_table_carries_the_table_class_and_keeps_its_content(self) -> None:
-        soup = render_element(self.SOURCE)
+    def test_a_table_is_a_theme_table_that_scrolls_inside_its_own_area(self) -> None:
+        soup = render_element(self.TABLE)
 
-        assert "table" in soup.table["class"]
-        assert soup.select_one("table > thead > th").get_text(strip=True) == "Key"
-        assert soup.select_one("table > tbody > tr > td").get_text(strip=True) == "Edit"
+        wrapper = soup.select_one("div.overflow-x-auto")
+        assert "table" in wrapper.select_one("table")["class"]
+
+    def test_the_head_and_body_cells_are_kept(self) -> None:
+        soup = render_element(self.TABLE)
+
+        assert [th.get_text(strip=True) for th in soup.select("thead th")] == [
+            "Started",
+            "Size",
+        ]
+        assert [td.get_text(strip=True) for td in soup.select("tbody td")] == [
+            "Today",
+            "4",
+        ]
+
+    def test_a_cell_aligned_right_is_aligned_to_the_end(self) -> None:
+        soup = render_element(self.TABLE)
+
+        first, second = soup.select("tbody td")
+        assert second["class"] == ["text-end"]
+        assert not first.has_attr("class")

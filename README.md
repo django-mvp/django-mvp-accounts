@@ -93,19 +93,20 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password, Phone number, Connected accounts and Two-factor
-  authentication, listed under an "Account" heading below its Overview entry.
+- **Menu entries** for Email, Password, Phone number, Connected accounts, Two-factor
+  authentication and Sessions, listed under an "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Connected accounts appears only with the social account app (`allauth.socialaccount`)
-installed, and Two-factor authentication only with the multi-factor app (`allauth.mfa`)
-installed. Without allauth installed the package adds nothing and raises nothing.
+installed, Two-factor authentication only with the multi-factor app (`allauth.mfa`)
+installed, and Sessions only with the user sessions app (`allauth.usersessions`) installed.
+Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
-change and verification, connected accounts, and re-authentication) render in the Account
-Center, inside the shell with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
+change and verification, connected accounts, sessions, and re-authentication) render in the
+Account Center, inside the shell with its sidebar and messages. Pages that allauth builds on its entrance base render the same way
 for a signed-in person, so re-authentication and the phone verification that follows a change are
 management pages, while phone verification during sign-up stays an entrance page. The social
 sign-in pages, including the confirmation a signed-in person sees when connecting another
@@ -149,6 +150,44 @@ Once `allauth.mfa` is installed, its pages render in django-mvp's shell:
 
 Without `allauth.mfa` installed, the Account Center has no Two-factor authentication entry or
 card, and nothing else changes.
+
+## Signed-in sessions
+
+allauth's sessions page lists the browsers and devices a person is signed in from,
+and it renders in the Account Center like the other management pages. This
+package adds a Sessions entry and card for it, and draws its table with
+django-mvp's table class inside a wrapper that scrolls sideways on a narrow
+screen. To turn the page on, install allauth's user sessions app, its
+middleware and `django.contrib.humanize`, which allauth's page loads its date
+filters from, as
+[allauth documents](https://docs.allauth.org/en/latest/usersessions/index.html):
+
+```python
+INSTALLED_APPS = [
+    # ...
+    "allauth.usersessions",
+    "django.contrib.humanize",
+]
+
+MIDDLEWARE = [
+    # ...
+    "allauth.account.middleware.AccountMiddleware",
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
+]
+```
+
+Set `USERSESSIONS_TRACK_ACTIVITY = True` to add a "Last seen at" column. The
+package leaves the setting to the project.
+
+Only sessions allauth has recorded are listed. A browser that was already signed
+in before the app was installed appears after its next sign-in, or after its
+next request when activity tracking is on. The page offers one action: signing
+out every session except the current one, without asking first, as allauth's
+does. Signing out one chosen session is not offered, because allauth does not
+offer it.
+
+Without the user sessions app the Account Center has no Sessions entry or card,
+and nothing else changes.
 
 ## Signing in with other accounts
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 23:45+0200\n"
+"POT-Creation-Date: 2026-09-28 16:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,28 +22,32 @@ msgstr ""
 msgid "Accounts"
 msgstr ""
 
-#: menus.py:23
+#: menus.py:75
 msgid "Account"
 msgstr ""
 
-#: menus.py:28 templates/mvp/account/overview.html:13
+#: menus.py:87 templates/mvp/account/overview.html:13
 msgid "Email"
 msgstr ""
 
-#: menus.py:33 templates/mvp/account/overview.html:22
+#: menus.py:99 templates/mvp/account/overview.html:22
 msgid "Password"
 msgstr ""
 
-#: menus.py:38 templates/mvp/account/overview.html:31
+#: menus.py:105 templates/mvp/account/overview.html:31
 msgid "Phone number"
 msgstr ""
 
-#: menus.py:43 templates/mvp/account/overview.html:40
+#: menus.py:110 templates/mvp/account/overview.html:40
 msgid "Connected accounts"
 msgstr ""
 
-#: menus.py:49 templates/mvp/account/overview.html:49
+#: menus.py:126 templates/mvp/account/overview.html:49
 msgid "Two-factor authentication"
+msgstr ""
+
+#: menus.py:133 templates/mvp/account/overview.html:58
+msgid "Sessions"
 msgstr ""
 
 #: templates/account/logout.html:10 templates/account/logout.html:14
@@ -137,6 +141,16 @@ msgstr ""
 
 #: templates/mvp/account/overview.html:52
 msgid "Manage two-factor authentication"
+msgstr ""
+
+#: templates/mvp/account/overview.html:59
+msgid ""
+"See the browsers and devices signed in to your account, and sign out the "
+"others."
+msgstr ""
+
+#: templates/mvp/account/overview.html:61
+msgid "Manage sessions"
 msgstr ""
 
 #: templates/socialaccount/login_redirect.html:11

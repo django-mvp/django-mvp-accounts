@@ -58,8 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   social account app the entry and card do not appear. The demo seeds an account with a connected
   test provider account and one with no password.
 - With allauth's multi-factor app (`allauth.mfa`, from `django-allauth[mfa]`) installed,
-  django-mvp's Account Center gains a Two-factor authentication menu entry, last in the "Account"
-  group, and a card on its landing page. The two-factor overview, activating and deactivating the
+  django-mvp's Account Center gains a Two-factor authentication menu entry, after Connected accounts
+  in the "Account" group, and a card on its landing page. The two-factor overview, activating and deactivating the
   authenticator app, and the recovery codes pages (view, download, generate) render in the
   Account Center. The overview draws each factor as a card with all of its actions. The QR code is
   always dark on white, in every theme, and the recovery codes are shown in a read-only text
@@ -81,6 +81,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `django.contrib.humanize` in `INSTALLED_APPS`. Browsers only allow security keys and passkeys
   over HTTPS or on `localhost`. The demo leaves passkey sign-up off, because allauth requires
   mandatory email verification by code for it, among other settings.
+- With allauth's user sessions app installed, django-mvp's Account Center gains a Sessions menu
+  entry, in the "Account" group after Two-factor authentication, and a card on its landing page. allauth's
+  sessions page renders in the Account Center and lists each browser a person is signed in from,
+  with its address, browser and the "Current" marker, and a "Last seen at" column when
+  `USERSESSIONS_TRACK_ACTIVITY` is on. The page's button signs out every other session without
+  asking first, and the confirmation appears in the shell. With one session the button is "Sign
+  Out" and uses the site's own sign-out. The table scrolls sideways inside its own area on a narrow
+  screen. To use it, install `allauth.usersessions`, its middleware and `django.contrib.humanize`.
+  Without the app the entry and card do not appear. The demo signs `regular.user@example.com` in
+  from two more browsers.
 
 ### Changed
 

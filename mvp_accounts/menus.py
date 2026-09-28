@@ -6,8 +6,9 @@ It adds its "Account" group only when allauth is installed, so a project
 without it never builds entries that could only be dropped again. An entry
 whose page allauth has not routed, the phone number page with phone numbers
 turned off, the connected accounts page without the social account app, or the
-two-factor page without the multi-factor app, is left out of the rendered menu
-by django-mvp itself, so nothing here checks settings.
+two-factor page without the multi-factor app, or the sessions page without the
+user sessions app, is left out of the rendered menu by django-mvp itself, so
+nothing here checks settings.
 
 django-mvp draws the Account Center's sidebar on a page that is not its own
 only when an entry in its menu marks that page current, and an entry matches
@@ -125,6 +126,11 @@ if apps.is_installed("allauth"):
                         "label": _("Two-factor authentication"),
                         "icon": "lock",
                     },
+                ),
+                AccountEntry(
+                    name="sessions",
+                    view_name="usersessions_list",
+                    extra_context={"label": _("Sessions"), "icon": "login"},
                 ),
             ],
         )

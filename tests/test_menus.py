@@ -102,3 +102,23 @@ class TestAccountGroup:
 
     def test_the_group_does_not_collapse(self, account_center) -> None:
         assert "<details" not in account_center
+
+
+class TestSessionsEntry:
+    """The sessions page is one more entry, after Connected accounts."""
+
+    def test_it_is_an_entry_with_its_label_and_icon(self, account_center) -> None:
+        assert href("usersessions_list") in account_center
+        assert "<span>Sessions</span>" in account_center
+        assert '<i class="bi bi-box-arrow-in-right"' in account_center
+
+    def test_it_follows_the_connected_accounts_entry(self, account_center) -> None:
+        assert account_center.index(href("usersessions_list")) > (
+            account_center.index(href("socialaccount_connections"))
+        )
+
+    def test_it_is_headed_account(self, account_center) -> None:
+        heading = TestAccountGroup.HEADING.search(account_center)
+
+        assert heading is not None
+        assert account_center.index(href("usersessions_list")) > heading.end()

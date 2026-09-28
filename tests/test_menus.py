@@ -63,6 +63,31 @@ class TestConnectedAccountsEntry:
         )
 
 
+class TestTwoFactorEntry:
+    """Two-factor authentication is the last entry of the same group."""
+
+    def test_it_links_to_the_overview_with_its_label_and_icon(
+        self, account_center
+    ) -> None:
+        assert href("mfa_index") in account_center
+        assert "<span>Two-factor authentication</span>" in account_center
+        assert '<i class="bi bi-lock"' in account_center
+
+    def test_it_follows_connected_accounts(self, account_center) -> None:
+        assert account_center.index(href("mfa_index")) > (
+            account_center.index(href("socialaccount_connections"))
+        )
+
+    def test_it_sits_under_the_account_heading_and_does_not_collapse(
+        self, account_center
+    ) -> None:
+        heading = TestAccountGroup.HEADING.search(account_center)
+
+        assert heading is not None
+        assert account_center.index(href("mfa_index")) > heading.end()
+        assert "<details" not in account_center
+
+
 class TestAccountGroup:
     """The entries sit under one "Account" heading, never a collapsible group."""
 

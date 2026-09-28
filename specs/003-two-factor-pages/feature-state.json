@@ -1,0 +1,318 @@
+{
+  "feature": "003-two-factor-pages",
+  "branch": "003-two-factor-pages",
+  "repo": "django-mvp/django-mvp-accounts",
+  "state": "PR_READY",
+  "state_history": [
+    {
+      "state": "QUEUED",
+      "at": "2026-09-26T15:01:17Z",
+      "note": "specification merged to main in PR #18, merge commit 6f1ed3d8e9bfdf752cad4d2720ecd772119fa8a3; epic #7, stories #19-#21"
+    },
+    {
+      "state": "PLAN",
+      "at": "2026-09-26T21:02:30Z",
+      "note": "plan.md, research.md, tasks.md"
+    },
+    {
+      "state": "DESIGN_REVIEW",
+      "at": "2026-09-26T21:03:17Z",
+      "note": "design reviewer dispatched, three lenses, one round"
+    },
+    {
+      "state": "IMPLEMENT",
+      "at": "2026-09-26T21:11:45Z",
+      "note": "US1, US2, US3 sequentially in the feature worktree"
+    },
+    {
+      "state": "CONVERGE",
+      "at": "2026-09-26T21:36:33Z",
+      "note": "all three stories done"
+    },
+    {
+      "state": "REVIEW",
+      "at": "2026-09-26T21:39:31Z",
+      "note": "one reviewer correctness+spec+docs, one security lens"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-09-26T21:47:14Z",
+      "note": "review fixed and recorded; PR ready; walkthrough sent"
+    }
+  ],
+  "gates": {
+    "spec": {
+      "approved_by": "SamuelJennings",
+      "at": "2026-09-26T15:01:17Z",
+      "self_resolved": []
+    },
+    "plan": {
+      "approved_by": "notified",
+      "at": "2026-09-26T21:11:35Z",
+      "self_resolved": []
+    },
+    "merge": {
+      "approved_by": null,
+      "at": null
+    },
+    "design_review": {
+      "approved_by": "design-panel",
+      "at": "2026-09-26T21:11:35Z",
+      "self_resolved": [
+        "SPEC-001 medium: FR-010/SC-001 passkey sign-up in the demo conflicts with optional email verification; demo kept, pages reached in tests (D5)",
+        "SPEC-002 medium: rebuild_urls reloads allauth's multi-factor URLconfs (T015, R6)",
+        "SPEC-003 medium: recovery-codes hook check under show-once (T005, R3)",
+        "SPEC-004 medium: test security key is a parseable registration response (T012, R7)",
+        "SPEC-005 low: TOTP code helper (T004, R7)",
+        "SPEC-006 low: .bg-white defined by django-mvp's stylesheet (T004)",
+        "ARCH-001 low: repeated panel actions render joined (R2)"
+      ]
+    },
+    "review": {
+      "approved_by": "review-panel",
+      "at": "2026-09-26T21:46:28Z",
+      "self_resolved": [
+        "COR-001 medium: Account Center card copy names no specific factor \u2014 fixed",
+        "COR-002 low: README and CHANGELOG name all four passkey sign-up requirements \u2014 fixed",
+        "COR-003 low: FR-010 and SC-001 amended to the delivered state (D5) \u2014 fixed",
+        "COR-004 low: status-only key test folded into the re-authentication page test \u2014 fixed",
+        "SEC-001 low: seed_demo refusal with DEBUG off tested \u2014 fixed"
+      ]
+    }
+  },
+  "stories": [
+    {
+      "id": "US1",
+      "priority": "P1",
+      "issue": 19,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-003",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T001",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestDemoTwoFactor: 4 passed; entrance, social entrance and recovery page tests: 48 passed; pre-commit clean."
+            ]
+          }
+        },
+        {
+          "id": "T002",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_menus.py tests/test_account_center.py: 31 passed."
+            ]
+          }
+        },
+        {
+          "id": "T003",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 27 passed, 1 skipped (existing)."
+            ]
+          }
+        },
+        {
+          "id": "T004",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py: 38 passed, 1 skipped (existing)."
+            ]
+          }
+        },
+        {
+          "id": "T005",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_pages.py tests/test_elements.py tests/test_management_pages.py tests/test_entrance_pages.py: 71 passed, 2 skipped (existing)."
+            ]
+          }
+        },
+        {
+          "id": "T006",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_without_mfa.py: 6 passed."
+            ]
+          }
+        },
+        {
+          "id": "T007",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "makemessages -l en: three new msgids; pre-commit run below."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US2",
+      "priority": "P1",
+      "issue": 20,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-003",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T008",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_sign_in.py tests/test_elements.py::TestFormId -q (10 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T009",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_sign_in.py -q (passed)"
+            ]
+          }
+        },
+        {
+          "id": "T010",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_two_factor_sign_in.py -q (15 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T011",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_demo.py -q (32 passed)"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US3",
+      "priority": "P2",
+      "issue": 21,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-003",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T012",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_elements.py tests/test_security_key_pages.py -q (40 passed, 1 skipped)"
+            ]
+          }
+        },
+        {
+          "id": "T013",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_security_key_pages.py::TestAddSecurityKey -q (2 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T014",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_security_key_pages.py::TestPasskeySignIn -q (2 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T015",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_security_key_pages.py -q (14 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T016",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_security_key_pages.py::TestReauthenticateWithSecurityKey -q (1 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T017",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pytest tests/test_security_key_pages.py::TestSecurityKeysTurnedOff -q (2 passed)"
+            ]
+          }
+        },
+        {
+          "id": "T018",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "commands": [
+              "uv run pre-commit run --all-files (all hooks passed)"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "converge_cycles": {
+      "used": 1,
+      "max": 2
+    },
+    "review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "design_review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "tokens": {
+      "used": 0,
+      "max": 120
+    }
+  },
+  "escalations": [],
+  "pr": {
+    "number": 28,
+    "draft": false
+  }
+}

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.mfa",
     # Records where each account is signed in, which is what allauth's
     # sessions page lists.
     "allauth.usersessions",
@@ -51,8 +52,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
-    # allauth's sessions page loads its date filters from it, and fails to
-    # render without it.
+    # allauth's sessions page and security-key list load their date filters
+    # from here, and fail to render without it.
     "django.contrib.humanize",
     "mvp",
     "easy_icons",
@@ -137,6 +138,18 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*", "phone"]
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_REAUTHENTICATION_REQUIRED = True
+
+# Two-factor authentication with every factor on except passkey sign-up.
+# allauth only allows passkey sign-up with mandatory email verification by
+# code, which the demo does not use, so it stays off here. Security keys and
+# passkeys need HTTPS or `localhost`; over any other host the browser refuses
+# them. The fixed code lets the authenticator app pages be walked through
+# without a phone. allauth refuses it unless DEBUG is on, and the demo is
+# never deployed.
+MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
+MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_TRUST_ENABLED = True
+MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
 
 # The sessions page can show when each session was last used. The demo turns
 # it on so that column can be seen; the package leaves it to the project.

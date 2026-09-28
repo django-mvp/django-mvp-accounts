@@ -179,7 +179,10 @@ element allauth gave it to.
 - **FR-009**: The package MUST NOT declare the multi-factor app as a runtime dependency, set any of
   its settings, or check how it is configured.
 - **FR-010**: The demo MUST enable the authenticator app, recovery codes, security keys, passkey
-  sign-in, passkey sign-up and "trust this browser", so every page in this feature can be reached.
+  sign-in and "trust this browser", so every page in this feature can be reached. Passkey sign-up
+  stays off in the demo, because allauth only allows it with mandatory email verification by code
+  and the demo keeps verification optional. Its pages are reached in tests that turn those
+  settings on.
 - **FR-011**: Every string the package adds MUST be marked for translation.
 - **FR-012**: `CONTEXT.md` MUST define passkey: a security key or device credential that can also be
   used to sign in without a password, which allauth treats as one kind of authenticator.
@@ -209,8 +212,9 @@ element allauth gave it to.
 
 ### Measurable Outcomes
 
-- **SC-001**: Every multi-factor page, and passkey sign-up, renders inside the shell in the demo,
-  and a test for each page fails if that page falls back to allauth's bare markup.
+- **SC-001**: Every multi-factor page renders inside the shell in the demo, passkey sign-up renders
+  inside it under the settings that enable it, and a test for each page fails if that page falls
+  back to allauth's bare markup.
 - **SC-002**: On every page that loads allauth's security-key script, every id and data attribute
   the script looks for is present, and a test fails if any is missing.
 - **SC-003**: The QR code has a light background and dark modules in both the demo's light and dark

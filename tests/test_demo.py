@@ -11,13 +11,15 @@ from io import StringIO
 
 import pytest
 from allauth.account.models import EmailAddress
+from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
 from allauth.usersessions.models import UserSession
 from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.urls import NoReverseMatch, reverse
 
+from demo import settings as demo_settings
 from demo.adapter import DemoAccountAdapter
 from demo.mail import OutboxEmailBackend
 from tests.factories import PhoneNumberFactory, UserFactory
@@ -81,7 +83,7 @@ class TestDemoSignIn:
         call_command("seed_demo", stdout=StringIO())
 
         addresses = EmailAddress.objects.filter(verified=True, primary=True)
-        assert addresses.count() == 4
+        assert addresses.count() == 5
 
 
 class TestUrlconfRebuild:
@@ -190,6 +192,84 @@ class TestSeededStates:
         assert verified
 
 
+class TestDemoTwoFactorAccount:
+    """mfa.user@example.com signs in with a second factor, so the step can be seen."""
+
+    EMAIL = "mfa.user@example.com"
+
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        """The demo's development-only pages exist only with DEBUG on."""
+        settings.DEBUG = True
+
+    def test_it_has_an_authenticator_app_and_recovery_codes(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email=self.EMAIL, verified=True).user
+        types = Authenticator.objects.filter(user=user).values_list("type", flat=True)
+        assert set(types) == {
+            Authenticator.Type.TOTP,
+            Authenticator.Type.RECOVERY_CODES,
+        }
+
+    def test_nothing_is_seeded_with_debug_off(self, db, settings) -> None:
+        settings.DEBUG = False
+
+        with pytest.raises(CommandError):
+            call_command("seed_demo", stdout=StringIO())
+
+        assert not Authenticator.objects.filter(user__email=self.EMAIL).exists()
+
+    def test_seeding_twice_leaves_one_of_each(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+        user = EmailAddress.objects.get(email=self.EMAIL).user
+        assert Authenticator.objects.filter(user=user).count() == 2
+
+    def test_its_secret_survives_seeding_again(self, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+        user = EmailAddress.objects.get(email=self.EMAIL).user
+        first = Authenticator.objects.get(user=user, type=Authenticator.Type.TOTP)
+        secret = first.data["secret"]
+        call_command("seed_demo", stdout=StringIO())
+
+        again = Authenticator.objects.get(user=user, type=Authenticator.Type.TOTP)
+        assert again.data["secret"] == secret
+
+    def test_the_password_leads_to_the_second_factor_step(self, client, db) -> None:
+        call_command("seed_demo", stdout=StringIO())
+
+        response = client.post(
+            reverse("account_login"), {"login": self.EMAIL, "password": "password"}
+        )
+
+        assert response["Location"] == reverse("mfa_authenticate")
+
+    def test_the_output_names_the_account_and_the_bypass_code(
+        self, db, settings
+    ) -> None:
+        settings.MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
+        output = StringIO()
+
+        call_command("seed_demo", stdout=output)
+
+        assert self.EMAIL in output.getvalue()
+        assert "'123456' passes that step, as a demo convenience only" in (
+            output.getvalue()
+        )
+
+    def test_without_a_fixed_code_the_output_says_to_compute_one(
+        self, db, settings
+    ) -> None:
+        settings.MFA_TOTP_INSECURE_BYPASS_CODE = None
+        output = StringIO()
+
+        call_command("seed_demo", stdout=output)
+
+        assert "no fixed code is set" in output.getvalue()
+
+
 class TestDemoSocialAccounts:
     """The demo installs allauth's test provider, so a sign-in needs no credentials."""
 
@@ -237,6 +317,27 @@ class TestSeededSocialAccounts:
         assert "1001" in text
         assert "2002" in text
         assert "All three sign in with the password" not in text
+
+
+class TestDemoTwoFactor:
+    """The demo installs allauth's multi-factor app with every page reachable."""
+
+    def test_the_two_factor_overview_resolves(self) -> None:
+        assert reverse("mfa_index")
+
+    def test_the_suite_never_accepts_a_fixed_code(self, settings) -> None:
+        """Every test enters a real code computed from the secret."""
+        assert settings.MFA_TOTP_INSECURE_BYPASS_CODE is None
+
+    def test_the_demo_turns_on_every_factor_but_passkey_sign_up(self) -> None:
+        assert demo_settings.MFA_SUPPORTED_TYPES == [
+            "totp",
+            "recovery_codes",
+            "webauthn",
+        ]
+        assert demo_settings.MFA_PASSKEY_LOGIN_ENABLED
+        assert demo_settings.MFA_TRUST_ENABLED
+        assert not getattr(demo_settings, "MFA_PASSKEY_SIGNUP_ENABLED", False)
 
 
 class TestDemoUserSessions:

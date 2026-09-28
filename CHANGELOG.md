@@ -57,8 +57,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   markup, including its refusal to disconnect the only way a person can sign in. Without the
   social account app the entry and card do not appear. The demo seeds an account with a connected
   test provider account and one with no password.
+- With allauth's multi-factor app (`allauth.mfa`, from `django-allauth[mfa]`) installed,
+  django-mvp's Account Center gains a Two-factor authentication menu entry, after Connected accounts
+  in the "Account" group, and a card on its landing page. The two-factor overview, activating and deactivating the
+  authenticator app, and the recovery codes pages (view, download, generate) render in the
+  Account Center. The overview draws each factor as a card with all of its actions. The QR code is
+  always dark on white, in every theme, and the recovery codes are shown in a read-only text
+  area. Which factors are enabled stays your choice through allauth's `MFA_*` settings. Without
+  the multi-factor app the entry and card do not appear. The demo installs it with the
+  authenticator app, recovery codes, security keys, passkey sign-in and trusted browsers turned
+  on, and accepts a fixed code (`123456`) for the authenticator app while `DEBUG` is on.
+- The second-factor step of signing in, the "trust this browser" prompt and re-authentication with a
+  code render as django-mvp pages: the first two as entrance pages, the last in the Account Center.
+  The form element keeps the `id` allauth gives it, which the security-key button on the sign-in
+  step needs to find its form. The demo seeds `mfa.user@example.com`, with the password `password`,
+  an authenticator app and recovery codes; the demo's fixed code passes its second-factor step.
+- With `"webauthn"` in `MFA_SUPPORTED_TYPES`, allauth's security-key pages render as django-mvp
+  pages: the list, adding, renaming and removing a key, and re-authenticating with one in the
+  Account Center. With `MFA_PASSKEY_LOGIN_ENABLED` the sign-in page offers "Sign in with a
+  passkey", and with `MFA_PASSKEY_SIGNUP_ENABLED` the two passkey sign-up pages are entrance
+  pages. allauth's tables are drawn with django-mvp's table class. Every page keeps the ids and
+  data attributes allauth's JavaScript looks for. The security-key list needs
+  `django.contrib.humanize` in `INSTALLED_APPS`. Browsers only allow security keys and passkeys
+  over HTTPS or on `localhost`. The demo leaves passkey sign-up off, because allauth requires
+  mandatory email verification by code for it, among other settings.
 - With allauth's user sessions app installed, django-mvp's Account Center gains a Sessions menu
-  entry, in the "Account" group after Connected accounts, and a card on its landing page. allauth's
+  entry, in the "Account" group after Two-factor authentication, and a card on its landing page. allauth's
   sessions page renders in the Account Center and lists each browser a person is signed in from,
   with its address, browser and the "Current" marker, and a "Last seen at" column when
   `USERSESSIONS_TRACK_ACTIVITY` is on. The page's button signs out every other session without

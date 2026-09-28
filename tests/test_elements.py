@@ -221,7 +221,127 @@ class TestElementMarkup:
         assert soup.form["action"] == "/x/"
 
 
+class TestPanel:
+    """The two-factor overview draws one panel per factor."""
+
+    def test_it_draws_a_card_with_its_title_and_body(self) -> None:
+        soup = render_element(
+            "{% element panel %}{% slot title %}Authenticator App{% endslot %}"
+            "{% slot body %}Not active.{% endslot %}{% endelement %}"
+        )
+
+        card = soup.select_one(".card")
+        assert "Authenticator App" in card.get_text()
+        assert "Not active." in card.get_text()
+
+    def test_it_draws_every_action(self) -> None:
+        """allauth passes one ``actions`` slot per button and expects them all."""
+        soup = render_element(
+            "{% element panel %}{% slot title %}Codes{% endslot %}"
+            "{% slot actions %}<a href='/view/'>View</a>{% endslot %}"
+            "{% slot actions %}<a href='/download/'>Download</a>{% endslot %}"
+            "{% endelement %}"
+        )
+
+        hrefs = [a["href"] for a in soup.select(".card a")]
+        assert hrefs == ["/view/", "/download/"]
+
+    def test_a_panel_without_actions_draws_no_footer_links(self) -> None:
+        soup = render_element(
+            "{% element panel %}{% slot title %}Keys{% endslot %}{% endelement %}"
+        )
+
+        assert soup.select(".card a") == []
+
+
+class TestImg:
+    """The QR code is drawn from a data URI and always on white."""
+
+    def test_it_draws_the_image_with_its_source_and_alt(self) -> None:
+        soup = render_element(
+            "{% element img src=src alt=alt %}{% endelement %}",
+            src="data:image/svg+xml;base64,AAAA",
+            alt="A secret",
+        )
+
+        img = soup.find("img")
+        assert img["src"] == "data:image/svg+xml;base64,AAAA"
+        assert img["alt"] == "A secret"
+        assert "bg-white" in img["class"]
+
+    def test_the_source_and_alt_are_escaped(self) -> None:
+        soup = render_element(
+            "{% element img src=src alt=alt %}{% endelement %}",
+            src='"><script>alert(1)</script>',
+            alt='"><script>alert(2)</script>',
+        )
+
+        assert soup.find("script") is None
+        assert soup.find("img")["src"] == '"><script>alert(1)</script>'
+        assert soup.find("img")["alt"] == '"><script>alert(2)</script>'
+
+    def test_an_image_without_alt_has_no_alt_attribute(self) -> None:
+        soup = render_element("{% element img src=src %}{% endelement %}", src="/a.png")
+
+        assert soup.find("img").get("alt") is None
+
+
+class TestFieldTextarea:
+    """The recovery codes page draws a read-only text area through ``field``."""
+
+    SOURCE = (
+        '{% element field id="recovery_codes" type="textarea" rows=2 readonly=True %}'
+        "{% slot label %}Unused codes{% endslot %}"
+        "{% slot value %}abc-1\nabc-2{% endslot %}{% endelement %}"
+    )
+
+    def test_it_draws_a_readonly_textarea_with_its_id_rows_and_content(self) -> None:
+        textarea = render_element(self.SOURCE).find("textarea")
+
+        assert textarea["id"] == "recovery_codes"
+        assert textarea.has_attr("readonly")
+        assert textarea["rows"] == "2"
+        assert textarea.get_text() == "abc-1\nabc-2"
+
+    def test_it_keeps_the_label(self) -> None:
+        soup = render_element(self.SOURCE)
+
+        label = soup.find("label", attrs={"for": "recovery_codes"})
+        assert label.get_text(strip=True) == "Unused codes"
+
+    def test_the_content_is_escaped(self) -> None:
+        soup = render_element(
+            '{% element field id="x" type="textarea" %}'
+            "{% slot value %}{{ value }}{% endslot %}{% endelement %}",
+            value="<script>alert(1)</script>",
+        )
+
+        assert soup.find("script") is None
+
+
+class TestFormId:
+    """allauth's scripts find some forms by id, so a form keeps the one it is given."""
+
+    def test_a_form_keeps_the_id_it_is_given(self) -> None:
+        soup = render_element(
+            '{% element form id="webauthn_form" method="post" %}'
+            "{% slot body %}Hi{% endslot %}{% endelement %}"
+        )
+
+        assert soup.form["id"] == "webauthn_form"
+
+    def test_a_form_without_an_id_writes_none(self) -> None:
+        soup = render_element(
+            '{% element form method="post" %}{% slot body %}Hi{% endslot %}'
+            "{% endelement %}"
+        )
+
+        assert not soup.form.has_attr("id")
+
+
 class TestTableElements:
+    """allauth's tables are drawn with django-mvp's table class, not bare tags."""
+
     TABLE = (
         "{% element table %}"
         "{% element thead %}{% element tr %}"

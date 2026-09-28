@@ -1,9 +1,7 @@
 {% extends "allauth/layouts/entrance.html" %}
 {% comment %}
-  A copy of allauth 65.19.4's account/logout.html with one change: it extends
-  the entrance layout instead of allauth's management one. Signing out is an
-  entrance page here, and allauth's own page is always seen signed in. Compare
-  it with allauth's when allauth is upgraded.
+  A copy of allauth 65.19.4's template, extending the entrance layout because
+  signing out is an entrance page here. Compare with allauth's on upgrade.
 {% endcomment %}
 {% load allauth i18n %}
 {% block head_title %}

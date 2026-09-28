@@ -1,11 +1,8 @@
 {% load allauth %}
 {% comment %}
-  One provider's sign-in button.
-
-  The icon is named after allauth's provider id (`github`, `google`), not the
-  display name, and the host project supplies it through its icon mapping: the
-  package ships no provider icons. Values go through `{{ }}` so they are
-  escaped, never `|safe`.
+  Named by provider id (`github`, `google`), not display name. The host
+  project supplies the icon: see
+  docs/adr/0003-provider-icons-come-from-the-host-project.md.
 {% endcomment %}
 <c-button href="{{ attrs.href }}"
           outline

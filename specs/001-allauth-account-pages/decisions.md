@@ -8,7 +8,7 @@ them, and a project with allauth gets them without the package doing anything at
 allauth as a runtime dependency would add nothing the host project does not already have when it
 wants these pages, and would force it on projects that do not.
 
-The constitution (Article XIII) asks for every upstream dependency to be bounded to the major versions
+The constitution (Article XII) asks for every upstream dependency to be bounded to the major versions
 CI runs. With allauth in the development group only, that bound applies to what CI installs and
 cannot reach a host project. The README therefore states the supported range, and the bound in the
 development group keeps CI on it.

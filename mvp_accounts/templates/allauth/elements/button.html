@@ -1,10 +1,7 @@
 {% load allauth %}
 {% comment %}
-  A theme button, or a link drawn as one when allauth gives it an `href`.
-
-  The three branches exist because a Cotton attribute is always written out: a
-  `form=""` on a plain submit button would detach it from the form around it.
-  Values go through `{{ }}` so they are escaped, never `|safe`.
+  Three branches because a Cotton attribute is always written out: `form=""`
+  on a plain submit button would detach it from its form.
 {% endcomment %}
 {% with tags=attrs.tags|default:"" %}
   {% if attrs.href %}

@@ -28,7 +28,7 @@ Every page in allauth's account app extends one of two layouts and draws its mar
 small set of elements, so overriding those moves every page at once, including pages a later
 release adds. Overriding each page template instead would mean about thirty copies of allauth's
 markup to keep in step with every release, and forms replacing allauth's own are what the
-constitution's Article XIII rules out.
+constitution's Article XII rules out.
 
 Keeping allauth out of the runtime dependencies means a project that does not want accounts from
 allauth never installs it, and a project that does already has it. The templates are only ever

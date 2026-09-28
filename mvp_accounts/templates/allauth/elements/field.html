@@ -1,19 +1,8 @@
 {% load allauth %}
 {% comment %}
-  One hand-built input: the radio list on the email page, and the change-email
-  and change-phone inputs. Whole forms go through `fields`.
-
-  It is drawn by <c-form.field>, which gives the label its `for`. That
-  component renders help text and errors without ids, so the input cannot
-  point at them (django-mvp#412).
-
-  A `textarea` is the recovery codes list: its content is the `value` slot,
-  written with no whitespace around it because the whitespace is part of the
-  text a person copies.
-
-  Only the attributes allauth's account pages pass are handled. `checked` and
-  `disabled` pick the branch, since a Cotton attribute is always written out
-  and `checked="False"` would still tick the box.
+  <c-form.field> renders help text and errors without ids, so the input cannot point at them (django-mvp#412).
+  The textarea's `value` slot has no surrounding whitespace, which would be copied with the codes.
+  `checked`/`disabled` pick the branch because `checked="False"` still ticks the box.
 {% endcomment %}
 {% if attrs.type == "textarea" %}
   {% if attrs.readonly %}

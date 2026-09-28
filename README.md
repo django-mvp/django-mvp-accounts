@@ -1,8 +1,8 @@
 # django-mvp-accounts
 
 Sign-up, sign-in, account management and API access for
-[django-mvp](https://github.com/django-mvp/django-mvp) projects, assembled from
-the third-party packages that already do each of those jobs well.
+[django-mvp](https://github.com/django-mvp/django-mvp) projects, built from the
+third-party packages that already do each job well.
 
 It is not released yet. So far it puts django-allauth's sign-in, sign-up and
 sign-out pages inside django-mvp's application shell.

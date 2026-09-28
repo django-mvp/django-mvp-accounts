@@ -42,6 +42,8 @@ SCRIPT = textwrap.dedent(
         "account_installed": apps.is_installed("allauth.account"),
         "usersessions_installed": apps.is_installed("allauth.usersessions"),
         "sessions_routed": routed,
+        "account_email_url": reverse("account_email"),
+        "account_change_password_url": reverse("account_change_password"),
         "account_center": [account_center.status_code, account_center.content.decode()],
         "overview": [overview.status_code, overview.content.decode()],
     }))
@@ -51,13 +53,10 @@ SCRIPT = textwrap.dedent(
 
 @pytest.fixture(scope="module")
 def result(run_in_subprocess) -> dict:
-    """Start Django with allauth but no user sessions app and render the pages."""
     return run_in_subprocess("tests.settings_without_usersessions", SCRIPT)
 
 
 class TestWithoutUserSessions:
-    """A project that installs allauth's account app and not its sessions one."""
-
     def test_the_subprocess_really_runs_without_the_user_sessions_app(
         self, result
     ) -> None:
@@ -71,15 +70,14 @@ class TestWithoutUserSessions:
 
     def test_the_account_center_still_offers_the_account_pages(self, result) -> None:
         _status, page = result["account_center"]
-        assert "Manage email" in page
-        assert "Change password" in page
+        assert f'href="{result["account_email_url"]}"' in page
+        assert f'href="{result["account_change_password_url"]}"' in page
 
     def test_the_account_center_has_no_sessions_entry_or_card(self, result) -> None:
         _status, page = result["account_center"]
-        assert "Sessions" not in page
-        assert "Manage sessions" not in page
+        assert 'href="/accounts/sessions/"' not in page
 
     def test_the_landing_page_renders_without_a_sessions_entry(self, result) -> None:
         status, page = result["overview"]
         assert status == 200
-        assert "Sessions" not in page
+        assert 'href="/accounts/sessions/"' not in page

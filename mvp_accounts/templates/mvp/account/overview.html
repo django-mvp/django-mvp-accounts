@@ -1,10 +1,8 @@
 {% extends "mvp/account/overview.html" %}
 {% load i18n %}
 {% comment %}
-  One card per account management page. Each URL is looked up with
-  `{% url ... as %}`, which leaves the variable empty instead of raising, so a
-  page allauth has not routed (phone numbers turned off) gets no card, and
-  without allauth none of them is drawn.
+  `url … as` leaves the variable empty instead of raising, so a page allauth
+  has not routed (phone numbers off, or no allauth) gets no card.
 {% endcomment %}
 {% block account.cards %}
   {{ block.super }}

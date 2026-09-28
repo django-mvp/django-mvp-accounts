@@ -26,13 +26,11 @@ from tests.test_management_pages import ManagementPageAssertions
 
 @pytest.fixture(autouse=True)
 def fresh_caches():
-    """Forget rate limits, which live in a cache that outlives a test."""
     cache.clear()
 
 
 @pytest.fixture
 def fresh_client(client, db):
-    """A client that signed in through the form, so allauth need not ask again."""
     address = EmailAddressFactory()
     response = client.post(
         reverse("account_login"), {"login": address.email, "password": "password"}
@@ -44,7 +42,6 @@ def fresh_client(client, db):
 
 @pytest.fixture
 def two_keys(fresh_client):
-    """A passkey named Laptop and a security key named Office."""
     user = fresh_client.user
     return (
         AuthenticatorFactory(user=user, webauthn=True, key_name="Laptop", passkey=True),
@@ -60,7 +57,9 @@ class TestSecurityKeyList(ManagementPageAssertions):
     ) -> None:
         response = fresh_client.get(reverse("mfa_list_webauthn"))
 
-        html = self.assert_management_page(response, "Security Keys")
+        html = self.assert_management_page(
+            response, f'href="{reverse("mfa_add_webauthn")}"'
+        )
         soup = BeautifulSoup(html, "html.parser")
         assert "Laptop" in html
         assert "Office" in html
@@ -80,11 +79,15 @@ class TestSecurityKeyList(ManagementPageAssertions):
         assert "Passkey" in by_name["Laptop"]
         assert "Security key" in by_name["Office"]
 
-    def test_with_no_keys_it_says_so(self, fresh_client) -> None:
+    def test_with_no_keys_it_lists_none(self, fresh_client) -> None:
         response = fresh_client.get(reverse("mfa_list_webauthn"))
 
-        html = self.assert_management_page(response, "Security Keys")
-        assert "No security keys have been added." in html
+        html = self.assert_management_page(
+            response, f'href="{reverse("mfa_add_webauthn")}"'
+        )
+        soup = BeautifulSoup(html, "html.parser")
+        assert soup.select("tbody tr") == []
+        assert not soup.find("a", href=re.compile(r"/webauthn/keys/\d+/edit/"))
 
 
 class TestRenameSecurityKey(ManagementPageAssertions):
@@ -113,15 +116,14 @@ class TestRemoveSecurityKey(ManagementPageAssertions):
 
         self.assert_management_page(response, "<form")
 
-    def test_confirming_removes_the_key_and_shows_allauths_message(
-        self, fresh_client, two_keys
-    ) -> None:
+    def test_confirming_removes_the_key(self, fresh_client, two_keys) -> None:
         url = reverse("mfa_remove_webauthn", args=[two_keys[1].pk])
 
         response = fresh_client.post(url, follow=True)
 
         assert not Authenticator.objects.filter(pk=two_keys[1].pk).exists()
-        assert "Security key removed." in response.content.decode()
+        messages = list(response.context["messages"])
+        assert any(m.level_tag == "success" for m in messages)
 
 
 class TestAddSecurityKey(ManagementPageAssertions):
@@ -155,7 +157,6 @@ class TestPasskeySignIn(EntrancePageAssertions):
         button = soup.find(id="passkey_login")
         assert button is not None, "the passkey button is missing"
         assert button["form"] == "mfa_login"
-        assert "Sign in with a passkey" in button.get_text()
         form = soup.find("form", id="mfa_login")
         assert form.find("input", id="mfa_credential")
         assert form["action"] == reverse("mfa_login_webauthn")
@@ -183,8 +184,6 @@ PASSKEY_SIGNUP = {
 
 
 class TestPasskeySignUp(EntrancePageAssertions):
-    """The demo leaves passkey sign-up off, so these run under settings overrides."""
-
     def test_the_passkey_sign_up_page_is_an_entrance_page(
         self, client, db, rebuild_urls
     ) -> None:
@@ -215,7 +214,6 @@ class TestReauthenticateWithSecurityKey(ManagementPageAssertions):
     def test_it_is_a_management_page_with_the_hooks_the_script_needs(
         self, fresh_client, two_keys, assert_script_hooks
     ) -> None:
-        """Both stored keys, a passkey and a security key, parse as the page begins."""
         response = fresh_client.get(reverse("mfa_reauthenticate_webauthn"))
 
         html = self.assert_management_page(response, 'id="mfa_webauthn_reauthenticate"')
@@ -223,8 +221,6 @@ class TestReauthenticateWithSecurityKey(ManagementPageAssertions):
 
 
 class TestSecurityKeysTurnedOff(ManagementPageAssertions):
-    """A project that leaves ``webauthn`` out of MFA_SUPPORTED_TYPES offers no key."""
-
     TYPES = ["totp", "recovery_codes"]
 
     def test_the_overview_names_no_security_key_and_links_to_no_key_page(
@@ -234,9 +230,9 @@ class TestSecurityKeysTurnedOff(ManagementPageAssertions):
         with rebuild_urls(MFA_SUPPORTED_TYPES=self.TYPES):
             response = fresh_client.get(reverse("mfa_index"))
 
-        html = self.assert_management_page(response, "Authenticator App")
-        assert "Security Key" not in html
-        assert "Passkey" not in html
+        html = self.assert_management_page(
+            response, f'href="{reverse("mfa_activate_totp")}"'
+        )
         assert key_pages not in html
 
     def test_the_second_factor_step_offers_no_security_key(

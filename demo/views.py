@@ -1,9 +1,4 @@
-"""The demo project's pages.
-
-Each view subclasses ``MVPTemplateView`` rather than Django's ``TemplateView``:
-that is what supplies the page title, the subtitle and the breadcrumb trail the
-application shell draws around the content.
-"""
+"""The demo project's pages."""
 
 from django.conf import settings
 from django.http import Http404
@@ -34,11 +29,13 @@ class OutboxView(MVPTemplateView):
     breadcrumbs = [{"text": "Outbox"}]
 
     def dispatch(self, request, *args, **kwargs):
+        """Hide the outbox unless DEBUG is on."""
         if not settings.DEBUG:
             raise Http404
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Add the twenty newest messages."""
         return super().get_context_data(
             messages_sent=SentMessage.objects.all()[:20], **kwargs
         )

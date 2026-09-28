@@ -1,11 +1,9 @@
 {% extends "socialaccount/connections.html" %}
 {% load allauth %}
 {% comment %}
-  allauth's connections page, with the form's errors shown above it. Its radio
-  choices are drawn by hand, so the `account` field's errors, the required
-  message and the one for a person's only way to sign in, reach no `field`
-  element, and the non-field errors have nowhere to go either. Django skips
-  this template when it looks for the one it extends and finds allauth's.
+  allauth draws the radio choices by hand, so the `account` field's errors and
+  the non-field errors reach no `field` element and are shown here. Django
+  skips this file when resolving the extends and finds allauth's. See FS-002.
 {% endcomment %}
 {% block content %}
   {% if form.errors %}

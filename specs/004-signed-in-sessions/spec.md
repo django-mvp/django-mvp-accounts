@@ -30,7 +30,7 @@ dependency on the user sessions app.
 
 - Q: Can a person sign out one chosen session rather than all the others? → A: No. allauth's
   browser page signs out every session except the current one, and signing out a single chosen
-  session exists only in allauth's headless API. Under Article XIII, upstream does the work, so
+  session exists only in allauth's headless API. Under Article XII, upstream does the work, so
   that gap is raised with allauth rather than built here, and this feature offers what the page
   offers.
 - Q: What does each session show, to tell them apart? → A: What allauth records: when the session

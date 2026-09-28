@@ -1,10 +1,8 @@
 {% extends "allauth/layouts/entrance.html" %}
 {% comment %}
-  A copy of allauth 65.19.4's account/verified_email_required.html with one
-  change: it extends the entrance layout instead of allauth's management one.
-  A person told to verify their address is not yet fully signed in to the
-  site, so this is an entrance page here. Compare it with allauth's when
-  allauth is upgraded.
+  A copy of allauth 65.19.4's template, extending the entrance layout because a
+  person told to verify is not yet fully signed in. Compare with allauth's on
+  upgrade.
 {% endcomment %}
 {% load i18n %}
 {% load allauth %}

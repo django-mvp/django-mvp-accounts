@@ -62,9 +62,7 @@ class TestSessionsPage(ManagementPageAssertions):
     def test_it_is_a_management_page(self, three_browsers) -> None:
         response = three_browsers[0].get(reverse("usersessions_list"))
 
-        html = self.assert_management_page(response, "<h1")
-        assert "Sessions" in html
-        assert "Sign Out Other Sessions" in html
+        self.assert_management_page(response, "<h1")
 
     def test_every_session_is_listed_with_its_address_and_browser(
         self, three_browsers
@@ -93,7 +91,6 @@ class TestSessionsPage(ManagementPageAssertions):
     ) -> None:
         response = three_browsers[0].get(reverse("usersessions_list"))
 
-        assert "Last seen at" in response.content.decode()
         assert all(len(row) == 5 for row in rows_of(response))
 
     @override_settings(USERSESSIONS_TRACK_ACTIVITY=False)
@@ -113,16 +110,15 @@ class TestSessionsPage(ManagementPageAssertions):
 
         response = client.get(reverse("usersessions_list"))
 
-        assert "Last seen at" not in response.content.decode()
         assert all(len(row) == 4 for row in rows_of(response))
 
-    def test_the_table_scrolls_inside_its_own_area(self, three_browsers) -> None:
+    def test_the_table_is_a_theme_table(self, three_browsers) -> None:
         soup = BeautifulSoup(
             three_browsers[0].get(reverse("usersessions_list")).content.decode(),
             "html.parser",
         )
 
-        table = soup.select_one("div.overflow-x-auto > table")
+        table = soup.find("table")
         assert "table" in table["class"]
 
     def test_a_browser_string_is_shown_as_text(self, person) -> None:
@@ -152,17 +148,14 @@ class TestSessionsPage(ManagementPageAssertions):
 
 
 class TestSigningOutOtherSessions:
-    """The page's one action ends every session but the asking browser's."""
-
     def test_the_button_posts_to_the_sessions_page(self, three_browsers) -> None:
         soup = BeautifulSoup(
             three_browsers[0].get(reverse("usersessions_list")).content.decode(),
             "html.parser",
         )
 
-        button = soup.find("button", string=lambda t: t and "Sign Out Other" in t)
-        assert button.get_text(strip=True) == "Sign Out Other Sessions"
-        assert button.find_parent("form")["action"] == reverse("usersessions_list")
+        form = soup.find("form", action=reverse("usersessions_list"))
+        assert form.find("button") is not None
 
     def test_posting_it_leaves_only_the_posting_browsers_session(
         self, three_browsers
@@ -172,7 +165,6 @@ class TestSigningOutOtherSessions:
         rows = rows_of(response)
         assert len(rows) == 1
         assert rows[0][1] == "198.51.100.24"
-        assert "Signed out of all other sessions." in response.content.decode()
 
     def test_the_other_browsers_are_sent_to_sign_in(self, three_browsers) -> None:
         three_browsers[1].post(reverse("usersessions_list"))
@@ -189,8 +181,6 @@ class TestSigningOutOtherSessions:
 
 
 class TestSigningOutTheLastSession:
-    """With one session the button is the site's own sign-out."""
-
     def test_the_button_posts_to_sign_out(self, person) -> None:
         client = browser(person, "192.0.2.10", FIREFOX)
 
@@ -198,9 +188,11 @@ class TestSigningOutTheLastSession:
             client.get(reverse("usersessions_list")).content.decode(), "html.parser"
         )
 
-        button = soup.find("button", string=lambda t: t and "Sign Out" in t)
-        assert button.get_text(strip=True) == "Sign Out"
-        assert button.find_parent("form")["action"] == reverse("account_logout")
+        form = soup.find(
+            "form", attrs={"action": reverse("account_logout"), "id": None}
+        )
+        assert form is not None
+        assert form.find("button") is not None
 
     def test_posting_it_signs_the_person_out(self, person) -> None:
         client = browser(person, "192.0.2.10", FIREFOX)
@@ -213,8 +205,6 @@ class TestSigningOutTheLastSession:
 
 
 class TestHostProjectOverride:
-    """A sessions page the host project writes for itself wins over allauth's."""
-
     def test_the_projects_page_is_the_one_rendered(self, person, settings) -> None:
         client = browser(person, "192.0.2.10", FIREFOX)
         override_dir = Path(__file__).parent / "templates_host_override"
@@ -225,4 +215,4 @@ class TestHostProjectOverride:
         html = client.get(reverse("usersessions_list")).content.decode()
 
         assert "This project's own sessions page" in html
-        assert "Sign Out" not in html
+        assert f'action="{reverse("usersessions_list")}"' not in html

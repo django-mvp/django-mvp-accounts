@@ -47,13 +47,10 @@ SCRIPT = textwrap.dedent(
 
 @pytest.fixture(scope="module")
 def result(run_in_subprocess) -> dict:
-    """Start Django without allauth and report what it built and rendered."""
     return run_in_subprocess("tests.settings_without_allauth", SCRIPT)
 
 
 class TestWithoutAllauth:
-    """A project that installs this package but not allauth."""
-
     def test_the_subprocess_really_runs_without_allauth(self, result) -> None:
         assert result["package_installed"]
         assert not result["allauth_installed"]
@@ -70,6 +67,6 @@ class TestWithoutAllauth:
     ) -> None:
         status, page = result["account_center"]
         assert status == 200
-        assert "Change password" not in page
-        assert "Manage email" not in page
-        assert "Change phone number" not in page
+        assert 'href="/accounts/password/change/"' not in page
+        assert 'href="/accounts/email/"' not in page
+        assert 'href="/accounts/phone/change/"' not in page

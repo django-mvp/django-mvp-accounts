@@ -34,12 +34,6 @@ from tests.factories import EmailAddressFactory
 
 @pytest.fixture(scope="session")
 def render():
-    """Compile a Cotton source string and render it.
-
-    No request is involved. A component that reads nothing off one renders
-    anywhere a template does, including a page assembled outside the request
-    cycle, and this fixture is what holds it to that.
-    """
     compiler = CottonCompiler()
 
     def render_source(source, **context):
@@ -50,14 +44,11 @@ def render():
 
 @pytest.fixture
 def overview_page(client, db):
-    """The demo project's overview page, rendered, as a string."""
     return client.get(reverse("overview")).content.decode()
 
 
 @pytest.fixture
 def totp_code():
-    """The authenticator code that is valid right now for a secret."""
-
     def code_for(secret: str) -> str:
         counter = next(yield_hotp_counters_from_time())
         return format_hotp_value(hotp_value(secret, counter))
@@ -67,7 +58,6 @@ def totp_code():
 
 @pytest.fixture
 def signed_in_client(client, db):
-    """A test client signed in as an account with a verified primary address."""
     address = EmailAddressFactory()
     client.force_login(address.user)
     client.user = address.user
@@ -76,14 +66,6 @@ def signed_in_client(client, db):
 
 @pytest.fixture
 def assert_script_hooks():
-    """Check that every element allauth's scripts look up is on the page.
-
-    allauth's scripts run from ``script[data-allauth-onload]`` tags whose JSON
-    names the id of each element they then find with ``getElementById``. A
-    reskinned element that drops its id leaves the script with nothing to bind,
-    and nothing raises.
-    """
-
     def check(html: str) -> int:
         soup = BeautifulSoup(html, "html.parser")
         hooks = soup.select("script[data-allauth-onload]")
@@ -120,17 +102,6 @@ def reload_urlconf():
 
 @pytest.fixture
 def rebuild_urls():
-    """Apply settings overrides and rebuild allauth's routes to match.
-
-    allauth decides which account routes and templates exist when its views and
-    URLconf are imported, so
-    switching a setting with ``override_settings`` alone changes nothing a test
-    can see. Used as ``with rebuild_urls(ACCOUNT_LOGIN_BY_CODE_ENABLED=False):``.
-    The routes are rebuilt again on the way out, from the restored settings.
-    Every xdist worker is its own process, so a rebuild in one cannot reach
-    another.
-    """
-
     @contextmanager
     def rebuild(**overrides):
         try:
@@ -145,13 +116,6 @@ def rebuild_urls():
 
 @pytest.fixture(scope="session")
 def run_in_subprocess():
-    """Run a script under other settings and return the JSON it prints last.
-
-    Which apps are installed is decided when Django starts, so the running
-    suite cannot switch one off. The script starts Django itself, in a process
-    that reads ``settings_module`` instead.
-    """
-
     def run(settings_module: str, script: str) -> dict:
         completed = subprocess.run(  # noqa: S603
             [sys.executable, "-c", script],

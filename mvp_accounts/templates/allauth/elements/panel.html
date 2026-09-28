@@ -1,12 +1,8 @@
 {% load allauth %}
 {% comment %}
-  One section of the two-factor overview: a card with a heading, a body and
-  the actions that apply.
-
-  allauth fills the `actions` slot once per button and reads them back as a
-  list, so every entry is drawn in the footer. `title` is a slot rather than
-  an attribute, so the heading is written here instead of through the card's
-  own `title`.
+  allauth fills `actions` once per button and reads them back as a list, so
+  each is drawn in the footer. `title` is a slot, not an attribute, so the
+  heading is written here rather than through the card's `title`.
 {% endcomment %}
 <c-card>
   <h2 class="card-title">

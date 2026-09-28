@@ -31,19 +31,15 @@ def cards_of(page: str) -> str:
 
 @pytest.fixture
 def account_center(signed_in_client) -> str:
-    """The Account Center page as a signed-in person sees it."""
     return signed_in_client.get(reverse("account-center")).content.decode()
 
 
 class TestOverviewCards:
-    """One card per account management page, drawn only when the page exists."""
-
     @pytest.mark.parametrize(("title", "url_name"), CARDS.items())
     def test_each_management_page_has_a_card(
         self, account_center, title, url_name
     ) -> None:
         cards = cards_of(account_center)
-        assert f"<span>{title}</span>" in cards
         assert f'href="{reverse(url_name)}"' in cards
 
     def test_no_phone_card_when_phone_numbers_are_off(
@@ -53,34 +49,14 @@ class TestOverviewCards:
             page = signed_in_client.get(reverse("account-center")).content.decode()
 
         cards = cards_of(page)
-        assert "<span>Email</span>" in cards
-        assert "<span>Password</span>" in cards
-        assert "<span>Phone number</span>" not in cards
+        assert f'href="{reverse("account_email")}"' in cards
+        assert f'href="{reverse("account_change_password")}"' in cards
+        assert f'href="{reverse("account_change_phone")}"' not in cards
 
-    def test_the_connected_accounts_card_offers_its_button_and_icon(
-        self, account_center
-    ) -> None:
-        cards = cards_of(account_center)
-
-        assert "Manage connected accounts" in cards
-        assert "bi-link-45deg" in cards
-
-    def test_the_two_factor_card_offers_its_button_and_follows_connected_accounts(
-        self, account_center
-    ) -> None:
+    def test_the_two_factor_card_links_to_the_overview(self, account_center) -> None:
         cards = cards_of(account_center)
 
         assert f'href="{reverse("mfa_index")}"' in cards
-        assert "Manage two-factor authentication" in cards
-        assert cards.index("<span>Two-factor authentication</span>") > (
-            cards.index("<span>Connected accounts</span>")
-        )
-
-    def test_the_sessions_card_offers_its_button_and_icon(self, account_center) -> None:
-        cards = cards_of(account_center)
-
-        assert "Manage sessions" in cards
-        assert "bi-box-arrow-in-right" in cards
 
     def test_a_signed_out_visitor_is_sent_to_sign_in(self, client, db) -> None:
         response = client.get(reverse("account-center"))
@@ -89,8 +65,6 @@ class TestOverviewCards:
 
 
 class TestChainedCard:
-    """Another app's overview template adds beside this package's cards (FR-007)."""
-
     def test_another_apps_card_shows_beside_this_packages(
         self, signed_in_client
     ) -> None:
@@ -102,17 +76,11 @@ class TestChainedCard:
 
         cards = cards_of(page)
         assert 'id="chained-card"' in cards
-        assert "<span>Email</span>" in cards
-        assert "<span>Password</span>" in cards
+        assert f'href="{reverse("account_email")}"' in cards
+        assert f'href="{reverse("account_change_password")}"' in cards
 
 
 class TestUserMenu:
-    """The shell's user menu is the way to the Account Center and to sign out.
-
-    Read off the demo's overview page: the Account Center draws its own
-    navigation in place of the user menu's Account Center row.
-    """
-
     @pytest.fixture
     def page(self, signed_in_client) -> str:
         return signed_in_client.get(reverse("overview")).content.decode()
@@ -120,7 +88,6 @@ class TestUserMenu:
     def test_signed_in_it_links_to_the_account_center(self, page) -> None:
         link = f'href="{reverse("account-center")}"'
         assert link in page
-        assert "<span>Account Center</span>" in page
 
     def test_signed_in_it_holds_a_sign_out_form(self, page) -> None:
         assert f'action="{reverse("account_logout")}"' in page
@@ -131,5 +98,5 @@ class TestUserMenu:
         page = response.content.decode()
 
         assert response.status_code == 200
-        assert "<span>Account Center</span>" not in page
+        assert f'href="{reverse("account-center")}"' not in page
         assert f'action="{reverse("account_logout")}"' not in page

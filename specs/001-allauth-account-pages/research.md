@@ -55,7 +55,7 @@ takes a filter expression, so the base can pick its parent with `user.is_authent
 (125 lines of allauth's markup to keep in step with each release, against one line).
 
 **Alternatives**: overriding each page template (about thirty files that would each need
-revisiting on every allauth release, and the thing Article XIII rules out), or a custom view
+revisiting on every allauth release, and the thing Article XII rules out), or a custom view
 layer (reimplements allauth).
 
 ## R2 — The entrance layout
@@ -192,7 +192,7 @@ project without allauth gets.
 **Decision**: `django-allauth>=65.19.4,<66` in the development dependency group, and the same
 range stated in the README.
 
-**Rationale**: the spec's clarification and Article XIII. The bound cannot reach a host project,
+**Rationale**: the spec's clarification and Article XII. The bound cannot reach a host project,
 so the README carries it for them.
 
 ## R10 — django-mvp floor

@@ -35,8 +35,21 @@ SCRIPT = textwrap.dedent(
     client.logout()
     sign_in = client.get(reverse("account_login"))
 
+    mfa_installed = apps.is_installed("allauth.mfa")
+    if mfa_installed:
+        from django.urls import NoReverseMatch
+        try:
+            mfa_index_url = reverse("mfa_index")
+        except NoReverseMatch:
+            mfa_index_url = None
+    else:
+        mfa_index_url = None
+
     print(json.dumps({
-        "mfa_installed": apps.is_installed("allauth.mfa"),
+        "mfa_installed": mfa_installed,
+        "account_email_url": reverse("account_email"),
+        "account_change_password_url": reverse("account_change_password"),
+        "mfa_index_url": mfa_index_url,
         "account_center": [account_center.status_code, account_center.content.decode()],
         "password": [password.status_code, password.content.decode()],
         "sign_in": [sign_in.status_code, sign_in.content.decode()],
@@ -47,13 +60,10 @@ SCRIPT = textwrap.dedent(
 
 @pytest.fixture(scope="module")
 def result(run_in_subprocess) -> dict:
-    """Start Django with allauth but no multi-factor app and render the pages."""
     return run_in_subprocess("tests.settings_without_mfa", SCRIPT)
 
 
 class TestWithoutMultiFactor:
-    """A project that installs allauth's account app and not its multi-factor one."""
-
     def test_the_subprocess_really_runs_without_the_multi_factor_app(
         self, result
     ) -> None:
@@ -64,18 +74,17 @@ class TestWithoutMultiFactor:
     ) -> None:
         status, page = result["account_center"]
         assert status == 200
-        assert "Manage email" in page
-        assert "Change password" in page
+        assert f'href="{result["account_email_url"]}"' in page
+        assert f'href="{result["account_change_password_url"]}"' in page
 
     def test_the_account_center_has_no_two_factor_entry_or_card(self, result) -> None:
         _status, page = result["account_center"]
-        assert "Two-factor authentication" not in page
-        assert "Manage two-factor authentication" not in page
+        assert 'href="/accounts/2fa/"' not in page
 
     def test_a_management_page_renders_with_no_two_factor_entry(self, result) -> None:
         status, page = result["password"]
         assert status == 200
-        assert "Two-factor authentication" not in page
+        assert 'href="/accounts/2fa/"' not in page
 
     def test_the_sign_in_page_renders_without_a_passkey_button(self, result) -> None:
         status, page = result["sign_in"]
@@ -84,12 +93,6 @@ class TestWithoutMultiFactor:
 
 
 class TestTheSubprocessCanFail:
-    """Pointed at the suite's own settings, the same script sees the entry.
-
-    Without this, a script that never looked at the multi-factor app at all
-    would pass the tests above for the wrong reason.
-    """
-
     def test_with_the_multi_factor_app_the_entry_and_card_are_there(
         self, run_in_subprocess
     ) -> None:
@@ -97,6 +100,5 @@ class TestTheSubprocessCanFail:
 
         assert with_mfa["mfa_installed"]
         _status, page = with_mfa["account_center"]
-        assert "Two-factor authentication" in page
-        assert "Manage two-factor authentication" in page
+        assert f'href="{with_mfa["mfa_index_url"]}"' in page
         assert "passkey_login" in with_mfa["sign_in"][1]

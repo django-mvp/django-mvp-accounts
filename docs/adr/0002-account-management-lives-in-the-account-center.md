@@ -17,6 +17,12 @@ An entry or card whose allauth URL does not resolve is not drawn, so what appear
 project has turned on in allauth. `menus.py` adds nothing unless `allauth` is installed, so a project without it never builds
 entries only to drop them again.
 
+django-mvp draws the Account Center's sidebar on a page it does not serve only when an entry marks
+that page current. Each entry therefore also names the allauth pages reached from it, such as the
+authenticator app's activation page under Two-factor authentication. The "Account" heading claims
+the re-authentication pages, which come before a change anywhere in the area. Only a signed-in
+visit is claimed, so a signed-out password reset stays an entrance page.
+
 The user menu's "Account Center" and "Log out" entries are django-mvp's own, and this package adds
 none.
 

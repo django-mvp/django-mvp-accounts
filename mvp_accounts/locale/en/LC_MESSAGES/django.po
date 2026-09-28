@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 20:04+0200\n"
+"POT-Creation-Date: 2026-09-26 23:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,6 +40,10 @@ msgstr ""
 
 #: menus.py:43 templates/mvp/account/overview.html:40
 msgid "Connected accounts"
+msgstr ""
+
+#: menus.py:49 templates/mvp/account/overview.html:49
+msgid "Two-factor authentication"
 msgstr ""
 
 #: templates/account/logout.html:10 templates/account/logout.html:14
@@ -123,6 +127,16 @@ msgstr ""
 
 #: templates/mvp/account/overview.html:43
 msgid "Manage connected accounts"
+msgstr ""
+
+#: templates/mvp/account/overview.html:50
+msgid ""
+"Add a second step to signing in, so a stolen password is not enough on its "
+"own."
+msgstr ""
+
+#: templates/mvp/account/overview.html:52
+msgid "Manage two-factor authentication"
 msgstr ""
 
 #: templates/socialaccount/login_redirect.html:11

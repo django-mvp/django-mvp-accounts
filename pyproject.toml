@@ -43,7 +43,7 @@ Issues = "https://github.com/django-mvp/django-mvp-accounts/issues"
 # way runs one version of each tool. Ships ruff, mypy, deptry, pre-commit,
 # pytest, pytest-django, pytest-xdist, factory-boy, coverage and django-stubs.
 dev = [
-    "django-allauth>=65.19.4,<66",
+    "django-allauth[mfa]>=65.19.4,<66",
     "mvp-shared[dev,test]",
 ]
 
@@ -150,8 +150,12 @@ non-mirror-paths = [
     "tests/test_entrance_pages.py",
     "tests/test_management_pages.py",
     "tests/test_recovery_pages.py",
+    "tests/test_security_key_pages.py",
     "tests/test_social_entrance_pages.py",
+    "tests/test_two_factor_pages.py",
+    "tests/test_two_factor_sign_in.py",
     "tests/test_without_allauth.py",
+    "tests/test_without_mfa.py",
     "tests/test_without_socialaccount.py",
 ]
 

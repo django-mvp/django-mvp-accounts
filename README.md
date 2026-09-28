@@ -93,13 +93,14 @@ backend and settings are yours to choose.
 
 With django-allauth installed, this package adds to django-mvp's Account Center:
 
-- **Menu entries** for Email, Password, Phone number and Connected accounts, listed under an
-  "Account" heading below its Overview entry.
+- **Menu entries** for Email, Password, Phone number, Connected accounts and Two-factor
+  authentication, listed under an "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Connected accounts appears only with the social account app (`allauth.socialaccount`)
+installed, and Two-factor authentication only with the multi-factor app (`allauth.mfa`)
 installed. Without allauth installed the package adds nothing and raises nothing.
 
 allauth's account management pages (email, change email, password change and set, phone
@@ -114,6 +115,40 @@ The Account Center itself, the "Account Center" and "Log out" entries in the use
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
+## Two-factor authentication
+
+To offer two-factor authentication, install allauth's multi-factor app with its `mfa`
+extra (`pip install "django-allauth[mfa]"`), add `allauth.mfa` to `INSTALLED_APPS`, and run
+`migrate`. Which factors are on is your choice, through allauth's own settings:
+`MFA_SUPPORTED_TYPES` (authenticator app, recovery codes and security keys),
+`MFA_PASSKEY_LOGIN_ENABLED`, `MFA_TRUST_ENABLED` and the rest. This package sets none of
+them and checks none of them.
+
+Once `allauth.mfa` is installed, its pages render in django-mvp's shell:
+
+- The two-factor overview, activating and deactivating the authenticator app, and viewing,
+  downloading and generating recovery codes are management pages in the Account Center, with
+  the Two-factor authentication entry and card described above.
+- A page with no factor it can offer leaves that factor out. With `"totp"` missing from
+  `MFA_SUPPORTED_TYPES`, nothing on the overview offers the authenticator app.
+- With `"webauthn"` in `MFA_SUPPORTED_TYPES`, the security-key pages (the list, adding,
+  renaming and removing a key, and re-authenticating with one) are management pages too. The
+  list also needs `django.contrib.humanize` in `INSTALLED_APPS`, which allauth's page loads.
+- Signing in with a passkey (`MFA_PASSKEY_LOGIN_ENABLED`) adds a "Sign in with a passkey" button
+  to the sign-in page. Creating an account with a passkey (`MFA_PASSKEY_SIGNUP_ENABLED`) adds
+  its own sign-up page and a page to create the passkey. allauth refuses to start with it unless
+  `webauthn` is in `MFA_SUPPORTED_TYPES`, `ACCOUNT_EMAIL_VERIFICATION = "mandatory"`,
+  `ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True` and `ACCOUNT_SIGNUP_FIELDS` requires
+  `email*`. All four are your project's settings, and the demo leaves passkey sign-up off. Sign-in and sign-up pages are entrance pages. Every
+  page keeps the ids and data attributes allauth's JavaScript looks for.
+- The QR code is always drawn dark on white, in every theme, because a scanner cannot read
+  it from a dark background.
+- Security keys and passkeys work only over HTTPS or on `localhost`. On any other address the
+  browser refuses them, whatever this package renders.
+
+Without `allauth.mfa` installed, the Account Center has no Two-factor authentication entry or
+card, and nothing else changes.
 
 ## Signing in with other accounts
 
@@ -185,6 +220,14 @@ uv run python manage.py migrate
 uv run python manage.py seed_demo
 uv run python manage.py runserver
 ```
+
+`seed_demo` creates accounts you can sign in with, all with the password `password`:
+`regular.user@example.com`, `staff.user@example.com`, `super.user@example.com` and
+`mfa.user@example.com`. The last one has an authenticator app and recovery codes, so
+signing in ends at the second-factor step. The demo sets `MFA_TOTP_INSECURE_BYPASS_CODE`
+to `123456`, so that code passes the step without a phone. That is a convenience for
+this demo only: allauth refuses the setting when `DEBUG` is off, and a project of your
+own should not copy it.
 
 ## License
 

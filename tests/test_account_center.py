@@ -64,6 +64,17 @@ class TestOverviewCards:
         assert "Manage connected accounts" in cards
         assert "bi-link-45deg" in cards
 
+    def test_the_two_factor_card_offers_its_button_and_follows_connected_accounts(
+        self, account_center
+    ) -> None:
+        cards = cards_of(account_center)
+
+        assert f'href="{reverse("mfa_index")}"' in cards
+        assert "Manage two-factor authentication" in cards
+        assert cards.index("<span>Two-factor authentication</span>") > (
+            cards.index("<span>Connected accounts</span>")
+        )
+
     def test_a_signed_out_visitor_is_sent_to_sign_in(self, client, db) -> None:
         response = client.get(reverse("account-center"))
         assert response.status_code == 302

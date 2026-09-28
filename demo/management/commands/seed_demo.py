@@ -2,8 +2,11 @@
 
 Three sign-ins, because the application shell renders differently for each: an
 ordinary account, one with access to the admin, and one with everything. A
-fourth, social.user@example.com, has no password and signs in only through the
-test provider. The staff account has a connected test provider account with uid
+fourth, mfa.user@example.com, has an authenticator app and recovery codes, so
+signing in ends at the second-factor step. The demo's fixed code, set in
+MFA_TOTP_INSECURE_BYPASS_CODE, passes that step, and it is a convenience for this
+demo only. A fifth, social.user@example.com, has no password and signs in only
+through the test provider. The staff account has a connected test provider account with uid
 1001, and social.user's has uid 2002. Signed in as staff, the connections page
 shows an account that can be removed. Signed in as social.user, it shows one that
 allauth refuses to remove. A reviewer opening
@@ -16,6 +19,9 @@ site is that this command will not execute there.
 """
 
 from allauth.account.models import EmailAddress
+from allauth.mfa.models import Authenticator
+from allauth.mfa.recovery_codes.internal.auth import RecoveryCodes
+from allauth.mfa.totp.internal.auth import TOTP
 from allauth.socialaccount.models import SocialAccount
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -25,6 +31,9 @@ from demo.models import PhoneNumber
 
 PASSWORD = "password"
 
+MFA_EMAIL = "mfa.user@example.com"
+# A fixed secret, so the account's authenticator app is the same after every run.
+MFA_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP"
 SOCIAL_EMAIL = "social.user@example.com"
 STAFF_UID = "1001"
 SOCIAL_UID = "2002"
@@ -71,10 +80,20 @@ class Command(BaseCommand):
             self.stdout.write(f"  {'created' if created else 'updated'}  {email}")
 
         self.seed_states(user_model, username_field)
+        self.seed_two_factor_user(user_model, username_field)
 
+        bypass = settings.MFA_TOTP_INSECURE_BYPASS_CODE
+        second_factor = (
+            f"the demo's fixed code {bypass!r} passes that step, as a demo "
+            "convenience only"
+            if bypass
+            else "no fixed code is set, so enter a code computed from its secret"
+        )
         self.stdout.write(
             self.style.SUCCESS(
-                f"\nThe first three sign in with the password {PASSWORD!r}. "
+                f"\nThe first three sign in with the password {PASSWORD!r}, and so "
+                f"does {MFA_EMAIL}, which then asks for a second factor: "
+                f"{second_factor}. "
                 f"{SOCIAL_EMAIL} has no password and signs in through the test "
                 f"provider as uid {SOCIAL_UID}; staff.user@example.com has uid "
                 f"{STAFF_UID} connected."
@@ -122,3 +141,25 @@ class Command(BaseCommand):
             user=user, provider=PROVIDER, uid=SOCIAL_UID
         )
         self.stdout.write(f"  {'created' if created else 'updated'}  {SOCIAL_EMAIL}")
+
+    def seed_two_factor_user(self, user_model, username_field):
+        """Create the account whose sign-in ends at the second-factor step."""
+        user, created = user_model.objects.get_or_create(
+            **{username_field: MFA_EMAIL}, defaults={"email": MFA_EMAIL}
+        )
+        user.set_password(PASSWORD)
+        user.save()
+        EmailAddress.objects.update_or_create(
+            user=user,
+            email=MFA_EMAIL,
+            defaults={"verified": True, "primary": True},
+        )
+        if not Authenticator.objects.filter(
+            user=user, type=Authenticator.Type.TOTP
+        ).exists():
+            TOTP.activate(user, MFA_SECRET)
+        if not Authenticator.objects.filter(
+            user=user, type=Authenticator.Type.RECOVERY_CODES
+        ).exists():
+            RecoveryCodes.activate(user)
+        self.stdout.write(f"  {'created' if created else 'updated'}  {MFA_EMAIL}")

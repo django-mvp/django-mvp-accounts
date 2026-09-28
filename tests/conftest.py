@@ -17,6 +17,12 @@ import sys
 from contextlib import contextmanager
 
 import pytest
+from allauth.mfa.totp.internal.auth import (
+    format_hotp_value,
+    hotp_value,
+    yield_hotp_counters_from_time,
+)
+from bs4 import BeautifulSoup
 from django import template as dj_template
 from django.template import Context
 from django.test import override_settings
@@ -49,6 +55,17 @@ def overview_page(client, db):
 
 
 @pytest.fixture
+def totp_code():
+    """The authenticator code that is valid right now for a secret."""
+
+    def code_for(secret: str) -> str:
+        counter = next(yield_hotp_counters_from_time())
+        return format_hotp_value(hotp_value(secret, counter))
+
+    return code_for
+
+
+@pytest.fixture
 def signed_in_client(client, db):
     """A test client signed in as an account with a verified primary address."""
     address = EmailAddressFactory()
@@ -57,11 +74,37 @@ def signed_in_client(client, db):
     return client
 
 
+@pytest.fixture
+def assert_script_hooks():
+    """Check that every element allauth's scripts look up is on the page.
+
+    allauth's scripts run from ``script[data-allauth-onload]`` tags whose JSON
+    names the id of each element they then find with ``getElementById``. A
+    reskinned element that drops its id leaves the script with nothing to bind,
+    and nothing raises.
+    """
+
+    def check(html: str) -> int:
+        soup = BeautifulSoup(html, "html.parser")
+        hooks = soup.select("script[data-allauth-onload]")
+        for hook in hooks:
+            for name, element_id in json.loads(hook.string)["ids"].items():
+                assert soup.find(id=element_id), (
+                    f"{hook['data-allauth-onload']} needs #{element_id} ({name})"
+                )
+        return len(hooks)
+
+    return check
+
+
 # The views come first: a view class reads some settings, the template it
 # renders among them, when it is defined, and the URLconf holds the classes.
 URLCONF_MODULES = (
     "allauth.account.views",
     "allauth.account.urls",
+    "allauth.mfa.base.urls",
+    "allauth.mfa.webauthn.urls",
+    "allauth.mfa.urls",
     "allauth.urls",
     "demo.urls",
     "tests.urls",

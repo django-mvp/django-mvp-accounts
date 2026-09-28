@@ -46,3 +46,7 @@ SOCIALACCOUNT_PROVIDERS = {
         "APPS": [{"client_id": "suite-client-id", "secret": "suite-secret"}],
     },
 }
+
+# The demo accepts a fixed authenticator code. Every test enters a real one
+# computed from the secret, so the shortcut is switched off here.
+MFA_TOTP_INSECURE_BYPASS_CODE = None

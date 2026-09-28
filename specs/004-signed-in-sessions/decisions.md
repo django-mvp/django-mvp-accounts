@@ -4,7 +4,7 @@
 
 The issue and R4 both say a person can sign out any session. allauth's browser page offers one
 action, which ends every session except the current one. Ending a single chosen session exists only
-in allauth's headless API. Article XIII says a feature upstream lacks is raised there first, and
+in allauth's headless API. Article XII says a feature upstream lacks is raised there first, and
 building it here is an ADR. The spec therefore delivers what allauth's page does and records
 single-session sign-out as an upstream gap for the maintainer to raise.
 

@@ -34,7 +34,7 @@ re-authentication required. A demo adapter storing phone numbers in a demo `Phon
 `tests/factories.py` gains one factory per model the tests build: the user, allauth's
 `EmailAddress` (verified and primary by default) and the demo's `PhoneNumber`. `tests/conftest.py`
 gains a thin `signed_in_client` fixture over them. Later tasks use these instead of constructing
-objects inline (Article X). The `PhoneNumber` number is `unique=True`.
+objects inline (`docs/contributing/standards/testing.md`, section 4). The `PhoneNumber` number is `unique=True`.
 Tests: the sign-in page responds at allauth's URL; a seeded account signs in with `password`.
 
 ### T002 — The URLconf-rebuilding fixture

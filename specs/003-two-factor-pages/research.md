@@ -124,5 +124,5 @@ what the Account Center entry and card follow (ADR 0002).
   (the second-factor step, adding a key, re-authentication) runs `parse_registration_response` on
   every stored credential (`webauthn/internal/auth.py:109-118, 208-212`), so the stored credential
   must be a registration response that parses: a recorded fixture or one built with fido2's own
-  constructors. One factory in `tests/factories.py` (Article X), verified by rendering
+  constructors. One factory in `tests/factories.py` (`docs/contributing/standards/testing.md`, section 4), verified by rendering
   `mfa_list_webauthn` and `mfa_reauthenticate_webauthn`.

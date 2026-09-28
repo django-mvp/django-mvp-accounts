@@ -21,7 +21,7 @@ nothing checks how a project configured it.
 **Testing**: pytest, pytest-django, xdist. Assertions against rendered pages through the test client
 **Target Platform**: any Django project built on django-mvp
 **Project Type**: reusable Django app (templates plus one menu module)
-**Constraints**: no runtime import of allauth outside code that runs only when it is installed (Article XIV applied to allauth); every added string translatable
+**Constraints**: no runtime import of allauth outside code that runs only when it is installed (Article XIII applied to allauth); every added string translatable
 **Scale/Scope**: about 30 allauth pages, 12 element overrides, 3 layouts, 3 page-level overrides, 3 menu entries, 3 cards
 
 ## Constitution Check

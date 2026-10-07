@@ -1,0 +1,34 @@
+{% extends "mvp/account/base.html" %}
+{% load i18n %}
+{% block account.content %}
+  {% url "account_api_tokens" as tokens_url %}
+  <c-mvp.page>
+    <c-mvp.page.title :title="page.title" />
+    <c-mvp.card>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <c-mvp.data_field label="{% trans "Token" %}">
+          <code class="font-mono">{{ token.token_key }}…</code>
+        </c-mvp.data_field>
+        <c-mvp.data_field label="{% trans "Created" %}">
+          <time datetime="{{ token.created|date:"c" }}">{{ token.created|date:"DATETIME_FORMAT" }}</time>
+        </c-mvp.data_field>
+        <c-mvp.data_field label="{% trans "Expires" %}">
+          {% if token.expiry %}
+            <time datetime="{{ token.expiry|date:"c" }}">{{ token.expiry|date:"DATETIME_FORMAT" }}</time>
+          {% else %}
+            {% trans "Never expires" %}
+          {% endif %}
+        </c-mvp.data_field>
+      </div>
+      <c-alert variant="warning" role="note">
+        <span>{% trans "Anything that uses this token will stop working as soon as you revoke it. A revoked token cannot be brought back." %}</span>
+      </c-alert>
+      <c-slot name="footer">
+        <c-mvp.form method="post" action="{{ request.path }}">
+          <c-button type="submit" variant="error" text="{% trans "Revoke token" %}" />
+        </c-mvp.form>
+        <c-button href="{{ tokens_url }}" ghost text="{% trans "Cancel" %}" />
+      </c-slot>
+    </c-mvp.card>
+  </c-mvp.page>
+{% endblock account.content %}

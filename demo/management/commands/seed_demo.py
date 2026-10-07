@@ -11,7 +11,10 @@ through the test provider. The staff account has a connected test provider accou
 shows an account that can be removed. Signed in as social.user, it shows one that
 allauth refuses to remove. regular.user is also signed in from two other
 browsers, so signing in as that account shows three sessions on the sessions
-page and offers to sign out the others. Any other account shows one. A reviewer
+page and offers to sign out the others. Any other account shows one.
+regular.user also holds three API tokens, one of which never expires, and a
+fourth that has expired and is not listed. staff.user holds none, and
+super.user holds as many as the demo allows. A reviewer
 opening this project should not have to invent a login or read the code to find
 out what exists.
 
@@ -38,6 +41,8 @@ from django.contrib.auth import (
 )
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
+from knox.models import get_token_model
+from knox.settings import knox_settings
 
 from demo.models import PhoneNumber
 
@@ -68,6 +73,10 @@ OTHER_BROWSERS = [
         5,
     ),
 ]
+
+# regular.user's API tokens: how many days ago each was created, and how many
+# days from now it expires. None never expires, and a negative number already has.
+REGULAR_TOKENS = [(40, None), (6, 24), (0, 30), (45, -15)]
 
 ACCOUNTS = [
     ("regular.user@example.com", {"is_staff": False, "is_superuser": False}),
@@ -114,6 +123,7 @@ class Command(BaseCommand):
 
         self.seed_states(user_model, username_field)
         self.seed_two_factor_user(user_model, username_field)
+        self.seed_tokens(user_model, username_field)
 
         bypass = settings.MFA_TOTP_INSECURE_BYPASS_CODE
         second_factor = (
@@ -130,7 +140,9 @@ class Command(BaseCommand):
                 f"{SOCIAL_EMAIL} has no password and signs in through the test "
                 f"provider as uid {SOCIAL_UID}; staff.user@example.com has uid "
                 f"{STAFF_UID} connected. regular.user@example.com is signed in from two "
-                "other browsers, so its sessions page lists three."
+                "other browsers, so its sessions page lists three, and holds "
+                "three API tokens. staff.user@example.com holds none and "
+                "super.user@example.com holds as many as the demo allows."
             )
         )
 
@@ -191,6 +203,37 @@ class Command(BaseCommand):
                 user_agent=user_agent,
                 created_at=started,
                 last_seen_at=started,
+            )
+
+    def seed_tokens(self, user_model, username_field):
+        """Give the three accounts the token lists the tokens page has to show.
+
+        Every run replaces them, so a token revoked while looking at the page
+        comes back. The values are thrown away, as they are for anyone: a token
+        to try against the API is made on the page.
+        """
+        token_model = get_token_model()
+        regular, staff, admin = (
+            user_model.objects.get(**{username_field: email}) for email, _ in ACCOUNTS
+        )
+        token_model.objects.filter(user__in=[regular, staff, admin]).delete()
+        now = timezone.now()
+        for created_days_ago, expires_in_days in REGULAR_TOKENS:
+            token, _value = token_model.objects.create(user=regular, expiry=None)
+            # `created` is set on save, so it is moved back afterwards.
+            token_model.objects.filter(pk=token.pk).update(
+                created=now - timedelta(days=created_days_ago, hours=3),
+                expiry=(
+                    None
+                    if expires_in_days is None
+                    else now + timedelta(days=expires_in_days)
+                ),
+            )
+        for number in range(knox_settings.TOKEN_LIMIT_PER_USER or 0):
+            token, _value = token_model.objects.create(user=admin)
+            token_model.objects.filter(pk=token.pk).update(
+                created=now - timedelta(days=number * 4, hours=1),
+                expiry=now + timedelta(days=30 - number * 4),
             )
 
     def seed_social_user(self, user_model, username_field):

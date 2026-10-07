@@ -145,6 +145,12 @@ if apps.is_installed("allauth"):
                     view_name="usersessions_list",
                     extra_context={"label": _("Sessions"), "icon": "login"},
                 ),
+                AccountEntry(
+                    name="api_tokens",
+                    view_name="account_api_tokens",
+                    pages=("account_api_token_revoke",),
+                    extra_context={"label": _("API tokens"), "icon": "key"},
+                ),
             ],
         )
     )

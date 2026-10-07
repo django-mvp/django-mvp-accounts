@@ -1,13 +1,15 @@
 {% load allauth %}
 {% comment %}
   Three branches because a Cotton attribute is always written out: `form=""`
-  on a plain submit button would detach it from its form.
+  on a plain submit button would detach it from its form. `link` and `ghost`
+  are attributes of the button, not variants, so their classes are written
+  in `class`, where a tag can decide them.
 {% endcomment %}
 {% with tags=attrs.tags|default:"" %}
   {% if attrs.href %}
     <c-button href="{{ attrs.href }}"
-              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags %}link{% elif 'secondary' in tags %}ghost{% else %}primary{% endif %}"
-              class="{% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
+              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags or 'secondary' in tags %}{% else %}primary{% endif %}"
+              class="{% if 'danger' in tags or 'warning' in tags or 'success' in tags %}{% elif 'link' in tags or 'cancel' in tags %}btn-link{% elif 'secondary' in tags %}btn-ghost{% endif %} {% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
       {% slot %}
       {% endslot %}
     </c-button>
@@ -17,8 +19,8 @@
               name="{{ attrs.name }}"
               value="{{ attrs.value }}"
               id="{{ attrs.id }}"
-              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags %}link{% elif 'secondary' in tags %}ghost{% else %}primary{% endif %}"
-              class="{% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
+              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags or 'secondary' in tags %}{% else %}primary{% endif %}"
+              class="{% if 'danger' in tags or 'warning' in tags or 'success' in tags %}{% elif 'link' in tags or 'cancel' in tags %}btn-link{% elif 'secondary' in tags %}btn-ghost{% endif %} {% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
       {% slot %}
       {% endslot %}
     </c-button>
@@ -27,8 +29,8 @@
               name="{{ attrs.name }}"
               value="{{ attrs.value }}"
               id="{{ attrs.id }}"
-              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags %}link{% elif 'secondary' in tags %}ghost{% else %}primary{% endif %}"
-              class="{% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
+              variant="{% if 'danger' in tags %}error{% elif 'warning' in tags %}warning{% elif 'success' in tags %}success{% elif 'link' in tags or 'cancel' in tags or 'secondary' in tags %}{% else %}primary{% endif %}"
+              class="{% if 'danger' in tags or 'warning' in tags or 'success' in tags %}{% elif 'link' in tags or 'cancel' in tags %}btn-link{% elif 'secondary' in tags %}btn-ghost{% endif %} {% if 'outline' in tags %}btn-outline{% endif %} {% if 'minor' in tags or 'tool' in tags %}btn-sm{% endif %} {% if 'prominent' in tags %}btn-block{% endif %}">
       {% slot %}
       {% endslot %}
     </c-button>

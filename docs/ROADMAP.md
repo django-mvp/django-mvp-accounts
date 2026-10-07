@@ -28,7 +28,7 @@ Everything needed to reach a minimum usable release.
 
 ### R1 — Accounts, sign-in and recovery
 
-*feature · advances G1, G2, G3*
+*delivered in [#5](https://github.com/django-mvp/django-mvp-accounts/issues/5) · advances G1, G2, G3*
 
 A person can create an account on a django-mvp site, sign in, sign out, get
 back in after forgetting their password, and change the details of their
@@ -64,7 +64,7 @@ Everything needed for the complete release.
 
 ### R2 — Connected social accounts
 
-*feature · advances G1, G2, G3*
+*delivered in [#6](https://github.com/django-mvp/django-mvp-accounts/issues/6) · advances G1, G2, G3*
 
 A person can sign up and sign in with an external account such as GitHub or
 Google, and connect or disconnect those accounts from their own account pages.
@@ -84,7 +84,7 @@ host project's settings.
 
 ### R3 — Two-factor authentication
 
-*feature · advances G1, G2, G3*
+*delivered in [#7](https://github.com/django-mvp/django-mvp-accounts/issues/7) · advances G1, G2, G3*
 
 A person can protect their account with a second factor: an authenticator app,
 recovery codes, and security keys or passkeys where the project enables them.
@@ -101,7 +101,7 @@ Serves G1, G2 and G3.
 
 ### R4 — Signed-in sessions
 
-*feature · advances G1, G2, G3*
+*delivered in [#8](https://github.com/django-mvp/django-mvp-accounts/issues/8) · advances G1, G2, G3*
 
 A person can see every device and browser currently signed in to their
 account, and sign any of them out. Built on allauth's user sessions app.

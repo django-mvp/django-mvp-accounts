@@ -100,10 +100,6 @@ class TestAccessibleForms:
         control = soup.find("input", attrs={"name": "email"})
         assert soup.find("label", attrs={"for": control["id"]})
 
-    @pytest.mark.skip(
-        reason="django-mvp#412: c-form.field renders help text and errors "
-        "without ids, so a single input cannot reference them"
-    )
     def test_a_single_field_points_at_its_error(
         self, signed_in_client, rebuild_urls
     ) -> None:

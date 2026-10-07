@@ -5,13 +5,13 @@
 {% endcomment %}
 {% block page.content %}
   {% for message in messages_sent %}
-    <c-section title="{{ message.subject }}" icon="email">
-      <c-text>To {{ message.recipient }} · {{ message.sent_at|timesince }} ago</c-text>
+    <c-mvp.section title="{{ message.subject }}" icon="email">
+      <c-mvp.text>To {{ message.recipient }} · {{ message.sent_at|timesince }} ago</c-mvp.text>
       <div class="prose max-w-none">
-        <c-text>{{ message.body|urlize|linebreaksbr }}</c-text>
+        <c-mvp.text>{{ message.body|urlize|linebreaksbr }}</c-mvp.text>
       </div>
-    </c-section>
+    </c-mvp.section>
   {% empty %}
-    <c-text>Nothing sent yet. Ask for a sign-in code or a password reset, then come back.</c-text>
+    <c-mvp.text>Nothing sent yet. Ask for a sign-in code or a password reset, then come back.</c-mvp.text>
   {% endfor %}
 {% endblock page.content %}

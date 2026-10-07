@@ -54,9 +54,10 @@ INSTALLED_APPS = [
     # from here, and fail to render without it.
     "django.contrib.humanize",
     "mvp",
+    "daisy_cotton",
     "easy_icons",
     "crispy_forms",
-    "crispy_tailwind",
+    "mvp_forms",
     "flex_menu",
     "django_cotton",
     # Reloads the browser on a change to a template, a stylesheet or Python. It
@@ -149,8 +150,8 @@ USERSESSIONS_TRACK_ACTIVITY = True
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = ["tailwind"]
-CRISPY_TEMPLATE_PACK = "tailwind"
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["daisyui"]
+CRISPY_TEMPLATE_PACK = "daisyui"
 
 FLEX_MENUS = {
     "renderers": {

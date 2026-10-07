@@ -21,7 +21,7 @@ from tests.factories import EmailAddressFactory, PhoneNumberFactory, UserFactory
 
 STYLESHEET = "css/django-mvp.css"
 NAVIGATION = 'aria-label="Main navigation"'
-SIDEBAR_MENU = re.compile(r'<ul[^>]*role="navigation"[^>]*aria-label="([^"]+)"')
+SIDEBAR_MENU = re.compile(r'<nav(?![^>]*class="dock\b)[^>]*aria-label="([^"]+)"')
 NEW_PHONE = "+491510000123"
 
 

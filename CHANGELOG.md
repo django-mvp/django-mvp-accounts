@@ -22,6 +22,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking: django-mvp 0.27.0 is now the minimum.** That release draws forms with
+  django-mvp-forms in place of crispy-tailwind and takes its basic components from
+  daisy-cotton, so a project upgrading this package follows django-mvp's own upgrade notes
+  for [0.26.0](https://github.com/django-mvp/django-mvp/releases/tag/v0.26.0) and
+  [0.27.0](https://github.com/django-mvp/django-mvp/releases/tag/v0.27.0): add
+  `"daisy_cotton"` directly below `"mvp"` in `INSTALLED_APPS`, replace `"crispy_tailwind"`
+  with `"mvp_forms"`, and set `CRISPY_TEMPLATE_PACK` and `CRISPY_ALLOWED_TEMPLATE_PACKS` to
+  `daisyui`. Nothing else is needed for this package's pages.
+- A field drawn on its own, such as the new address on the email page or the phone number
+  on the phone page, is a `<fieldset id="<id>-field">` holding a `<label>` and the control.
+  A radio or checkbox sits inside its label.
+
+### Fixed
+
+- A field drawn on its own now points at its help text and its errors through
+  `aria-describedby`, so a screen reader announces them with the field. The help text has
+  the id `<id>-field-description` and the errors `<id>-field-errors`.
+
 ## [v0.1.0] - 2026-09-29
 
 ### Added

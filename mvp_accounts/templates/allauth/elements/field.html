@@ -1,77 +1,83 @@
 {% load allauth %}
 {% comment %}
-  <c-form.field> renders help text and errors without ids, so the input cannot point at them (django-mvp#412).
+  One field outside a whole form. The fieldset gives its help text the id `<id>-field-description` and its errors `<id>-field-errors`, and the control points at both.
   The textarea's `value` slot has no surrounding whitespace, which would be copied with the codes.
-  `checked`/`disabled` pick the branch because `checked="False"` still ticks the box.
+  `readonly`, `disabled` and `checked` pick the branch because `checked="False"` still ticks the box.
+  A radio or a checkbox sits inside its label. Every other control has its label above it.
 {% endcomment %}
-{% if attrs.type == "textarea" %}
-  {% if attrs.readonly %}
-    <c-form.field type="textarea"
-                  id="{{ attrs.id }}"
-                  rows="{{ attrs.rows|default:3 }}"
-                  readonly><c-slot name="label">
+<c-form.fieldset id="{% if attrs.id %}{{ attrs.id }}-field{% endif %}" :errors="attrs.errors">
+  {% if attrs.type == "textarea" %}
+    <c-form.label for="{{ attrs.id }}">
       {% slot label %}
       {% endslot %}
-      </c-slot>{% slot value %}{% endslot %}</c-form.field>
+    </c-form.label>
+    {% if attrs.readonly %}
+      <c-form.textarea id="{{ attrs.id }}"
+                       rows="{{ attrs.rows|default:3 }}"
+                       class="w-full"
+                       readonly>{% slot value %}{% endslot %}</c-form.textarea>
+    {% else %}
+      <c-form.textarea id="{{ attrs.id }}"
+                       rows="{{ attrs.rows|default:3 }}"
+                       class="w-full">{% slot value %}{% endslot %}</c-form.textarea>
+    {% endif %}
+  {% elif attrs.type == "radio" %}
+    <c-form.label class="gap-2">
+      {% if attrs.checked %}
+        <c-form.radio id="{{ attrs.id }}"
+                      name="{{ attrs.name }}"
+                      value="{{ attrs.value|default_if_none:'' }}"
+                      checked />
+      {% else %}
+        <c-form.radio id="{{ attrs.id }}"
+                      name="{{ attrs.name }}"
+                      value="{{ attrs.value|default_if_none:'' }}" />
+      {% endif %}
+      {% slot label %}
+      {% endslot %}
+    </c-form.label>
+  {% elif attrs.type == "checkbox" %}
+    <c-form.label class="gap-2">
+      {% if attrs.checked %}
+        <c-form.checkbox id="{{ attrs.id }}"
+                         name="{{ attrs.name }}"
+                         value="{{ attrs.value|default_if_none:'' }}"
+                         checked />
+      {% else %}
+        <c-form.checkbox id="{{ attrs.id }}"
+                         name="{{ attrs.name }}"
+                         value="{{ attrs.value|default_if_none:'' }}" />
+      {% endif %}
+      {% slot label %}
+      {% endslot %}
+    </c-form.label>
   {% else %}
-    <c-form.field type="textarea"
-                  id="{{ attrs.id }}"
-                  rows="{{ attrs.rows|default:3 }}"><c-slot name="label">
+    <c-form.label for="{{ attrs.id }}">
       {% slot label %}
       {% endslot %}
-      </c-slot>{% slot value %}{% endslot %}</c-form.field>
+    </c-form.label>
+    {% if attrs.disabled %}
+      <c-form.input type="{{ attrs.type }}"
+                    id="{{ attrs.id }}"
+                    name="{{ attrs.name }}"
+                    value="{{ attrs.value|default_if_none:'' }}"
+                    class="w-full"
+                    disabled />
+    {% else %}
+      <c-form.input type="{{ attrs.type }}"
+                    id="{{ attrs.id }}"
+                    name="{{ attrs.name }}"
+                    value="{{ attrs.value|default_if_none:'' }}"
+                    class="w-full"
+                    variant="{% if attrs.errors %}error{% endif %}"
+                    aria-invalid="{% if attrs.errors %}true{% else %}false{% endif %}"
+                    aria-describedby="{% if slots.help_text %}{{ attrs.id }}-field-description{% endif %}{% if attrs.errors %} {{ attrs.id }}-field-errors{% endif %}" />
+    {% endif %}
   {% endif %}
-{% elif attrs.disabled %}
-  <c-form.field type="{{ attrs.type }}"
-                id="{{ attrs.id }}"
-                name="{{ attrs.name }}"
-                value="{{ attrs.value|default_if_none:'' }}"
-                :errors="attrs.errors"
-                disabled>
-    <c-slot name="label">
-    {% slot label %}
+  {% if slots.help_text %}
+    <c-slot name="description">
+    {% slot help_text %}
     {% endslot %}
     </c-slot>
-    {% if slots.help_text %}
-      <c-slot name="help_text">
-      {% slot help_text %}
-      {% endslot %}
-      </c-slot>
-    {% endif %}
-  </c-form.field>
-{% elif attrs.checked %}
-  <c-form.field type="{{ attrs.type }}"
-                id="{{ attrs.id }}"
-                name="{{ attrs.name }}"
-                value="{{ attrs.value|default_if_none:'' }}"
-                :errors="attrs.errors"
-                checked>
-    <c-slot name="label">
-    {% slot label %}
-    {% endslot %}
-    </c-slot>
-    {% if slots.help_text %}
-      <c-slot name="help_text">
-      {% slot help_text %}
-      {% endslot %}
-      </c-slot>
-    {% endif %}
-  </c-form.field>
-{% else %}
-  <c-form.field type="{{ attrs.type }}"
-                id="{{ attrs.id }}"
-                name="{{ attrs.name }}"
-                value="{{ attrs.value|default_if_none:'' }}"
-                :errors="attrs.errors">
-    <c-slot name="label">
-    {% slot label %}
-    {% endslot %}
-    </c-slot>
-    {% if slots.help_text %}
-      <c-slot name="help_text">
-      {% slot help_text %}
-      {% endslot %}
-      </c-slot>
-    {% endif %}
-  </c-form.field>
-{% endif %}
+  {% endif %}
+</c-form.fieldset>

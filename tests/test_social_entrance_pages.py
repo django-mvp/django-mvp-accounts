@@ -56,7 +56,7 @@ class TestProviderButtons(EntrancePageAssertions):
         href = reverse(f"{provider_id}_login")
         [content] = [c for h, c in LOGIN_LINK.findall(page) if h == href]
 
-        assert icon(provider_id) in content
+        assert icon(provider_id, **{"aria-hidden": "true"}) in content
 
     def test_the_buttons_are_the_shells_buttons(self, page: str) -> None:
         links = re.findall(r'<a\b[^>]*href="/accounts/\w+/login/[^"]*"[^>]*>', page)

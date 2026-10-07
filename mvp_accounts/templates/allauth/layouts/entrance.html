@@ -13,11 +13,11 @@
   {% endblock extra_head %}
 {% endblock head %}
 {% block entrance %}
-  <c-messages :messages="messages" dismissible />
-  <c-entrance size="md" full-height>
+  <c-mvp.messages :messages="messages" dismissible />
+  <c-mvp.entrance size="md" full-height>
     {% block content %}
     {% endblock content %}
-  </c-entrance>
+  </c-mvp.entrance>
 {% endblock entrance %}
 {% block extra_js %}
   {% block extra_body %}

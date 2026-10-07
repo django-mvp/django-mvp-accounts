@@ -11,7 +11,8 @@ names allauth looks up, and does nothing else at runtime:
   extends the Account Center's `mvp/account/base.html`. `allauth/layouts/base.html` sends anything
   that extends it directly to the entrance layout.
 - `allauth/elements/*.html` rebuild the elements allauth's account pages use from django-mvp's
-  components. A whole form goes through `<c-form.render>`.
+  components and the daisy-cotton components it installs. A whole form goes through
+  `<c-mvp.form.render>`.
 - `account/base_entrance.html` picks its layout by whether the visitor is signed in: management
   when signed in, entrance otherwise. An entrance page is one seen before signing in.
 - A page allauth files under the wrong base for that rule is copied with only its parent changed.

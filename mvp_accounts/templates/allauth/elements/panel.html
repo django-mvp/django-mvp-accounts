@@ -4,7 +4,7 @@
   each is drawn in the footer. `title` is a slot, not an attribute, so the
   heading is written here rather than through the card's `title`.
 {% endcomment %}
-<c-card>
+<c-mvp.card>
   <h2 class="card-title">
     {% slot title %}
     {% endslot %}
@@ -16,4 +16,4 @@
       {% for action in slots.actions %}{{ action }}{% endfor %}
     </c-slot>
   {% endif %}
-</c-card>
+</c-mvp.card>

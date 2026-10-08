@@ -253,13 +253,46 @@
       "tasks": [
         {
           "id": "T009",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestTokensList"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py -q (26 passed, exit 0)",
+              "uv run pytest -n auto --dist loadscope (320 passed, exit 0)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:51",
+              "mvp_accounts/tokens/views.py:79",
+              "tests/test_tokens/test_views.py:76"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T010",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestSeededApiTokens"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py -q (48 passed, exit 0)",
+              "uv run pytest -n auto --dist loadscope (320 passed, exit 0)",
+              "uv run python manage.py migrate && uv run python manage.py seed_demo (exit 0)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "demo/management/commands/seed_demo.py:79",
+              "demo/management/commands/seed_demo.py:209",
+              "tests/test_demo.py:407"
+            ],
+            "verified_by_ci": false
+          }
         }
       ]
     },

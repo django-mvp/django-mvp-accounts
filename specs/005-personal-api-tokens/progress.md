@@ -139,3 +139,10 @@ Did: mvp_accounts/tokens/access.py with may_use_tokens(user): False for a visito
 Verified: `uv run pytest tests/test_tokens/test_access.py -q` -> 7 passed (red first: collection error, the module did not exist). Probed by mutation: dropping the is_authenticated guard failed 2 tests (anonymous refused, function not asked); returning the function's answer without bool() failed the always-a-bool test. Mutations reverted. pre-commit passed.
 Next: T021, TokenPageMixin.test_func asks may_use_tokens.
 Watch: none.
+
+## 2026-10-08T10:42:12Z · Implementer US5 · T021
+
+Did: TokenPageMixin.test_func now returns may_use_tokens(self.request.user); no dispatch override, so Django redirects a visitor to sign in and raises PermissionDenied (403) for a signed-in person turned away, before get/post run (limit redirect, gone-token redirect). Tests in TestTokenPagesForAPersonTheProjectTurnsAway use settings.MVP_ACCOUNTS_API_TOKEN_ACCESS = "tests.access.staff_only": 403 on GET and POST of all three pages, nothing created or deleted, 403 rather than the limit redirect when at the limit, staff served, visitor still redirected to sign in.
+Verified: `uv run pytest tests/test_tokens -q` -> 105 passed. Red first: 8 failed with 200/302/405 where 403 was expected. The staff and visitor tests passed on first run, so probed by mutation: test_func returning True failed 11 of 12, returning False failed the staff test. Mutations reverted. pre-commit passed.
+Next: T022, the menu entry's check and the card's tag.
+Watch: a POST to the list page is 403 for a refused person and 405 for a permitted one, because the mixin runs first.

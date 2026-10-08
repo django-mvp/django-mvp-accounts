@@ -272,3 +272,20 @@ the tokens page. `tests/conftest.py` gained a fixture for knox's token. Neither 
 check.
 
 **ADR:** none.
+
+## D23 — The create page's choices that the plan left open
+
+- **The cookie is deleted on every GET of the tokens page**, not only when one arrived. One line
+  of code, and a response that reads the cookie, rejects it or never had it all end the same way.
+  The cost is a `Set-Cookie` on each load of a page that is already never cached.
+- **The limit message names no number.** The tokens page already says how many a person holds
+  and what the most is; the message only says the create page was refused and what to do.
+- **The form's lifetimes live in one mapping on `CreateTokenForm`** (key, label, `timedelta`),
+  so the choices and `get_expiry()` cannot disagree.
+- **The cookie's name, salt and age are module constants named for being shown once**, not for the
+  token: ruff's hardcoded-password rule (S105) matches any name containing `token`.
+
+**Why:** each was the smallest thing that satisfied the plan, and none changes what a person sees.
+
+**Revisit if:** a shared cache in front of a project ever strips or mishandles `Set-Cookie` on the
+tokens page, or a project asks for a lifetime that is not on the list.

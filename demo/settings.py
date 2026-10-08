@@ -6,6 +6,7 @@ the one description of the application shell — `tests/settings.py` inherits
 from this file rather than restating it.
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,6 +54,9 @@ INSTALLED_APPS = [
     # allauth's sessions page and security-key list load their date filters
     # from here, and fail to render without it.
     "django.contrib.humanize",
+    # The API the demo's tokens reach, and the package that keeps the tokens.
+    "rest_framework",
+    "knox",
     "mvp",
     "daisy_cotton",
     "easy_icons",
@@ -143,9 +147,24 @@ MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_TRUST_ENABLED = True
 MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
 
+# Only staff may hold API tokens here, so the demo shows a site that limits them.
+# Left unset, every signed-in person may.
+MVP_ACCOUNTS_API_TOKEN_ACCESS = "demo.access.staff_only"
+
 # The sessions page can show when each session was last used. The demo turns
 # it on so that column can be seen; the package leaves it to the project.
 USERSESSIONS_TRACK_ACTIVITY = True
+
+# A token is what the demo's API accepts. A person chooses how long a token
+# made on the tokens page lasts, so the lifetime here only reaches tokens made
+# by knox's own sign-in view. A person may hold five.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["knox.auth.TokenAuthentication"],
+}
+REST_KNOX = {
+    "TOKEN_TTL": timedelta(days=30),
+    "TOKEN_LIMIT_PER_USER": 5,
+}
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

@@ -29,7 +29,7 @@ from django.test import override_settings
 from django.urls import clear_url_caches, reverse
 from django_cotton.compiler_regex import CottonCompiler
 
-from tests.factories import EmailAddressFactory
+from tests.factories import AuthTokenFactory, EmailAddressFactory
 
 
 @pytest.fixture(scope="session")
@@ -62,6 +62,11 @@ def signed_in_client(client, db):
     client.force_login(address.user)
     client.user = address.user
     return client
+
+
+@pytest.fixture
+def auth_token(db):
+    return AuthTokenFactory()
 
 
 @pytest.fixture

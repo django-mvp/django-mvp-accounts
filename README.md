@@ -97,12 +97,16 @@ With django-allauth installed, this package adds to django-mvp's Account Center:
   authentication and Sessions, listed under an "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
+API tokens join the same entries and cards when the project has turned them on, with or
+without allauth (see [API tokens](#api-tokens)).
+
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Connected accounts appears only with the social account app (`allauth.socialaccount`)
 installed, Two-factor authentication only with the multi-factor app (`allauth.mfa`)
 installed, and Sessions only with the user sessions app (`allauth.usersessions`) installed.
-Without allauth installed the package adds nothing and raises nothing.
+Without allauth installed the package adds none of those and raises nothing; the API tokens
+entry and card, which need nothing from allauth, are the only ones it can still add.
 
 allauth's account management pages (email, change email, password change and set, phone
 change and verification, connected accounts, sessions, and re-authentication) render in the
@@ -116,6 +120,152 @@ The Account Center itself, the "Account Center" and "Log out" entries in the use
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
+## API tokens
+
+A person can see and manage their own API tokens in the Account Center when the project uses
+[django-rest-knox](https://github.com/jazzband/django-rest-knox), which keeps the tokens but ships
+no pages for them. This package adds the pages, an "API tokens" entry under the "Account" heading
+and an "API tokens" card on the landing page. Every signed-in person may use them unless the
+project says otherwise (see [Who may hold tokens](#who-may-hold-tokens)), and a visitor is sent to
+sign in.
+
+Nothing is on until the project turns it on:
+
+1. Install the `api` extra, which brings in Django REST framework 3.16 or later and
+   django-rest-knox 5:
+
+   ```bash
+   pip install "django-mvp-accounts[api]"
+   ```
+
+2. Add both to `INSTALLED_APPS` and run `migrate`, which creates knox's token table:
+
+   ```python
+   INSTALLED_APPS = [
+       # ...
+       "rest_framework",
+       "knox",
+   ]
+   ```
+
+3. Include the pages' routes at an address of your choice, as the demo does:
+
+   ```python
+   urlpatterns = [
+       # ...
+       path("account/tokens/", include("mvp_accounts.tokens.urls")),
+       path("", include("mvp.urls")),
+   ]
+   ```
+
+4. Make your API accept the tokens, in your own settings, as
+   [knox documents](https://jazzband.co/projects/django-rest-knox):
+
+   ```python
+   REST_FRAMEWORK = {
+       "DEFAULT_AUTHENTICATION_CLASSES": ["knox.auth.TokenAuthentication"],
+   }
+   ```
+
+The routes are served by `TokensView`, `CreateTokenView` and `RevokeTokenView` in
+`mvp_accounts.tokens.views`, which share `TokenPageMixin`. Include the routes as above rather
+than the views, so that the pages and their names stay together.
+
+None of that is checked or configured for you: the package adds no system check and sets no
+default, so a missing route or setting shows as the entry and card not appearing, or as tokens
+your API does not accept. The package adds no model and no migration of its own.
+
+The entry and the card are drawn only where the tokens routes resolve. A project that has not
+installed django-rest-knox or Django REST framework, or has not included the routes, gets neither,
+and the rest of the package works as before.
+
+### Creating a token
+
+The create page asks for a lifetime: 7 days, 30 days, 90 days, 1 year or never, with 30 days
+selected. The lifetime is the token's expiry, and "never" stores none. The list is fixed in the
+package. The page's form is `CreateTokenForm` in `mvp_accounts.tokens.forms`: its `lifetime`
+field holds the choice, and `get_expiry()` turns a valid choice into a `timedelta`, or `None`
+for "never".
+
+A new token is shown once. The page the person returns to after creating it holds the complete
+value, and no later page does: the package stores nothing but what django-rest-knox keeps, which
+is a digest and the token's first characters. A person who loses a token revokes it and creates
+another. The value travels from the create page to the tokens page in a signed cookie that lasts a
+minute, is sent only to the tokens pages and is deleted as the page shows it. Tokens carry no name
+and no last-used time.
+
+Two of knox's settings matter here:
+
+- `TOKEN_TTL` is the lifetime of the tokens knox's own views create. The create page passes the
+  chosen lifetime instead. With knox's `AUTO_REFRESH` on, each use of a token that has an expiry
+  moves that expiry to `TOKEN_TTL` from then, capped by `AUTO_REFRESH_MAX_TTL`, whatever lifetime
+  the person chose. A token that never expires is not touched.
+- `TOKEN_LIMIT_PER_USER` is the number of working tokens a person may hold, and the pages honour
+  it: at the limit the create page creates nothing and returns to the tokens page with a message,
+  and the tokens page stops offering to create one. A token that has expired does not count, and
+  one with no expiry does. The count is taken just before a token is created, so two requests
+  sent at the same moment can both pass it, as they can in knox's own sign-in view. knox sets no
+  limit by default, so a project should set one:
+
+  ```python
+  REST_KNOX = {
+      "TOKEN_LIMIT_PER_USER": 5,
+  }
+  ```
+
+A request carries the token in the `Authorization` header, as `Authorization: Token <token>`.
+The word before the token is knox's `AUTH_HEADER_PREFIX`, and the page shows the one your project
+uses. The demo answers at `/api/whoami/` with the email of the person the token belongs to.
+
+### Revoking a token
+
+Each row of the tokens page links to a page that shows the token and asks before revoking it.
+Confirming deletes that one token and returns to the tokens page; anything that still presents
+it is refused from that moment, and nothing brings it back. Cancelling changes nothing, and
+neither does opening the page. A token that is already gone, has expired or belongs to someone
+else gets the same reply: a message that it no longer exists.
+
+Changing a password does not revoke a person's tokens, so a person who suspects a leak should
+revoke them here as well. knox's own sign-out-everywhere endpoint, `LogoutAllView`, deletes all
+of a person's tokens at once; the pages in this package revoke one at a time.
+
+### Who may hold tokens
+
+Some sites give API access to a few people, such as staff. Set
+`MVP_ACCOUNTS_API_TOKEN_ACCESS` to the dotted path of a function that takes the signed-in person
+and says whether they may hold tokens:
+
+```python
+# settings.py
+MVP_ACCOUNTS_API_TOKEN_ACCESS = "myproject.access.staff_only"
+```
+
+```python
+# myproject/access.py
+def staff_only(user):
+    return user.is_staff
+```
+
+Left unset, or set to `None`, every signed-in person may. A visitor who is not signed in never
+may, and your function is not called for one. Whatever your function returns is read as true or
+false.
+
+One answer decides everything. For a person it says no to, the tokens, create and revoke pages
+reply with 403 Forbidden, to a GET or a POST, so nothing is created or deleted, and the Account
+Center shows neither the "API tokens" entry nor the card. The demo sets the setting to
+`demo.access.staff_only`.
+
+The setting is read in one place, `may_use_tokens(user)` in `mvp_accounts.tokens.access`. The
+pages call it, and so do the menu entry and the `may_use_api_tokens` template tag the card
+uses. A project that adds its own page for tokens can call it too.
+
+The setting is not checked for you: a path that does not import raises `ImportError` the first
+time a page, the entry or the card asks.
+
+It decides who sees the pages and nothing more. It does not revoke tokens a person already
+holds, and it is not consulted when a token is used, because this package checks no API request.
+A project that needs either deletes those tokens itself or checks in its own API.
 
 ## Two-factor authentication
 

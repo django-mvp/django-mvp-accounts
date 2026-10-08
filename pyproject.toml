@@ -31,6 +31,11 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 
+[project.optional-dependencies]
+# What the API tokens page runs on. Neither is a runtime dependency: a project
+# with no API installs neither and gets no tokens page.
+api = ["djangorestframework>=3.16,<4", "django-rest-knox>=5.0,<6"]
+
 [project.urls]
 Homepage = "https://github.com/django-mvp/django-mvp-accounts"
 Repository = "https://github.com/django-mvp/django-mvp-accounts"
@@ -42,6 +47,7 @@ Issues = "https://github.com/django-mvp/django-mvp-accounts/issues"
 # pytest, pytest-django, pytest-xdist, factory-boy, coverage and django-stubs.
 dev = [
     "django-allauth[mfa]>=65.19.4,<66",
+    "django-mvp-accounts[api]",
     "mvp-shared[dev,test]",
 ]
 
@@ -139,6 +145,7 @@ ignore_missing_model_attributes = "True"
 non-mirror-paths = [
     "tests/test_account_center.py",
     "tests/test_app.py",
+    "tests/test_components/",
     "tests/test_connections_page.py",
     "tests/test_demo.py",
     "tests/test_elements.py",
@@ -151,6 +158,7 @@ non-mirror-paths = [
     "tests/test_two_factor_pages.py",
     "tests/test_two_factor_sign_in.py",
     "tests/test_without_allauth.py",
+    "tests/test_without_knox.py",
     "tests/test_without_mfa.py",
     "tests/test_without_socialaccount.py",
     "tests/test_without_usersessions.py",
@@ -162,7 +170,9 @@ extend_exclude = ["tests/", "demo/", "docs/"]
 [tool.deptry.per_rule_ignores]
 # No module imports django-mvp: the dependency is at template and theme level
 # (see [project] dependencies).
-DEP002 = ["django-mvp"]
+# Nor does one import Django REST framework: django-rest-knox is built on it,
+# and the extra names it so both arrive at versions that were tested together.
+DEP002 = ["django-mvp", "djangorestframework"]
 # flex_menu comes in through django-mvp, which builds its menus on it, so
 # django-mvp's requirement is the pin that matters.
 DEP003 = ["flex_menu"]

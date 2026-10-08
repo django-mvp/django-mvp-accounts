@@ -21,6 +21,7 @@ class TestStartup:
             "connections",
             "two_factor",
             "sessions",
+            "api_tokens",
         ]
 
     def test_entries_reach_the_rendered_page(self, signed_in_client) -> None:

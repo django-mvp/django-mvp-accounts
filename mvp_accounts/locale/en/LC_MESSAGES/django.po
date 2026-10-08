@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 16:22+0200\n"
+"POT-Creation-Date: 2026-10-08 13:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,44 +18,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps.py:16
+#: apps.py:18
 msgid "Accounts"
 msgstr ""
 
-#: menus.py:75
-msgid "Account"
-msgstr ""
-
-#: menus.py:87 templates/mvp/account/overview.html:13
+#: menus.py:112 templates/mvp/account/overview.html:11
 msgid "Email"
 msgstr ""
 
-#: menus.py:99 templates/mvp/account/overview.html:22
+#: menus.py:124 templates/mvp/account/overview.html:20
 msgid "Password"
 msgstr ""
 
-#: menus.py:105 templates/mvp/account/overview.html:31
+#: menus.py:130 templates/mvp/account/overview.html:29
 msgid "Phone number"
 msgstr ""
 
-#: menus.py:110 templates/mvp/account/overview.html:40
+#: menus.py:135 templates/mvp/account/overview.html:38
 msgid "Connected accounts"
 msgstr ""
 
-#: menus.py:126 templates/mvp/account/overview.html:49
+#: menus.py:151 templates/mvp/account/overview.html:47
 msgid "Two-factor authentication"
 msgstr ""
 
-#: menus.py:133 templates/mvp/account/overview.html:58
+#: menus.py:158 templates/mvp/account/overview.html:56
 msgid "Sessions"
 msgstr ""
 
-#: templates/account/logout.html:10 templates/account/logout.html:14
-#: templates/account/logout.html:27
+#: menus.py:168
+msgid "Account"
+msgstr ""
+
+#: menus.py:177 templates/mvp/account/overview.html:66 tokens/views.py:78
+#: tokens/views.py:88 tokens/views.py:193 tokens/views.py:208
+msgid "API tokens"
+msgstr ""
+
+#: templates/account/logout.html:8 templates/account/logout.html:12
+#: templates/account/logout.html:25
 msgid "Sign Out"
 msgstr ""
 
-#: templates/account/logout.html:17
+#: templates/account/logout.html:15
 msgid "Are you sure you want to sign out?"
 msgstr ""
 
@@ -69,19 +74,19 @@ msgid ""
 "email address so you can receive notifications, reset your password, etc."
 msgstr ""
 
-#: templates/account/verified_email_required.html:12
-#: templates/account/verified_email_required.html:16
+#: templates/account/verified_email_required.html:10
+#: templates/account/verified_email_required.html:14
 msgid "Verify Your Email Address"
 msgstr ""
 
-#: templates/account/verified_email_required.html:20
+#: templates/account/verified_email_required.html:18
 msgid ""
 "This part of the site requires us to verify that\n"
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your email address. "
 msgstr ""
 
-#: templates/account/verified_email_required.html:25
+#: templates/account/verified_email_required.html:23
 msgid ""
 "We have sent an email to you for\n"
 "verification. Please click on the link inside that email. If you do not see "
@@ -90,73 +95,277 @@ msgid ""
 "contact us if you do not receive it within a few minutes."
 msgstr ""
 
-#: templates/account/verified_email_required.html:30
+#: templates/account/verified_email_required.html:28
 #, python-format
 msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
 "email address</a>."
 msgstr ""
 
-#: templates/mvp/account/overview.html:14
+#: templates/cotton/mvp_accounts/token/created.html:11
+msgid "Copy"
+msgstr ""
+
+#: templates/cotton/mvp_accounts/token/created.html:12
+msgid "Copied"
+msgstr ""
+
+#: templates/cotton/mvp_accounts/token/created.html:13
+msgid "Your new token"
+msgstr ""
+
+#: templates/cotton/mvp_accounts/token/created.html:18
+msgid ""
+"Copy this token now and keep it somewhere safe. It will not be shown again."
+msgstr ""
+
+#: templates/cotton/mvp_accounts/token/created.html:21
+#: templates/mvp_accounts/tokens/list.html:49
+#: templates/mvp_accounts/tokens/revoke.html:9
+msgid "Token"
+msgstr ""
+
+#: templates/cotton/mvp_accounts/token/created.html:41
+#, python-format
+msgid ""
+"Send it with each request, in the <code>Authorization</code> header: "
+"<code>Authorization: %(header_prefix)s &lt;your token&gt;</code>"
+msgstr ""
+
+#: templates/cotton/mvp_accounts/token/created.html:48
+msgid "I have copied it"
+msgstr ""
+
+#: templates/mvp/account/overview.html:12
 msgid ""
 "Add, remove and verify the addresses on your account, and choose the one we "
 "write to."
 msgstr ""
 
-#: templates/mvp/account/overview.html:16
+#: templates/mvp/account/overview.html:14
 msgid "Manage email"
 msgstr ""
 
-#: templates/mvp/account/overview.html:23
+#: templates/mvp/account/overview.html:21
 msgid ""
 "Change the password you sign in with, or set one if you do not have one yet."
 msgstr ""
 
-#: templates/mvp/account/overview.html:25
+#: templates/mvp/account/overview.html:23
 msgid "Change password"
 msgstr ""
 
-#: templates/mvp/account/overview.html:32
+#: templates/mvp/account/overview.html:30
 msgid "Add or change the phone number on your account."
 msgstr ""
 
-#: templates/mvp/account/overview.html:34
+#: templates/mvp/account/overview.html:32
 msgid "Change phone number"
 msgstr ""
 
-#: templates/mvp/account/overview.html:41
+#: templates/mvp/account/overview.html:39
 msgid ""
 "See the accounts you can sign in with, connect another one, or remove one."
 msgstr ""
 
-#: templates/mvp/account/overview.html:43
+#: templates/mvp/account/overview.html:41
 msgid "Manage connected accounts"
 msgstr ""
 
-#: templates/mvp/account/overview.html:50
+#: templates/mvp/account/overview.html:48
 msgid ""
 "Add a second step to signing in, so a stolen password is not enough on its "
 "own."
 msgstr ""
 
-#: templates/mvp/account/overview.html:52
+#: templates/mvp/account/overview.html:50
 msgid "Manage two-factor authentication"
 msgstr ""
 
-#: templates/mvp/account/overview.html:59
+#: templates/mvp/account/overview.html:57
 msgid ""
 "See the browsers and devices signed in to your account, and sign out the "
 "others."
 msgstr ""
 
-#: templates/mvp/account/overview.html:61
+#: templates/mvp/account/overview.html:59
 msgid "Manage sessions"
 msgstr ""
 
-#: templates/socialaccount/login_redirect.html:11
+#: templates/mvp/account/overview.html:67
+msgid ""
+"Create tokens for scripts and tools that use the API as you, and revoke any "
+"you no longer need."
+msgstr ""
+
+#: templates/mvp/account/overview.html:69
+msgid "Manage API tokens"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/create.html:10
+msgid ""
+"The token is shown once, on the next page. Have somewhere ready to keep it."
+msgstr ""
+
+#: templates/mvp_accounts/tokens/create.html:13
+#: templates/mvp_accounts/tokens/list.html:15
+msgid "Create token"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/create.html:14
+#: templates/mvp_accounts/tokens/revoke.html:30
+msgid "Cancel"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:27
+#, python-format
+msgid ""
+"You hold %(limit)s token, the most this site allows. Revoke it before you "
+"create another."
+msgid_plural ""
+"You hold %(limit)s tokens, the most this site allows. Revoke one before you "
+"create another."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/mvp_accounts/tokens/list.html:35
+msgid "Your tokens"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:39
+#, python-format
+msgid "%(count)s of %(limit)s"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:46
+msgid "Your API tokens"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:50
+#: templates/mvp_accounts/tokens/revoke.html:12
+msgid "Created"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:51
+#: templates/mvp_accounts/tokens/revoke.html:15
+msgid "Expires"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:53
+msgid "Actions"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:63
+msgid "New"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:73
+#: templates/mvp_accounts/tokens/revoke.html:19
+msgid "Never"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:77
+#, python-format
+msgid "Revoke token %(token)s…"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:83 tokens/views.py:209
+msgid "Revoke"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:90
+msgid ""
+"Only the first characters of each token are kept. Lost the rest of one? "
+"Revoke it and create another."
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:94
+msgid "You have no API tokens"
+msgstr ""
+
+#: templates/mvp_accounts/tokens/list.html:95
+msgid "Create one when a script or another tool needs to use the API as you."
+msgstr ""
+
+#: templates/mvp_accounts/tokens/revoke.html:24
+msgid ""
+"Anything that uses this token will stop working as soon as you revoke it. A "
+"revoked token cannot be brought back."
+msgstr ""
+
+#: templates/mvp_accounts/tokens/revoke.html:28
+msgid "Revoke token"
+msgstr ""
+
+#: templates/socialaccount/login_redirect.html:9
 msgid "Sign In"
 msgstr ""
 
-#: templates/socialaccount/login_redirect.html:18
+#: templates/socialaccount/login_redirect.html:16
 msgid "Continue"
+msgstr ""
+
+#: tokens/forms.py:17
+msgid "7 days"
+msgstr ""
+
+#: tokens/forms.py:18
+msgid "30 days"
+msgstr ""
+
+#: tokens/forms.py:19
+msgid "90 days"
+msgstr ""
+
+#: tokens/forms.py:20
+msgid "1 year"
+msgstr ""
+
+#: tokens/forms.py:21
+msgid "Never expires"
+msgstr ""
+
+#: tokens/forms.py:25
+msgid "Expires after"
+msgstr ""
+
+#: tokens/forms.py:29
+msgid ""
+"A token that expires limits the harm if it leaks. You can revoke any token "
+"sooner."
+msgstr ""
+
+#: tokens/views.py:80
+msgid ""
+"A token lets a script or another tool use the API as you, without your "
+"password."
+msgstr ""
+
+#: tokens/views.py:87 tokens/views.py:192 tokens/views.py:207
+msgid "Account Center"
+msgstr ""
+
+#: tokens/views.py:137
+msgid "Create a token"
+msgstr ""
+
+#: tokens/views.py:159
+msgid "No token was created. You already hold as many as this site allows."
+msgstr ""
+
+#: tokens/views.py:194
+msgid "Create"
+msgstr ""
+
+#: tokens/views.py:202
+msgid "Revoke this token?"
+msgstr ""
+
+#: tokens/views.py:232
+msgid "That token no longer exists."
+msgstr ""
+
+#: tokens/views.py:250
+#, python-format
+msgid "Token %(token)s… was revoked."
 msgstr ""

@@ -1,6 +1,7 @@
 """One factory per model the tests build."""
 
 import os
+from datetime import timedelta
 from importlib import import_module
 
 import factory
@@ -18,10 +19,12 @@ from django.contrib.auth import (
     SESSION_KEY,
     get_user_model,
 )
+from django.utils import timezone
 from factory.django import DjangoModelFactory
 from fido2 import cbor
 from fido2.utils import websafe_encode
 from fido2.webauthn import AttestedCredentialData, AuthenticatorData
+from knox.models import get_token_model
 
 from demo.models import PhoneNumber
 
@@ -172,3 +175,33 @@ class UserSessionFactory(DjangoModelFactory):
         store[HASH_SESSION_KEY] = user.get_session_auth_hash()
         store.save()
         return store.session_key
+
+
+class AuthTokenFactory(DjangoModelFactory):
+    """An API token for a user, built through knox's own manager.
+
+    The instance keeps the complete value in ``token``, which knox shows once
+    and never stores, so a test can send it. ``expiry`` is the moment the token
+    stops working, ``None`` for a token that never does, and ``created`` the
+    moment it was made. knox sets both itself, so an override is written after
+    its manager returns.
+    """
+
+    class Meta:
+        model = get_token_model()
+
+    user = factory.SubFactory(UserFactory)
+    expiry = factory.LazyFunction(lambda: timezone.now() + timedelta(days=30))
+    created = None
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        expiry, created = kwargs.pop("expiry"), kwargs.pop("created")
+        instance, token = model_class.objects.create(**kwargs)
+        changes = {"expiry": expiry}
+        if created is not None:
+            changes["created"] = created
+        model_class.objects.filter(pk=instance.pk).update(**changes)
+        instance.refresh_from_db()
+        instance.token = token
+        return instance

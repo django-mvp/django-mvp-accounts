@@ -15,7 +15,9 @@ than building a page of its own:
 
 An entry or card whose allauth URL does not resolve is not drawn, so what appears follows what the
 project has turned on in allauth. `menus.py` adds nothing unless `allauth` is installed, so a project without it never builds
-entries only to drop them again.
+entries only to drop them again. The API tokens
+entry is the one exception: [ADR 0005](0005-the-package-provides-the-api-tokens-pages.md)
+builds the group without allauth too, holding that entry alone.
 
 django-mvp draws the Account Center's sidebar on a page it does not serve only when an entry marks
 that page current. Each entry therefore also names the allauth pages reached from it, such as the

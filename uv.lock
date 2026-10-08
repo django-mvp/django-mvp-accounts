@@ -771,9 +771,16 @@ dependencies = [
     { name = "django-mvp" },
 ]
 
+[package.optional-dependencies]
+api = [
+    { name = "django-rest-knox" },
+    { name = "djangorestframework" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "django-allauth", extra = ["mfa"] },
+    { name = "django-mvp-accounts", extra = ["api"] },
     { name = "mvp-shared", extra = ["dev", "test"] },
 ]
 
@@ -781,11 +788,15 @@ dev = [
 requires-dist = [
     { name = "django", specifier = ">=5.2" },
     { name = "django-mvp", specifier = ">=0.27.0" },
+    { name = "django-rest-knox", marker = "extra == 'api'", specifier = ">=5.0,<6" },
+    { name = "djangorestframework", marker = "extra == 'api'", specifier = ">=3.16,<4" },
 ]
+provides-extras = ["api"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "django-allauth", extras = ["mfa"], specifier = ">=65.19.4,<66" },
+    { name = "django-mvp-accounts", extras = ["api"] },
     { name = "mvp-shared", extras = ["dev", "test"], git = "https://github.com/django-mvp/shared.git?tag=v0.6.0" },
 ]
 
@@ -800,6 +811,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/7c/bd/2b6751fc13831aaa2988b4e1f85b809aabd8ae7035ae106f93315ab6f147/django_mvp_forms-0.2.1.tar.gz", hash = "sha256:c896c1725dfb3435e5e4ee335e3ef974866e3b09cb4d85932d5b6915c32209cf", size = 99248, upload-time = "2026-10-04T12:57:29.536Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/05/73/3d6461fba61c41ae415e7e17b490deed2d698a4560de0307a9255e0ed6c0/django_mvp_forms-0.2.1-py3-none-any.whl", hash = "sha256:c22d11c534a3b59efdb09e9c633e0cd643655837ef834fff975fcee2a3be9197", size = 79726, upload-time = "2026-10-04T12:57:27.65Z" },
+]
+
+[[package]]
+name = "django-rest-knox"
+version = "5.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "djangorestframework" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/45/8d/14c8e67495f0e01fd26929c34d2fbebd910c20f9f3dcc268fadb93a009ec/django_rest_knox-5.1.0.tar.gz", hash = "sha256:78307dce32858679fe96afb06c4ab2d4fe0ed085c7a739a7ccc03a14dea2b37b", size = 20973, upload-time = "2026-07-12T12:02:34.482Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/20/188535a919c642a20fef171571e5b3470c3323c4be952602e709a0790edf/django_rest_knox-5.1.0-py3-none-any.whl", hash = "sha256:7dad21e91091db07796ea96f559fd2e1f67b8d42748d4e140d2fa7a0319538e7", size = 16044, upload-time = "2026-07-12T12:02:33.249Z" },
 ]
 
 [[package]]
@@ -841,6 +865,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/1a/89/51b82766a1c937dea9fb92f0fb7666919d120379fc26dc84ab504e35f37e/django_watchfiles-1.4.0.tar.gz", hash = "sha256:88e253e8e8427834eac467923d334c35010279b3e9ceb5bb91014be83975b11b", size = 8647, upload-time = "2025-09-22T16:34:04.634Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/85/3d31f347e1a3eef9be381792df1994ff25e4db4659ab40a5cc3f814e3a1a/django_watchfiles-1.4.0-py3-none-any.whl", hash = "sha256:40cb3180987c63629b0681ab228b65afd68e0f783388cc72a45620378213bb48", size = 6766, upload-time = "2025-09-22T16:34:03.193Z" },
+]
+
+[[package]]
+name = "djangorestframework"
+version = "3.18.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8d/b2/1cee76b188301f7d03169ca77fab2b3d3ec5d01b3469189f944af2d7f11a/djangorestframework-3.18.3.tar.gz", hash = "sha256:446a9b352e7eff630421ab3f2328bd2401b109a9470afa4a31189994911ed030", size = 923563, upload-time = "2026-10-06T21:33:51.521Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/dd/de5f4543765bec94e036a5e9593a42f8fa7efec8de78eb56b9ca834385f3/djangorestframework-3.18.3-py3-none-any.whl", hash = "sha256:8544bb674846731b1e3c9b309236ee1dc412905a0aa725be2ec193ca950a7d12", size = 903986, upload-time = "2026-10-06T21:33:49.917Z" },
 ]
 
 [[package]]

@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from flex_menu import MenuItem
 from mvp.menus import AccountCenterMenu, MenuGroup
 
+from mvp_accounts.tokens.access import may_use_tokens
+
 
 def signed_in_view_name(request: HttpRequest) -> str | None:
     """Return the URL name Django resolved a signed-in visitor's request to.
@@ -79,72 +81,89 @@ class AccountGroup(MenuGroup):
         return processed
 
 
-# django-flex-menus imports every app's menus module, so the group is added only
-# when allauth is installed. django-mvp drops an entry whose page is not routed.
+# django-flex-menus imports every app's menus module, so the group is added here
+# whether or not allauth is installed: the API tokens page needs nothing from it.
+# django-mvp drops an entry whose page is not routed.
 if apps.is_installed("allauth"):
-    AccountCenterMenu.append(
-        AccountGroup(
-            name="account",
-            extra_context={"label": _("Account")},
-            # Confirming who you are comes before a change on any of the pages
-            # below, so it belongs to the area rather than to one entry.
-            pages=(
-                "account_reauthenticate",
-                "mfa_reauthenticate",
-                "mfa_reauthenticate_webauthn",
-            ),
-            children=[
-                AccountEntry(
-                    name="email",
-                    view_name="account_email",
-                    extra_context={"label": _("Email"), "icon": "email"},
-                ),
-                AccountEntry(
-                    name="password",
-                    view_name="account_change_password",
-                    pages=(
-                        "account_set_password",
-                        "account_reset_password",
-                        "account_reset_password_done",
-                        "account_reset_password_from_key",
-                        "account_reset_password_from_key_done",
-                    ),
-                    extra_context={"label": _("Password"), "icon": "password"},
-                ),
-                AccountEntry(
-                    name="phone",
-                    view_name="account_change_phone",
-                    pages=("account_verify_phone",),
-                    extra_context={"label": _("Phone number"), "icon": "phone"},
-                ),
-                AccountEntry(
-                    name="connections",
-                    view_name="socialaccount_connections",
-                    extra_context={"label": _("Connected accounts"), "icon": "link"},
-                ),
-                AccountEntry(
-                    name="two_factor",
-                    view_name="mfa_index",
-                    pages=(
-                        "mfa_activate_totp",
-                        "mfa_deactivate_totp",
-                        "mfa_view_recovery_codes",
-                        "mfa_generate_recovery_codes",
-                        "mfa_list_webauthn",
-                        "mfa_add_webauthn",
-                        "mfa_edit_webauthn",
-                        "mfa_remove_webauthn",
-                    ),
-                    extra_context={
-                        "label": _("Two-factor authentication"),
-                        "icon": "lock",
-                    },
-                ),
-                AccountEntry(
-                    name="sessions",
-                    view_name="usersessions_list",
-                    extra_context={"label": _("Sessions"), "icon": "login"},
-                ),
-            ],
-        )
+    # Confirming who you are comes before a change on any of the pages below, so
+    # it belongs to the area rather than to one entry.
+    reauthentication_pages: tuple[str, ...] = (
+        "account_reauthenticate",
+        "mfa_reauthenticate",
+        "mfa_reauthenticate_webauthn",
     )
+    account_entries = [
+        AccountEntry(
+            name="email",
+            view_name="account_email",
+            extra_context={"label": _("Email"), "icon": "email"},
+        ),
+        AccountEntry(
+            name="password",
+            view_name="account_change_password",
+            pages=(
+                "account_set_password",
+                "account_reset_password",
+                "account_reset_password_done",
+                "account_reset_password_from_key",
+                "account_reset_password_from_key_done",
+            ),
+            extra_context={"label": _("Password"), "icon": "password"},
+        ),
+        AccountEntry(
+            name="phone",
+            view_name="account_change_phone",
+            pages=("account_verify_phone",),
+            extra_context={"label": _("Phone number"), "icon": "phone"},
+        ),
+        AccountEntry(
+            name="connections",
+            view_name="socialaccount_connections",
+            extra_context={"label": _("Connected accounts"), "icon": "link"},
+        ),
+        AccountEntry(
+            name="two_factor",
+            view_name="mfa_index",
+            pages=(
+                "mfa_activate_totp",
+                "mfa_deactivate_totp",
+                "mfa_view_recovery_codes",
+                "mfa_generate_recovery_codes",
+                "mfa_list_webauthn",
+                "mfa_add_webauthn",
+                "mfa_edit_webauthn",
+                "mfa_remove_webauthn",
+            ),
+            extra_context={
+                "label": _("Two-factor authentication"),
+                "icon": "lock",
+            },
+        ),
+        AccountEntry(
+            name="sessions",
+            view_name="usersessions_list",
+            extra_context={"label": _("Sessions"), "icon": "login"},
+        ),
+    ]
+else:
+    reauthentication_pages = ()
+    account_entries = []
+
+AccountCenterMenu.append(
+    AccountGroup(
+        name="account",
+        extra_context={"label": _("Account")},
+        pages=reauthentication_pages,
+        children=[
+            *account_entries,
+            AccountEntry(
+                name="api_tokens",
+                view_name="account_api_tokens",
+                pages=("account_api_token_create", "account_api_token_revoke"),
+                # Shown only to a person the host project lets hold tokens.
+                check=lambda request, **kwargs: may_use_tokens(request.user),
+                extra_context={"label": _("API tokens"), "icon": "key"},
+            ),
+        ],
+    )
+)

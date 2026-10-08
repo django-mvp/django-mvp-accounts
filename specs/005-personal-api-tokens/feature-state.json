@@ -1,0 +1,683 @@
+{
+  "feature": "005-personal-api-tokens",
+  "branch": "005-personal-api-tokens",
+  "repo": "django-mvp/django-mvp-accounts",
+  "state": "PR_READY",
+  "state_history": [
+    {
+      "state": "QUEUED",
+      "at": "2026-10-07T19:03:17Z",
+      "note": "specification approved on pull request #36 at c3e4442"
+    },
+    {
+      "state": "PLAN",
+      "at": "2026-10-08T09:36:29Z",
+      "note": "research.md, plan.md, tasks.md written after the prototype was approved"
+    },
+    {
+      "state": "DESIGN_REVIEW",
+      "at": "2026-10-08T09:37:18Z",
+      "note": "design reviewer dispatched, three lenses, one round"
+    },
+    {
+      "state": "IMPLEMENT",
+      "at": "2026-10-08T09:46:43Z",
+      "note": "plan gate open; design review applied"
+    },
+    {
+      "state": "CONVERGE",
+      "at": "2026-10-08T10:50:51Z",
+      "note": "all five stories accepted"
+    },
+    {
+      "state": "REVIEW",
+      "at": "2026-10-08T10:52:16Z",
+      "note": "one review round: correctness and security lenses"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-10-08T11:05:37Z",
+      "note": "review recorded, walkthrough laid out"
+    }
+  ],
+  "gates": {
+    "spec": {
+      "approved_by": "delegated review",
+      "at": "2026-10-07T19:03:17Z",
+      "self_resolved": [
+        "approved at c3e4442203b889381a58d620490e2b202e72d66f under the orchestrating run's open spec gate"
+      ]
+    },
+    "sketch": {
+      "approved_by": "Sam",
+      "at": "2026-10-08T09:30:45Z",
+      "self_resolved": [
+        "Create token button must not wrap: sits beside the heading at every width, text cannot wrap",
+        "A person chooses when a token expires: create page with a lifetime choice passed to knox as expiry",
+        "Dates only for created and expires: done in the list and on the confirmation",
+        "A developer can limit who may hold tokens: one setting naming a callable; demo staff only",
+        "Token names with a model and an app: built then removed on his correction; open question in planning-notes.md",
+        "Lifetime list, 30-day default and 403 refusal kept as built; approved at 8e708c71a54c3501621d042e33a5069d96b73cef"
+      ]
+    },
+    "plan": {
+      "approved_by": "open",
+      "at": "2026-10-08T09:46:13Z",
+      "self_resolved": []
+    },
+    "merge": {
+      "approved_by": null,
+      "at": null
+    },
+    "design_review": {
+      "approved_by": "design-panel",
+      "at": "2026-10-08T09:46:13Z",
+      "self_resolved": [
+        "SPEC-001 high: all three routes registered in T004 \u2014 plan edited",
+        "ARCH-001 high: token helpers are methods of TokenPageMixin \u2014 plan edited",
+        "SEC-001 medium: cookie deleted with its own path, asserted on the response header \u2014 plan and T013 edited",
+        "SPEC-002 medium: the suite's settings drop the demo's access setting \u2014 T023 edited",
+        "SPEC-003 medium: card link and page 200 asserted without allauth \u2014 T005 and T006 edited",
+        "ARCH-002 low: mixin is UserPassesTestMixin \u2014 plan edited",
+        "SEC-002 low: one record revoked, path converter \u2014 plan and research edited",
+        "SEC-003 low: value shown only to the person whose token it is \u2014 plan and T013 edited",
+        "SPEC-004 low: no test on the New badge's word \u2014 T013 edited",
+        "SPEC-005 low: one subprocess run without knox \u2014 T007 edited",
+        "ARCH-003 low: true reason for FormView recorded \u2014 research edited",
+        "SPEC-006 low: created override written by update \u2014 T003 edited",
+        "SEC-004 low: README says to set a limit \u2014 T016 edited"
+      ]
+    },
+    "review": {
+      "approved_by": "review-panel",
+      "at": "2026-10-08T11:03:24Z",
+      "self_resolved": [
+        "COR-001 medium: README covers AUTO_REFRESH \u2014 fixed",
+        "COR-002 low: line lengths and comment \u2014 fixed",
+        "COR-003 low: unused underscore names \u2014 fixed",
+        "COR-004 low: menu helper removed from README and code \u2014 fixed",
+        "SEC-001 low: cookie Secure follows SESSION_COOKIE_SECURE too \u2014 fixed with a test (T025)",
+        "SEC-002 low: limit race \u2014 accepted, documented in README",
+        "SEC-003 low: no ceiling when knox sets no limit \u2014 open for the maintainer, documented",
+        "found while fixing: lifetime field restored to the approved drop-down (T026)"
+      ]
+    },
+    "walkthrough": {
+      "approved_by": null,
+      "at": "2026-10-08T11:04:27Z",
+      "self_resolved": []
+    }
+  },
+  "stories": [
+    {
+      "id": "US1",
+      "priority": "P1",
+      "issue": 37,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T001",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_app.py::TestPackagedApp::test_the_public_surface_is_the_components_it_ships"
+            ],
+            "commands": [
+              "uv run pytest -n auto --dist loadscope -q (252 passed)",
+              "forge verify: conformance, docs, lint, typecheck, test, build passed"
+            ]
+          }
+        },
+        {
+          "id": "T002",
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestApiExtra",
+              "tests/test_demo.py::TestDemoApiTokens"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestApiExtra tests/test_demo.py::TestDemoApiTokens -q (5 passed, exit 0)",
+              "uv lock && uv sync (exit 0)"
+            ],
+            "code": [
+              "pyproject.toml:37"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T003",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_factories.py::TestAuthTokenFactory"
+            ],
+            "commands": [
+              "uv run pytest tests/test_factories.py -q (10 passed, exit 0)"
+            ],
+            "code": [
+              "tests/factories.py:180"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T004",
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_urls.py::TestTokenRoutes",
+              "tests/test_tokens/test_views.py::TestTokenPages",
+              "tests/test_tokens/test_views.py::TestTokensView",
+              "tests/test_tokens/test_views.py::TestCreateTokenView",
+              "tests/test_tokens/test_views.py::TestRevokeTokenView"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens -q (24 passed, exit 0)",
+              "uv run deptry . (exit 0)",
+              "uv run python manage.py migrate && uv run python manage.py seed_demo (exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/urls.py:7",
+              "mvp_accounts/tokens/views.py:20",
+              "mvp_accounts/tokens/views.py:51",
+              "mvp_accounts/tokens/views.py:73",
+              "mvp_accounts/tokens/views.py:90",
+              "demo/urls.py:11",
+              "pyproject.toml:174"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T005",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_menus.py::TestApiTokensEntry",
+              "tests/test_apps.py::TestStartup",
+              "tests/test_without_allauth.py::TestWithoutAllauth"
+            ],
+            "commands": [
+              "uv run pytest tests/test_apps.py tests/test_menus.py tests/test_without_allauth.py tests/test_tokens -q (44 passed, exit 0)",
+              "forge docs-check --repo . --base b34bd5b (clean)"
+            ],
+            "code": [
+              "mvp_accounts/menus.py:86",
+              "mvp_accounts/menus.py:151",
+              "tests/urls_without_knox.py:1",
+              "tests/urls_without_allauth.py:1"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T006",
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_account_center.py::TestOverviewCards",
+              "tests/test_without_allauth.py::TestWithoutAllauth"
+            ],
+            "commands": [
+              "uv run pytest tests/test_account_center.py tests/test_without_allauth.py -q (21 passed, exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/templates/mvp/account/overview.html:63"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T007",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_without_knox.py::TestWithoutKnox"
+            ],
+            "commands": [
+              "uv run pytest tests/test_without_knox.py -q (5 passed, exit 0)"
+            ],
+            "code": [
+              "tests/settings_without_knox.py:16",
+              "tests/test_without_knox.py:1"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T008",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "forge conformance --repo . --base b34bd5b (clean)",
+              "forge docs-check --repo . --base b34bd5b (clean)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "README.md:124",
+              "CONTEXT.md:48",
+              "CHANGELOG.md:25",
+              "docs/adr/0005-the-package-provides-the-api-tokens-pages.md:1"
+            ],
+            "verified_by_ci": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "US3",
+      "priority": "P2",
+      "issue": 39,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T009",
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestTokensList"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py -q (26 passed, exit 0)",
+              "uv run pytest -n auto --dist loadscope (320 passed, exit 0)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:51",
+              "mvp_accounts/tokens/views.py:79",
+              "tests/test_tokens/test_views.py:76"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T010",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestSeededApiTokens"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py -q (48 passed, exit 0)",
+              "uv run pytest -n auto --dist loadscope (320 passed, exit 0)",
+              "uv run python manage.py migrate && uv run python manage.py seed_demo (exit 0)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "demo/management/commands/seed_demo.py:79",
+              "demo/management/commands/seed_demo.py:209",
+              "tests/test_demo.py:407"
+            ],
+            "verified_by_ci": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "US2",
+      "priority": "P1",
+      "issue": 38,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T011",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_forms.py::TestCreateTokenForm"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_forms.py -x (8 passed, exit 0; red first at collection: no module mvp_accounts.tokens.forms)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/forms.py:9",
+              "mvp_accounts/tokens/forms.py:31"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T012",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestCreateTokenView"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py::TestCreateTokenView (8 passed, exit 0; red first: 4 failed, POST answered 405)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:129",
+              "mvp_accounts/tokens/views.py:164"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T013",
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestNewTokenShownOnce",
+              "tests/test_components/test_token_created.py::TestTokenCreatedComponent"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py::TestNewTokenShownOnce (13 passed, exit 0; red first: 12 failed)",
+              "uv run pytest tests/test_tokens tests/test_components tests/test_app.py -q (70 passed, exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:70",
+              "mvp_accounts/tokens/views.py:88",
+              "mvp_accounts/tokens/views.py:120",
+              "mvp_accounts/tokens/views.py:164"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T014",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestCreateTokenAtTheLimit"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py::TestCreateTokenAtTheLimit (7 passed, exit 0; red first: 3 failed)",
+              "uv run pytest tests/test_tokens -q (68 passed, exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:136",
+              "mvp_accounts/tokens/views.py:142",
+              "mvp_accounts/tokens/views.py:148"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T015",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestDemoWhoAmI"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestDemoWhoAmI (2 passed, exit 0; red first: NoReverseMatch)",
+              "uv run pytest tests/test_demo.py tests/test_without_knox.py -q (55 passed, exit 0)"
+            ],
+            "code": [
+              "demo/api.py:13",
+              "demo/urls.py:11"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T016",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "forge docs-check --repo . --base 906f348 (clean, exit 0 after naming CreateTokenForm)",
+              "forge conformance --repo . --base 906f348 (clean, exit 0)"
+            ],
+            "code": [
+              "README.md:182"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T025",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestNewTokenShownOnce::test_the_cookie_is_secure_where_the_project_marks_its_session_cookie_so"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py -k secure (red before the change, green after)"
+            ]
+          }
+        },
+        {
+          "id": "T026",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestCreateTokenView::test_the_page_asks_for_the_lifetime_in_a_field_of_that_name"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens -q (106 passed)",
+              "uv run pre-commit run --all-files (all hooks passed)"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "US4",
+      "priority": "P2",
+      "issue": 40,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T017",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestRevokeTokenView",
+              "tests/test_tokens/test_views.py::TestRevokeTokenViewForATokenThatIsGone",
+              "tests/test_tokens/test_views.py::TestTokensView::test_a_row_links_to_the_revoke_page_by_token_key"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py -q (65 passed, exit 0; red first: the gone-token tests failed on the 404)",
+              "mutation probes on the first-time-passing tests (GET deletes, unscoped lookup, distinct message, wrong row href) each failed the test that guards it, then reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:193",
+              "mvp_accounts/tokens/views.py:218",
+              "mvp_accounts/tokens/views.py:230"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T018",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestRevokingAToken",
+              "tests/test_demo.py::TestDemoRevokedToken"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py tests/test_demo.py::TestDemoRevokedToken -q (72 passed, exit 0; red first: 5 of 7 new tests failed)",
+              "mutation probes (queryset delete, unscoped lookup, test_func True, no-op delete) each failed a test, then reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:237"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T019",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "forge docs-check --repo . --base f3cb1c1 (clean, exit 0)",
+              "forge conformance --repo . --base f3cb1c1 (clean, exit 0)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "README.md:218",
+              "CHANGELOG.md:28"
+            ],
+            "verified_by_ci": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "US5",
+      "priority": "P2",
+      "issue": 41,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "done",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T020",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_access.py::TestMayUseTokens"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_access.py -q (7 passed, exit 0; red first: collection error, the module did not exist)",
+              "mutation probes: dropping the is_authenticated guard failed 2 tests, dropping bool() failed 1; reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/access.py:12",
+              "mvp_accounts/tokens/access.py:32"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T021",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestTokenPagesForAPersonTheProjectTurnsAway"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens -q (105 passed, exit 0; red first: 8 failed with 200/302/405 where 403 was expected)",
+              "mutation probes: test_func returning True failed 11 of 12, returning False failed the staff test; reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:40"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T022",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_templatetags/test_mvp_accounts.py::TestMayUseApiTokens",
+              "tests/test_menus.py::TestApiTokensEntryForAPersonTheProjectTurnsAway",
+              "tests/test_account_center.py::TestOverviewCardsForAPersonTheProjectTurnsAway"
+            ],
+            "commands": [
+              "uv run pytest tests/test_templatetags tests/test_menus.py tests/test_account_center.py tests/test_without_knox.py -q (40 passed, exit 0; red first: tag library not registered)",
+              "mutation probes: removing check= failed the entry test, removing the card condition failed the card test; reverted"
+            ],
+            "code": [
+              "mvp_accounts/menus.py:84",
+              "mvp_accounts/menus.py:177",
+              "mvp_accounts/templatetags/mvp_accounts.py:15",
+              "mvp_accounts/templates/mvp/account/overview.html:65"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T023",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestDemoTokenAccess"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py -q (56 passed, exit 0; red first: 4 of 5 new tests failed)",
+              "mutation probes: staff_only returning True failed 2 tests, removing the del in tests/settings.py failed 1; reverted",
+              "uv run python manage.py migrate; uv run python manage.py seed_demo (both exit 0)",
+              "forge docs-check --repo . --base df6473d (clean); forge conformance --repo . --base df6473d (clean)"
+            ],
+            "code": [
+              "demo/access.py:4",
+              "demo/settings.py:152",
+              "tests/settings.py:56"
+            ],
+            "verified_by_ci": false
+          }
+        },
+        {
+          "id": "T024",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "cd mvp_accounts && uv run django-admin makemessages -l en (exit 0; 31 -> 74 msgids)",
+              "script over the tokens templates, created component, menus.py, tokens/*.py and the card: 81 strings, 77 matched directly, the 4 blocktrans with variables matched by grep; grep -c '^#: .*tokens' django.po -> 42"
+            ],
+            "code": [
+              "mvp_accounts/locale/en/LC_MESSAGES/django.po:19"
+            ],
+            "verified_by_ci": false
+          }
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "converge_cycles": {
+      "used": 1,
+      "max": 2
+    },
+    "review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "design_review_cycles": {
+      "used": 1,
+      "max": 1
+    },
+    "tokens": {
+      "used": 35.31,
+      "max": 120
+    }
+  },
+  "pr": {
+    "number": 36,
+    "draft": false
+  }
+}

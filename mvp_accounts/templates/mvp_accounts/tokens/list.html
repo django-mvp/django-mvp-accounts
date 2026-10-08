@@ -1,0 +1,98 @@
+{% extends "mvp/account/base.html" %}
+{% load i18n %}
+{% block account.content %}
+  {% url "account_api_tokens" as tokens_url %}
+  <c-mvp.page>
+    {% comment %} `inline_actions` keeps the button beside the heading at every width, and the button's text on one line. {% endcomment %}
+    <c-mvp.page.title :title="page.title" :subtitle="page.subtitle" inline_actions>
+      {% if not at_limit %}
+        <c-slot name="actions">
+          <c-button href="{% url "account_api_token_create" %}"
+                    variant="primary"
+                    icon="add"
+                    class="whitespace-nowrap"
+                    text="{% trans "Create token" %}" />
+        </c-slot>
+      {% endif %}
+    </c-mvp.page.title>
+    {% if new_token %}
+      <c-mvp_accounts.token.created value="{{ new_token.value }}"
+                                    header_prefix="{{ header_prefix }}"
+                                    done_url="{{ tokens_url }}" />
+    {% endif %}
+    {% if at_limit %}
+      <c-alert variant="info" role="status">
+        <span>
+          {% blocktrans trimmed count limit=token_limit %}
+            You hold {{ limit }} token, the most this site allows. Revoke it before you create another.
+          {% plural %}
+            You hold {{ limit }} tokens, the most this site allows. Revoke one before you create another.
+          {% endblocktrans %}
+        </span>
+      </c-alert>
+    {% endif %}
+    <c-mvp.card title="{% trans "Your tokens" %}">
+      {% if token_limit and tokens %}
+        <c-slot name="badges">
+          <c-badge size="sm" class="badge-ghost">
+            {% blocktrans trimmed with count=tokens|length limit=token_limit %}
+              {{ count }} of {{ limit }}
+            {% endblocktrans %}
+          </c-badge>
+        </c-slot>
+      {% endif %}
+      {% if tokens %}
+        <c-table aria-label="{% trans "Your API tokens" %}">
+          <thead>
+            <tr>
+              <th scope="col">{% trans "Token" %}</th>
+              <th scope="col">{% trans "Created" %}</th>
+              <th scope="col">{% trans "Expires" %}</th>
+              <th scope="col">
+                <span class="sr-only">{% trans "Actions" %}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for token in tokens %}
+              <tr>
+                <th scope="row" class="font-normal whitespace-nowrap">
+                  <code class="font-mono">{{ token.token_key }}…</code>
+                  {% if new_token.token_key == token.token_key %}
+                    <c-badge size="sm" variant="success">{% trans "New" %}</c-badge>
+                  {% endif %}
+                </th>
+                <td class="whitespace-nowrap">
+                  <time datetime="{{ token.created|date:"Y-m-d" }}">{{ token.created|date:"DATE_FORMAT" }}</time>
+                </td>
+                <td class="whitespace-nowrap">
+                  {% if token.expiry %}
+                    <time datetime="{{ token.expiry|date:"Y-m-d" }}">{{ token.expiry|date:"DATE_FORMAT" }}</time>
+                  {% else %}
+                    {% trans "Never" %}
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  {% blocktrans asvar revoke_label with token=token.token_key %}Revoke token {{ token }}…{% endblocktrans %}
+                  <c-button href="{% url "account_api_token_revoke" token.token_key %}"
+                            variant="error"
+                            size="sm"
+                            outline
+                            aria-label="{{ revoke_label }}"
+                            text="{% trans "Revoke" %}" />
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </c-table>
+        <c-mvp.text muted tight size="sm">
+          {% trans "Only the first characters of each token are kept. Lost the rest of one? Revoke it and create another." %}
+        </c-mvp.text>
+      {% else %}
+        <c-mvp.page.list.empty icon="key"
+                               heading="{% trans "You have no API tokens" %}"
+                               message="{% trans "Create one when a script or another tool needs to use the API as you." %}" />
+      {% endif %}
+    </c-mvp.card>
+  </c-mvp.page>
+{% endblock account.content %}

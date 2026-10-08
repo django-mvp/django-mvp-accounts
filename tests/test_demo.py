@@ -7,7 +7,9 @@ None of those raise, so the demo is asserted against its rendered pages rather
 than against the objects that built them.
 """
 
+import tomllib
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from allauth.account.models import EmailAddress
@@ -15,15 +17,22 @@ from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
 from allauth.usersessions.models import UserSession
 from bs4 import BeautifulSoup
+from django.apps import apps
 from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
+from django.db.models import Q
+from django.test import Client
 from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
+from knox.models import get_token_model
+from knox.settings import knox_settings
+from packaging.requirements import Requirement
 
 from demo import settings as demo_settings
 from demo.adapter import DemoAccountAdapter
 from demo.mail import OutboxEmailBackend
-from tests.factories import PhoneNumberFactory, UserFactory
+from tests.factories import AuthTokenFactory, PhoneNumberFactory, UserFactory
 
 
 class TestOverviewPage:
@@ -354,3 +363,197 @@ class TestSeededSessionsWalkthrough:
         form = soup.find("form", attrs={"action": reverse("usersessions_list")})
         assert form is not None
         assert form.find("button", attrs={"type": "submit"}) is not None
+
+
+class TestApiExtra:
+    @pytest.fixture
+    def project(self) -> dict:
+        path = Path(__file__).resolve().parent.parent / "pyproject.toml"
+        return tomllib.loads(path.read_text())["project"]
+
+    @pytest.fixture
+    def extra(self, project) -> dict[str, Requirement]:
+        requirements = map(Requirement, project["optional-dependencies"]["api"])
+        return {requirement.name: requirement for requirement in requirements}
+
+    def test_django_rest_framework_is_bounded_to_the_3_16_series(self, extra) -> None:
+        specifier = extra["djangorestframework"].specifier
+
+        assert specifier.contains("3.16.0")
+        assert not specifier.contains("3.15.2")
+        assert not specifier.contains("4.0")
+
+    def test_knox_is_bounded_to_the_5_series(self, extra) -> None:
+        specifier = extra["django-rest-knox"].specifier
+
+        assert specifier.contains("5.0.0")
+        assert not specifier.contains("4.2.0")
+        assert not specifier.contains("6.0")
+
+    def test_neither_is_a_runtime_dependency(self, project) -> None:
+        names = {Requirement(entry).name for entry in project["dependencies"]}
+
+        assert names.isdisjoint({"djangorestframework", "django-rest-knox"})
+
+
+class TestDemoApiTokens:
+    def test_knoxs_token_model_is_installed(self) -> None:
+        assert apps.is_installed("knox")
+        assert apps.get_model(get_token_model()._meta.label)
+
+    def test_the_package_adds_no_migration(self, db) -> None:
+        call_command("makemigrations", check=True, dry_run=True, stdout=StringIO())
+
+
+class TestSeededApiTokens:
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        settings.DEBUG = True
+
+    @staticmethod
+    def tokens_of(email: str):
+        return get_token_model().objects.filter(user__email=email)
+
+    @staticmethod
+    def working(tokens):
+        return tokens.filter(Q(expiry__isnull=True) | Q(expiry__gt=timezone.now()))
+
+    @pytest.fixture
+    def seeded_twice(self, db):
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+    def test_staff_has_three_working_tokens_and_one_without_an_expiry(
+        self, seeded_twice
+    ) -> None:
+        working = self.working(self.tokens_of("staff.user@example.com"))
+
+        assert working.count() == 3
+        assert working.filter(expiry__isnull=True).count() == 1
+
+    def test_staff_has_one_token_that_has_expired(self, seeded_twice) -> None:
+        tokens = self.tokens_of("staff.user@example.com")
+
+        assert tokens.filter(expiry__lte=timezone.now()).count() == 1
+
+    def test_super_holds_exactly_the_demos_limit(self, seeded_twice) -> None:
+        working = self.working(self.tokens_of("super.user@example.com"))
+
+        assert working.count() == knox_settings.TOKEN_LIMIT_PER_USER
+
+    def test_regular_holds_none_even_after_making_one(self, db) -> None:
+        AuthTokenFactory(user=UserFactory(username="regular.user@example.com"))
+
+        call_command("seed_demo", stdout=StringIO())
+
+        assert not self.tokens_of("regular.user@example.com").exists()
+
+    def test_each_run_replaces_the_tokens_it_seeded(self, seeded_twice) -> None:
+        assert self.tokens_of("staff.user@example.com").count() == 4
+        assert self.tokens_of("super.user@example.com").count() == (
+            knox_settings.TOKEN_LIMIT_PER_USER
+        )
+
+
+class TestDemoWhoAmI:
+    @pytest.fixture
+    def whoami(self) -> str:
+        return reverse("api-whoami")
+
+    @pytest.fixture
+    def new_token(self, signed_in_client) -> str:
+        """Create a token on the create page and return the value it shows."""
+        response = signed_in_client.post(
+            reverse("account_api_token_create"), {"lifetime": "30d"}, follow=True
+        )
+        field = BeautifulSoup(response.content, "html.parser").find(id="new-api-token")
+        return field["value"]
+
+    def test_a_token_made_on_the_create_page_is_answered_as_its_person(
+        self, signed_in_client, new_token, whoami
+    ) -> None:
+        header = f"{knox_settings.AUTH_HEADER_PREFIX} {new_token}"
+
+        response = Client().get(whoami, headers={"Authorization": header})
+
+        assert response.status_code == 200
+        assert response.json() == {"email": signed_in_client.user.email}
+
+    def test_a_request_with_no_token_is_refused(self, signed_in_client, whoami) -> None:
+        response = Client().get(whoami)
+
+        assert response.status_code == 401
+
+
+class TestDemoRevokedToken:
+    @pytest.fixture
+    def whoami(self) -> str:
+        return reverse("api-whoami")
+
+    @staticmethod
+    def answer(token, whoami: str):
+        """Present ``token`` to the demo endpoint the way a script would."""
+        header = f"{knox_settings.AUTH_HEADER_PREFIX} {token.token}"
+        return Client().get(whoami, headers={"Authorization": header})
+
+    def test_a_revoked_token_is_refused_and_the_persons_other_token_is_answered(
+        self, signed_in_client, whoami
+    ) -> None:
+        revoked = AuthTokenFactory(user=signed_in_client.user)
+        kept = AuthTokenFactory(user=signed_in_client.user)
+        assert self.answer(revoked, whoami).status_code == 200
+
+        signed_in_client.post(
+            reverse("account_api_token_revoke", args=[revoked.token_key])
+        )
+
+        assert self.answer(revoked, whoami).status_code in (401, 403)
+        answered = self.answer(kept, whoami)
+        assert answered.status_code == 200
+        assert answered.json() == {"email": signed_in_client.user.email}
+
+
+class TestDemoTokenAccess:
+    STAFF_ONLY = "demo.access.staff_only"
+
+    @pytest.fixture
+    def seeded(self, db, settings):
+        settings.DEBUG = True
+        settings.MVP_ACCOUNTS_API_TOKEN_ACCESS = self.STAFF_ONLY
+        call_command("seed_demo", stdout=StringIO())
+
+    @staticmethod
+    def signed_in_as(email: str) -> Client:
+        client = Client()
+        client.force_login(EmailAddress.objects.get(email=email).user)
+        return client
+
+    def test_the_demo_lets_in_staff_only(self) -> None:
+        assert demo_settings.MVP_ACCOUNTS_API_TOKEN_ACCESS == self.STAFF_ONLY
+
+    def test_the_suites_own_settings_do_not_carry_the_demos_setting(
+        self, settings
+    ) -> None:
+        assert not hasattr(settings, "MVP_ACCOUNTS_API_TOKEN_ACCESS")
+
+    def test_the_regular_account_is_refused_at_the_tokens_page(self, seeded) -> None:
+        client = self.signed_in_as("regular.user@example.com")
+
+        assert client.get(reverse("account_api_tokens")).status_code == 403
+
+    def test_the_staff_account_sees_its_three_tokens(self, seeded) -> None:
+        client = self.signed_in_as("staff.user@example.com")
+
+        response = client.get(reverse("account_api_tokens"))
+
+        assert response.status_code == 200
+        assert len(response.context["tokens"]) == 3
+
+    def test_the_regular_accounts_account_center_has_no_tokens_link(
+        self, seeded
+    ) -> None:
+        client = self.signed_in_as("regular.user@example.com")
+
+        page = client.get(reverse("account-center")).content.decode()
+
+        assert f'href="{reverse("account_api_tokens")}"' not in page

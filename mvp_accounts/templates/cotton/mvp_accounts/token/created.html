@@ -1,0 +1,51 @@
+{# @description A token that was created a moment ago, shown whole for the only time, with a button that copies it. #}
+{# @prop value:text | description:"The complete token." #}
+{# @prop header_prefix:text | default:"Token" | description:"The word that goes before the token in the Authorization header." #}
+{# @prop done_url:text | description:"Where the person goes once they have the token." #}
+{% comment %}
+  The clipboard API only exists on a secure page, so the button falls back to
+  copying the selected field. Without scripts the field can still be selected by hand.
+{% endcomment %}
+{% load i18n %}
+<c-vars value header_prefix="Token" done_url />
+{% trans "Copy" as copy_label %}
+{% trans "Copied" as copied_label %}
+<c-mvp.card title="{% trans "Your new token" %}"
+            icon="key"
+            class="border border-warning"
+            :attrs="attrs">
+  <c-alert variant="warning">
+    <span>{% trans "Copy this token now and keep it somewhere safe. It will not be shown again." %}</span>
+  </c-alert>
+  <div x-data="{ copied: false }">
+    <c-form.label for="new-api-token">{% trans "Token" %}</c-form.label>
+    <c-join class="w-full">
+      <c-form.input id="new-api-token"
+                    value="{{ value }}"
+                    class="join-item font-mono w-full"
+                    x-ref="token"
+                    x-on:focus="$el.select()"
+                    aria-describedby="new-api-token-use"
+                    readonly
+                    autofocus />
+      <c-button type="button"
+                icon="copy"
+                class="join-item"
+                x-on:click="$refs.token.select(); navigator.clipboard ? navigator.clipboard.writeText($refs.token.value) : document.execCommand('copy'); copied = true">
+        <span x-text="copied ? '{{ copied_label|escapejs }}' : '{{ copy_label|escapejs }}'">{{ copy_label }}</span>
+      </c-button>
+    </c-join>
+    <span role="status" class="sr-only" x-text="copied ? '{{ copied_label|escapejs }}' : ''"></span>
+  </div>
+  <c-mvp.text id="new-api-token-use" muted tight size="sm">
+    {% blocktrans trimmed %}
+      Send it with each request, in the <code>Authorization</code> header:
+      <code>Authorization: {{ header_prefix }} &lt;your token&gt;</code>
+    {% endblocktrans %}
+  </c-mvp.text>
+  {% if done_url %}
+    <c-slot name="footer">
+      <c-button href="{{ done_url }}" size="sm" text="{% trans "I have copied it" %}" />
+    </c-slot>
+  {% endif %}
+</c-mvp.card>

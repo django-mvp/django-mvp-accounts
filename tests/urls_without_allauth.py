@@ -6,6 +6,7 @@ from demo.views import OverviewView
 
 urlpatterns = [
     path("", OverviewView.as_view(), name="overview"),
+    path("account/tokens/", include("mvp_accounts.tokens.urls")),
     path("", include("mvp.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

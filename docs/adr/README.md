@@ -3,6 +3,14 @@
 One file per architecturally significant decision, named
 `NNNN-kebab-slug.md` — four digits, zero-padded, sequential, never reused.
 
+## Records
+
+- [0001 — Reskin allauth through its layout and element templates](0001-reskin-allauth-through-its-templates.md)
+- [0002 — Account management lives in django-mvp's Account Center](0002-account-management-lives-in-the-account-center.md)
+- [0003 — Provider icons come from the host project](0003-provider-icons-come-from-the-host-project.md)
+- [0004 — Reskinned elements keep the ids allauth's scripts look up](0004-elements-keep-allauths-script-hooks.md)
+- [0005 — The package provides the API tokens pages itself](0005-the-package-provides-the-api-tokens-pages.md)
+
 ## What earns a record
 
 A decision goes here when it is all three of:

@@ -1,0 +1,19 @@
+{% extends "mvp/account/base.html" %}
+{% load i18n %}
+{% block account.content %}
+  {% url "account_api_tokens" as tokens_url %}
+  <c-mvp.page>
+    <c-mvp.page.title :title="page.title" />
+    <c-mvp.card>
+      <c-mvp.form method="post" action="{{ request.path }}" :form-obj="form" class="flex flex-col gap-4">
+        <c-mvp.text muted tight size="sm">
+          {% trans "The token is shown once, on the next page. Have somewhere ready to keep it." %}
+        </c-mvp.text>
+        <div class="flex flex-wrap items-center gap-2">
+          <c-button type="submit" variant="primary" text="{% trans "Create token" %}" />
+          <c-button href="{{ tokens_url }}" ghost text="{% trans "Cancel" %}" />
+        </div>
+      </c-mvp.form>
+    </c-mvp.card>
+  </c-mvp.page>
+{% endblock account.content %}

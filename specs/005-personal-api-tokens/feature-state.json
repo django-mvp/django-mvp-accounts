@@ -306,33 +306,116 @@
       "tasks": [
         {
           "id": "T011",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_forms.py::TestCreateTokenForm"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_forms.py -x (8 passed, exit 0; red first at collection: no module mvp_accounts.tokens.forms)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/forms.py:9",
+              "mvp_accounts/tokens/forms.py:31"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T012",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestCreateTokenView"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py::TestCreateTokenView (8 passed, exit 0; red first: 4 failed, POST answered 405)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:129",
+              "mvp_accounts/tokens/views.py:164"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T013",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestNewTokenShownOnce",
+              "tests/test_components/test_token_created.py::TestTokenCreatedComponent"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py::TestNewTokenShownOnce (13 passed, exit 0; red first: 12 failed)",
+              "uv run pytest tests/test_tokens tests/test_components tests/test_app.py -q (70 passed, exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:70",
+              "mvp_accounts/tokens/views.py:88",
+              "mvp_accounts/tokens/views.py:120",
+              "mvp_accounts/tokens/views.py:164"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T014",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestCreateTokenAtTheLimit"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py::TestCreateTokenAtTheLimit (7 passed, exit 0; red first: 3 failed)",
+              "uv run pytest tests/test_tokens -q (68 passed, exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:136",
+              "mvp_accounts/tokens/views.py:142",
+              "mvp_accounts/tokens/views.py:148"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T015",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestDemoWhoAmI"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestDemoWhoAmI (2 passed, exit 0; red first: NoReverseMatch)",
+              "uv run pytest tests/test_demo.py tests/test_without_knox.py -q (55 passed, exit 0)"
+            ],
+            "code": [
+              "demo/api.py:13",
+              "demo/urls.py:11"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T016",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "forge docs-check --repo . --base 906f348 (clean, exit 0 after naming CreateTokenForm)",
+              "forge conformance --repo . --base 906f348 (clean, exit 0)"
+            ],
+            "code": [
+              "README.md:182"
+            ],
+            "verified_by_ci": false
+          }
         }
       ]
     },

@@ -125,3 +125,10 @@ Did: RevokeTokenView.post deletes the one record found (token.delete(), not a qu
 Verified: `uv run pytest tests/test_tokens/test_views.py tests/test_demo.py::TestDemoRevokedToken -q` -> 72 passed. Red first: 5 of 7 new tests failed (405, token not deleted, revoked token still answered 200). The stranger and visitor POST tests passed first time (the T017 redirect and the mixin already did it), so probed by mutation: unscoped lookup failed the stranger test; test_func returning True failed the visitor test; queryset delete over the filter failed the shared-key test; a no-op delete failed 4 tests including the demo one. Mutations reverted.
 Next: T019, README and CHANGELOG.
 Watch: none.
+
+## 2026-10-08T10:36:11Z · Implementer US4 · T019
+
+Did: README "Revoking a token" (confirms first, immediate, password change does not revoke, knox LogoutAllView deletes all of a person's tokens; checked in .venv knox/views.py). Extended the existing CHANGELOG entry. No page under docs/ describes revoking beyond ADR 0005 and ROADMAP, which stay true.
+Verified: `uv run pre-commit run --all-files` -> all hooks passed after the change.
+Next: full suite and lint, then the report.
+Watch: none.

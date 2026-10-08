@@ -81,19 +81,6 @@ class AccountGroup(MenuGroup):
         return processed
 
 
-def may_hold_tokens(request: HttpRequest, **kwargs) -> bool:
-    """Show the API tokens entry only to a person who may hold tokens.
-
-    Args:
-        request: The request being rendered.
-        **kwargs: Passed by the menu and not used.
-
-    Returns:
-        Whether the host project lets the request's user hold tokens.
-    """
-    return may_use_tokens(request.user)
-
-
 # django-flex-menus imports every app's menus module, so the group is added here
 # whether or not allauth is installed: the API tokens page needs nothing from it.
 # django-mvp drops an entry whose page is not routed.
@@ -173,7 +160,8 @@ AccountCenterMenu.append(
                 name="api_tokens",
                 view_name="account_api_tokens",
                 pages=("account_api_token_create", "account_api_token_revoke"),
-                check=may_hold_tokens,
+                # Shown only to a person the host project lets hold tokens.
+                check=lambda request, **kwargs: may_use_tokens(request.user),
                 extra_context={"label": _("API tokens"), "icon": "key"},
             ),
         ],

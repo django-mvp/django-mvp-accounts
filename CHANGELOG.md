@@ -31,7 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   includes `mvp_accounts.tokens.urls`; a project without django-rest-knox or Django REST
   framework gets nothing and is otherwise unchanged. A person creates a token by choosing how
   long it lasts (7 days, 30 days, 90 days, 1 year or never) and sees its complete value once,
-  on the tokens page; the package stores nothing but what knox keeps. The pages honour knox's
+  on the tokens page; the package stores nothing but what knox keeps. Revoking a token asks
+  first and takes effect at once; changing a password does not revoke tokens. The pages honour knox's
   `TOKEN_LIMIT_PER_USER`, which knox leaves unset, so a project should set one. See "API
   tokens" in the README.
 - The "Account" heading is now drawn in a project without django-allauth too, when the API tokens

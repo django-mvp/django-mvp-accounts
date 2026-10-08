@@ -213,6 +213,18 @@ A request carries the token in the `Authorization` header, as `Authorization: To
 The word before the token is knox's `AUTH_HEADER_PREFIX`, and the page shows the one your project
 uses. The demo answers at `/api/whoami/` with the email of the person the token belongs to.
 
+### Revoking a token
+
+Each row of the tokens page links to a page that shows the token and asks before revoking it.
+Confirming deletes that one token and returns to the tokens page; anything that still presents
+it is refused from that moment, and nothing brings it back. Cancelling changes nothing, and
+neither does opening the page. A token that is already gone, has expired or belongs to someone
+else gets the same reply: a message that it no longer exists.
+
+Changing a password does not revoke a person's tokens, so a person who suspects a leak should
+revoke them here as well. knox's own sign-out-everywhere endpoint, `LogoutAllView`, deletes all
+of a person's tokens at once; the pages in this package revoke one at a time.
+
 ## Two-factor authentication
 
 To offer two-factor authentication, install allauth's multi-factor app with its `mfa`

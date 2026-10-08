@@ -96,8 +96,7 @@ def may_hold_tokens(request: HttpRequest, **kwargs) -> bool:
 
 # django-flex-menus imports every app's menus module, so the group is added here
 # whether or not allauth is installed: the API tokens page needs nothing from it.
-# django-mvp drops an entry whose page is not routed, and a group left with
-# nothing to show is not drawn.
+# django-mvp drops an entry whose page is not routed.
 if apps.is_installed("allauth"):
     # Confirming who you are comes before a change on any of the pages below, so
     # it belongs to the area rather than to one entry.

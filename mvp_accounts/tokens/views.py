@@ -4,6 +4,7 @@ Only a project that routes ``mvp_accounts.tokens.urls`` ever imports this module
 which is why it may import django-rest-knox where nothing else in the package may.
 """
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q, QuerySet
@@ -177,7 +178,9 @@ class CreateTokenView(TokenPageMixin, PageMixin, FormView):
             salt=SHOWN_ONCE_SALT,
             max_age=SHOWN_ONCE_MAX_AGE,
             path=self.get_success_url(),
-            secure=self.request.is_secure(),
+            # Secure on an HTTPS request, and wherever the project already marks
+            # its session cookie so, which covers a proxy that hides the scheme.
+            secure=self.request.is_secure() or settings.SESSION_COOKIE_SECURE,
             httponly=True,
             samesite="Strict",
         )

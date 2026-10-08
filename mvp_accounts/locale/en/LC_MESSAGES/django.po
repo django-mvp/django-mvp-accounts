@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 12:49+0200\n"
+"POT-Creation-Date: 2026-10-08 13:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,36 +22,36 @@ msgstr ""
 msgid "Accounts"
 msgstr ""
 
-#: menus.py:113 templates/mvp/account/overview.html:11
+#: menus.py:112 templates/mvp/account/overview.html:11
 msgid "Email"
 msgstr ""
 
-#: menus.py:125 templates/mvp/account/overview.html:20
+#: menus.py:124 templates/mvp/account/overview.html:20
 msgid "Password"
 msgstr ""
 
-#: menus.py:131 templates/mvp/account/overview.html:29
+#: menus.py:130 templates/mvp/account/overview.html:29
 msgid "Phone number"
 msgstr ""
 
-#: menus.py:136 templates/mvp/account/overview.html:38
+#: menus.py:135 templates/mvp/account/overview.html:38
 msgid "Connected accounts"
 msgstr ""
 
-#: menus.py:152 templates/mvp/account/overview.html:47
+#: menus.py:151 templates/mvp/account/overview.html:47
 msgid "Two-factor authentication"
 msgstr ""
 
-#: menus.py:159 templates/mvp/account/overview.html:56
+#: menus.py:158 templates/mvp/account/overview.html:56
 msgid "Sessions"
 msgstr ""
 
-#: menus.py:169
+#: menus.py:168
 msgid "Account"
 msgstr ""
 
-#: menus.py:178 templates/mvp/account/overview.html:66 tokens/views.py:77
-#: tokens/views.py:87 tokens/views.py:190 tokens/views.py:205
+#: menus.py:177 templates/mvp/account/overview.html:66 tokens/views.py:78
+#: tokens/views.py:88 tokens/views.py:193 tokens/views.py:208
 msgid "API tokens"
 msgstr ""
 
@@ -269,7 +269,7 @@ msgstr ""
 msgid "Revoke token %(token)s…"
 msgstr ""
 
-#: templates/mvp_accounts/tokens/list.html:83 tokens/views.py:206
+#: templates/mvp_accounts/tokens/list.html:83 tokens/views.py:209
 msgid "Revoke"
 msgstr ""
 
@@ -326,40 +326,46 @@ msgid "Never expires"
 msgstr ""
 
 #: tokens/forms.py:25
-msgid "Lifetime"
+msgid "Expires after"
 msgstr ""
 
-#: tokens/views.py:79
+#: tokens/forms.py:29
+msgid ""
+"A token that expires limits the harm if it leaks. You can revoke any token "
+"sooner."
+msgstr ""
+
+#: tokens/views.py:80
 msgid ""
 "A token lets a script or another tool use the API as you, without your "
 "password."
 msgstr ""
 
-#: tokens/views.py:86 tokens/views.py:189 tokens/views.py:204
+#: tokens/views.py:87 tokens/views.py:192 tokens/views.py:207
 msgid "Account Center"
 msgstr ""
 
-#: tokens/views.py:136
+#: tokens/views.py:137
 msgid "Create a token"
 msgstr ""
 
-#: tokens/views.py:158
+#: tokens/views.py:159
 msgid "No token was created. You already hold as many as this site allows."
 msgstr ""
 
-#: tokens/views.py:191
+#: tokens/views.py:194
 msgid "Create"
 msgstr ""
 
-#: tokens/views.py:199
+#: tokens/views.py:202
 msgid "Revoke this token?"
 msgstr ""
 
-#: tokens/views.py:229
+#: tokens/views.py:232
 msgid "That token no longer exists."
 msgstr ""
 
-#: tokens/views.py:247
+#: tokens/views.py:250
 #, python-format
 msgid "Token %(token)s… was revoked."
 msgstr ""

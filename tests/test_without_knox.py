@@ -1,4 +1,4 @@
-"""What this package does in a project without django-rest-knox or Django REST framework.
+"""What this package does without django-rest-knox or Django REST framework.
 
 It runs in a subprocess under ``tests/settings_without_knox.py``: whether a
 package can be imported is decided when Django starts, so the running suite,

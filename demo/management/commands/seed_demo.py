@@ -145,8 +145,8 @@ class Command(BaseCommand):
                 "other browsers, so its sessions page lists three. "
                 "staff.user@example.com holds three API tokens, one with no expiry, "
                 "and one that has expired; super.user@example.com holds as many as "
-                "the demo's limit; regular.user@example.com may not hold tokens, because "
-                "the demo lets in staff only."
+                "the demo's limit; regular.user@example.com may not hold tokens, "
+                "because the demo lets in staff only."
             )
         )
 
@@ -241,7 +241,7 @@ class Command(BaseCommand):
     def seed_token(self, user, created, expiry):
         """Create one token for ``user`` with the dates given."""
         token_model = get_token_model()
-        token, _value = token_model.objects.create(user=user, expiry=None)
+        token = token_model.objects.create(user=user, expiry=None)[0]
         # ``created`` is set on save, so both dates are written afterwards.
         token_model.objects.filter(pk=token.pk).update(created=created, expiry=expiry)
 

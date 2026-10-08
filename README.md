@@ -192,17 +192,21 @@ A new token is shown once. The page the person returns to after creating it hold
 value, and no later page does: the package stores nothing but what django-rest-knox keeps, which
 is a digest and the token's first characters. A person who loses a token revokes it and creates
 another. The value travels from the create page to the tokens page in a signed cookie that lasts a
-minute, is sent only to the tokens page and is deleted as the page shows it. Tokens carry no name
+minute, is sent only to the tokens pages and is deleted as the page shows it. Tokens carry no name
 and no last-used time.
 
 Two of knox's settings matter here:
 
-- `TOKEN_TTL` reaches only the tokens knox's own views create. The create page passes the chosen
-  lifetime instead.
+- `TOKEN_TTL` is the lifetime of the tokens knox's own views create. The create page passes the
+  chosen lifetime instead. With knox's `AUTO_REFRESH` on, each use of a token that has an expiry
+  moves that expiry to `TOKEN_TTL` from then, capped by `AUTO_REFRESH_MAX_TTL`, whatever lifetime
+  the person chose. A token that never expires is not touched.
 - `TOKEN_LIMIT_PER_USER` is the number of working tokens a person may hold, and the pages honour
   it: at the limit the create page creates nothing and returns to the tokens page with a message,
   and the tokens page stops offering to create one. A token that has expired does not count, and
-  one with no expiry does. knox sets no limit by default, so a project should set one:
+  one with no expiry does. The count is taken just before a token is created, so two requests
+  sent at the same moment can both pass it, as they can in knox's own sign-in view. knox sets no
+  limit by default, so a project should set one:
 
   ```python
   REST_KNOX = {
@@ -253,8 +257,8 @@ Center shows neither the "API tokens" entry nor the card. The demo sets the sett
 `demo.access.staff_only`.
 
 The setting is read in one place, `may_use_tokens(user)` in `mvp_accounts.tokens.access`. The
-pages call it, and so do the menu entry's `may_hold_tokens` check and the `may_use_api_tokens`
-template tag the card uses. A project that adds its own page for tokens can call it too.
+pages call it, and so do the menu entry and the `may_use_api_tokens` template tag the card
+uses. A project that adds its own page for tokens can call it too.
 
 The setting is not checked for you: a path that does not import raises `ImportError` the first
 time a page, the entry or the card asks.

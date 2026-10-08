@@ -22,10 +22,13 @@ class CreateTokenForm(forms.Form):
     }
 
     lifetime = forms.ChoiceField(
-        label=_("Lifetime"),
-        choices=[(key, label) for key, (label, _delta) in LIFETIMES.items()],
+        label=_("Expires after"),
+        choices=[(key, lifetime[0]) for key, lifetime in LIFETIMES.items()],
         initial="30d",
-        widget=forms.RadioSelect,
+        help_text=_(
+            "A token that expires limits the harm if it leaks. "
+            "You can revoke any token sooner."
+        ),
     )
 
     def get_expiry(self) -> timedelta | None:

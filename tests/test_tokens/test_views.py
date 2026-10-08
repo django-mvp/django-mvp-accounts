@@ -113,7 +113,7 @@ class TestTokenPagesForAPersonTheProjectTurnsAway:
 
 
 class TestTokensView:
-    def test_it_renders_the_approved_list_template(self, signed_in_client) -> None:
+    def test_it_renders_the_list_template(self, signed_in_client) -> None:
         response = signed_in_client.get(reverse("account_api_tokens"))
 
         assert "mvp_accounts/tokens/list.html" in [t.name for t in response.templates]
@@ -259,7 +259,7 @@ class TestTokensList:
 
 
 class TestCreateTokenView:
-    def test_it_renders_the_approved_create_template(self, signed_in_client) -> None:
+    def test_it_renders_the_create_template(self, signed_in_client) -> None:
         response = signed_in_client.get(reverse("account_api_token_create"))
 
         assert "mvp_accounts/tokens/create.html" in [t.name for t in response.templates]
@@ -270,8 +270,8 @@ class TestCreateTokenView:
     ) -> None:
         page = signed_in_client.get(reverse("account_api_token_create")).content
 
-        inputs = BeautifulSoup(page, "html.parser").select('input[name="lifetime"]')
-        assert {field["value"] for field in inputs} == {
+        options = BeautifulSoup(page, "html.parser").select('[name="lifetime"] option')
+        assert {option["value"] for option in options} == {
             "7d",
             "30d",
             "90d",
@@ -340,9 +340,7 @@ class TestCreateTokenView:
 
 
 class TestRevokeTokenView:
-    def test_it_renders_the_approved_revoke_template(
-        self, signed_in_client, page_urls
-    ) -> None:
+    def test_it_renders_the_revoke_template(self, signed_in_client, page_urls) -> None:
         response = signed_in_client.get(page_urls["revoke"])
 
         assert "mvp_accounts/tokens/revoke.html" in [t.name for t in response.templates]
@@ -633,6 +631,15 @@ class TestNewTokenShownOnce:
         self, signed_in_client, create_url
     ) -> None:
         response = signed_in_client.post(create_url, {"lifetime": "30d"}, secure=True)
+
+        assert response.cookies[COOKIE]["secure"]
+
+    def test_the_cookie_is_secure_where_the_project_marks_its_session_cookie_so(
+        self, signed_in_client, create_url, settings
+    ) -> None:
+        settings.SESSION_COOKIE_SECURE = True
+
+        response = signed_in_client.post(create_url, {"lifetime": "30d"})
 
         assert response.cookies[COOKIE]["secure"]
 

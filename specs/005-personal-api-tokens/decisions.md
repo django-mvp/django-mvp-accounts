@@ -234,3 +234,12 @@ as smaller edits or carried as notes for the build.
 - No test finds the "New" badge by its word. The test is on the value the view computes.
 
 **ADR:** none, corrections to the plan.
+
+## D20 — The prototype's Python was removed before any story
+
+T001 was done in one step outside the stories, because it only deletes: the prototype's views,
+form, access check, routes, template tag, menu entry, card and demo wiring. Every later task then
+starts from a failing test. The four approved templates were kept untouched. `tests/test_app.py`
+pins the list of this package's components, and gained the one-time card that stays on disk.
+
+**ADR:** none.

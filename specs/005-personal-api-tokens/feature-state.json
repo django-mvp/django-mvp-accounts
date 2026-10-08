@@ -85,8 +85,17 @@
       "tasks": [
         {
           "id": "T001",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_app.py::TestPackagedApp::test_the_public_surface_is_the_components_it_ships"
+            ],
+            "commands": [
+              "uv run pytest -n auto --dist loadscope -q (252 passed)",
+              "forge verify: conformance, docs, lint, typecheck, test, build passed"
+            ]
+          }
         },
         {
           "id": "T002",

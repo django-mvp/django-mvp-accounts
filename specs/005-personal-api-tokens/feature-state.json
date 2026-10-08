@@ -2,7 +2,7 @@
   "feature": "005-personal-api-tokens",
   "branch": "005-personal-api-tokens",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "PLAN",
+  "state": "DESIGN_REVIEW",
   "state_history": [
     {
       "state": "QUEUED",
@@ -13,6 +13,11 @@
       "state": "PLAN",
       "at": "2026-10-08T09:36:29Z",
       "note": "research.md, plan.md, tasks.md written after the prototype was approved"
+    },
+    {
+      "state": "DESIGN_REVIEW",
+      "at": "2026-10-08T09:37:18Z",
+      "note": "design reviewer dispatched, three lenses, one round"
     }
   ],
   "gates": {
@@ -36,12 +41,32 @@
       ]
     },
     "plan": {
-      "approved_by": null,
-      "at": null
+      "approved_by": "open",
+      "at": "2026-10-08T09:46:13Z",
+      "self_resolved": []
     },
     "merge": {
       "approved_by": null,
       "at": null
+    },
+    "design_review": {
+      "approved_by": "design-panel",
+      "at": "2026-10-08T09:46:13Z",
+      "self_resolved": [
+        "SPEC-001 high: all three routes registered in T004 \u2014 plan edited",
+        "ARCH-001 high: token helpers are methods of TokenPageMixin \u2014 plan edited",
+        "SEC-001 medium: cookie deleted with its own path, asserted on the response header \u2014 plan and T013 edited",
+        "SPEC-002 medium: the suite's settings drop the demo's access setting \u2014 T023 edited",
+        "SPEC-003 medium: card link and page 200 asserted without allauth \u2014 T005 and T006 edited",
+        "ARCH-002 low: mixin is UserPassesTestMixin \u2014 plan edited",
+        "SEC-002 low: one record revoked, path converter \u2014 plan and research edited",
+        "SEC-003 low: value shown only to the person whose token it is \u2014 plan and T013 edited",
+        "SPEC-004 low: no test on the New badge's word \u2014 T013 edited",
+        "SPEC-005 low: one subprocess run without knox \u2014 T007 edited",
+        "ARCH-003 low: true reason for FormView recorded \u2014 research edited",
+        "SPEC-006 low: created override written by update \u2014 T003 edited",
+        "SEC-004 low: README says to set a limit \u2014 T016 edited"
+      ]
     }
   },
   "stories": [
@@ -226,7 +251,7 @@
       "max": 1
     },
     "design_review_cycles": {
-      "used": 0,
+      "used": 1,
       "max": 1
     },
     "tokens": {

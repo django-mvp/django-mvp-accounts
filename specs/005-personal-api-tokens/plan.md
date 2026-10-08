@@ -28,7 +28,7 @@ maintainer (research, "Planning notes").
 **Target Platform**: any Django project built on django-mvp
 **Project Type**: reusable Django app
 **Constraints**: nothing from knox or Django REST framework imported outside `mvp_accounts/tokens/views.py` and what only it imports; no model, no migration; every added string translatable; the approved templates keep their markup and words
-**Scale/Scope**: 3 views, 1 form, 1 access function, 1 template tag, 1 menu entry, 1 card, 3 page templates and 1 component (already written), 1 decision record
+**Scale/Scope**: 3 views and their mixin, 1 form, 1 access function, 1 template tag, 1 menu entry, 1 card, 3 page templates and 1 component (already written), 1 decision record
 
 ## Constitution Check
 
@@ -36,7 +36,7 @@ maintainer (research, "Planning notes").
 |---|---|
 | I Test-first | The prototype's Python is deleted first (T001). Every view, form, function, entry and card comes back behind a failing test |
 | II Simplicity | Three class-based views, one form, one function. No registry, no settings object, no system check. Lifetimes are a fixed list (D11) |
-| III Anti-abstraction | One small mixin shared by the three views for sign-in and access. Nothing else is shared ahead of a second caller |
+| III Anti-abstraction | One mixin shared by the three views, built on Django's `UserPassesTestMixin`. Nothing else is shared ahead of a second caller |
 | IV Integration-first | Tests create real knox tokens and send them to the demo's API endpoint |
 | V Security | Every query starts from the signed-in person's own tokens. The complete token is never stored by the package and its page is not cached (R3). State changes are POSTs under Django's CSRF protection. Token values are escaped by the template engine |
 | VI Documentation | README section, `CONTEXT.md` correction, CHANGELOG and ADR 0005, each in the story that introduces what it describes |
@@ -80,27 +80,36 @@ demo/
 |---|---|---|
 | `account_api_tokens` | `` | `TokensView` |
 | `account_api_token_create` | `create/` | `CreateTokenView` |
-| `account_api_token_revoke` | `<str:token_key>/revoke/` | `RevokeTokenView` |
+| `account_api_token_revoke` | `<path:token_key>/revoke/` | `RevokeTokenView` |
 
 ### Views
 
-All three share `TokenPageMixin`: `LoginRequiredMixin` first, then `PermissionDenied` for a
-signed-in person `may_use_tokens` turns away (R5, R7).
+All three share `TokenPageMixin`. It is Django's `UserPassesTestMixin` with `test_func` returning
+`may_use_tokens(self.request.user)`, and it overrides no `dispatch`: Django then sends an
+anonymous visitor to sign in and raises `PermissionDenied` for a signed-in person who is turned
+away (R5, R7). Until US5 introduces the access check, `test_func` asks only whether the person is
+signed in.
 
-One module-level function, `working_tokens(user)`, returns that person's tokens with no expiry or
-an expiry in the future, newest first (R1). Every view starts from it, so no view can reach
-another person's token or an expired one. `at_limit(user)` compares its count with knox's
-`TOKEN_LIMIT_PER_USER`.
+The mixin also holds the two things every view asks about the person's tokens.
+`get_working_tokens()` returns the signed-in person's tokens with no expiry or an expiry in the
+future, newest first (R1). Every view starts from it, so no view can reach another person's token
+or an expired one. `is_at_limit()` compares its count with knox's `TOKEN_LIMIT_PER_USER`. There
+are no module-level functions that take a user (Article X).
+
+The limit redirect in `CreateTokenView` and the not-found redirect in `RevokeTokenView` live in
+`get` and `post`, so they run after the access check.
 
 - **`TokensView`** (`MVPTemplateView`, never cached). Context: `tokens`, `token_limit`,
-  `at_limit`, `header_prefix`, and `new_token` when the signed cookie is present: a mapping with
-  the `value` and its `token_key`. Reading the cookie deletes it on the same response (R3).
+  `at_limit`, `header_prefix`, and `new_token`: a mapping with the `value` and its `token_key`,
+  added only when the signed cookie is present and its value's `token_key` matches one of the
+  signed-in person's working tokens. The cookie is deleted on that response either way (R3).
 - **`CreateTokenView`** (`PageMixin` + Django's `FormView`). At the limit, loaded or submitted, it
   adds an error message and redirects to the list. A valid form creates the token through knox's
   manager with the chosen expiry and redirects to the list with the signed cookie set (R1, R3).
-- **`RevokeTokenView`** (`MVPTemplateView`). Looks the token up by `token_key` among the person's
-  working tokens. Nothing found, on GET or POST: a message and a redirect to the list. GET renders
-  the confirmation. POST deletes and redirects with a success message (R4, R5).
+- **`RevokeTokenView`** (`MVPTemplateView`). Takes one record, the newest of the person's working
+  tokens with that `token_key`. Nothing found, on GET or POST: a message and a redirect to the
+  list. GET renders the confirmation. POST deletes that one record and redirects with a success
+  message (R4, R5).
 
 The templates read `token.token_key`, `token.created` and `token.expiry`, and compare
 `new_token.token_key` with each row's for the "New" badge. The prototype's templates compared
@@ -116,9 +125,13 @@ Set on the redirect from `CreateTokenView`, read and deleted by `TokensView` (R3
 | name | `mvp_accounts_new_token` |
 | value | the complete token, signed with a salt of the package's own |
 | `max_age` | 60 seconds, checked again when read |
-| `path` | the tokens page's own path |
+| `path` | the tokens page's own path, so it is sent to the tokens pages and nowhere else |
 | `httponly`, `samesite="Strict"` | always |
 | `secure` | when the request is secure |
+| deleted | on the response that reads it, with the same `path` and `samesite` |
+
+The name contains "token" on purpose: Django's error reporter hides the value of a cookie whose
+name does.
 
 ### Turning it on
 
@@ -132,7 +145,7 @@ the group now exists for the tokens entry too, and is still not drawn when it ha
 
 ### Token names
 
-Not built (research, "Planning notes"). The plan leaves room: one queryset function feeds every
+Not built (research, "Planning notes"). The plan leaves room: one queryset method feeds every
 page, and the create form has one field.
 
 ## Story order

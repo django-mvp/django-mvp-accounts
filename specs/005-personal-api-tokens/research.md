@@ -47,7 +47,7 @@ tests that pin lists (R9), the extra's bounds (R8) and the documents (plan).
 ## R1 — What knox stores and how it is counted
 
 `AbstractAuthToken` (`models.py:49-67`) has `digest` (the primary key, 128 characters),
-`token_key` (indexed, the token's first 15 characters after any prefix, `settings.py:54`), `user`
+`token_key` (indexed, the token's first 15 characters, prefix included, `settings.py:54`), `user`
 (related name `auth_token_set`), `created` (`auto_now_add`) and `expiry` (nullable). The active
 model is `knox.models.get_token_model()` (`models.py:76-93`).
 
@@ -73,9 +73,11 @@ its "how to send it" line.
 `mvp.views.MVPTemplateView` is `PageMixin` plus Django's `TemplateView`. `PageMixin`
 (`views/base.py:148-240`) supplies `page.title`, `page.subtitle` and `page.breadcrumbs` from
 `page_title`, `page_subtitle` and `get_breadcrumbs()`. It is importable from `mvp.views.base`.
-django-mvp's own form views resolve a model's metadata and refuse a plain `Form`, so the create
-page is Django's `FormView` with `PageMixin`, and the list and confirmation pages are
-`MVPTemplateView`.
+django-mvp has a form view for a form with no model, `MVPFormView` (`views/edit.py:251`), but it
+sends the person to a `next` value from the request ahead of its own success URL
+(`views/edit.py:138-148`). The create page must always return to the tokens page, where the
+one-time cookie is read (R3), so it is Django's `FormView` with `PageMixin`. The list and
+confirmation pages are `MVPTemplateView`.
 
 A page joins the Account Center by extending `mvp/account/base.html` and by an
 `AccountCenterMenu` entry, whose `check` callable hides it per request (`flex_menu/menu.py:358`).
@@ -112,7 +114,12 @@ copy of the page either.
 
 The "New" badge needs to know which row was just created. `token_key` is the first 15 characters
 of the value (`CONSTANTS.TOKEN_KEY_LENGTH`), so the row is found from the value itself and nothing
-else has to travel.
+else has to travel. The same match guards the value: it is shown only when it belongs to one of
+the signed-in person's own working tokens, so a cookie left behind by one person is never shown to
+the next person to sign in on that browser.
+
+The cookie is deleted with the same `path` it was set with. `delete_cookie` defaults to `/`, and a
+browser keeps a cookie whose path does not match the one being deleted.
 
 ## R4 — What names a token in an address
 
@@ -121,17 +128,18 @@ The build uses `token_key`: it is what the list already shows the person, it is 
 handle (R1), and it is indexed. Every lookup is scoped to the signed-in person's working tokens
 first, so a `token_key` that belongs to someone else finds nothing.
 
-Two of one person's tokens sharing 15 random characters is not a case worth a branch. The lookup
-is a filter, and revoking deletes what it finds.
+Two of one person's tokens sharing their first 15 characters is not a case worth a branch. The
+lookup takes one record, the newest match, and revoking deletes that one record.
 
-A project's `TOKEN_PREFIX` may hold characters that need quoting in a path. `reverse()` quotes
-them and Django's `str` converter unquotes them.
+A project's `TOKEN_PREFIX` may hold characters that need quoting in a path, or a slash. The route
+uses Django's `path` converter, which reverses and resolves both.
 
 ## R5 — Refusals and messages
 
-- **Not signed in:** `LoginRequiredMixin` sends the visitor to sign in (FR-006).
+- **Not signed in:** sent to sign in (FR-006).
 - **Signed in, not allowed to hold tokens:** `PermissionDenied`, a 403, as the maintainer approved
-  (FR-019).
+  (FR-019). Both come from Django's `UserPassesTestMixin`, whose `handle_no_permission` redirects
+  an anonymous visitor and raises for a signed-in one.
 - **At the limit:** the create page, loaded or submitted, creates nothing and returns to the
   tokens page with an error message. The notice above the list is what stays on screen (FR-009).
 - **A token that is gone, expired or someone else's:** the confirmation page, loaded or submitted,
@@ -161,8 +169,9 @@ always. Unrouted, the entry is dropped, and a group left empty is not drawn (R2)
 Proving absence needs a process where knox cannot be imported. The suite already runs a script in
 a subprocess under other settings (`tests/conftest.py`, `run_in_subprocess`). Setting
 `sys.modules["knox"] = None` and `sys.modules["rest_framework"] = None` before `django.setup()`
-makes any import of either raise, which is what an uninstalled package does. A second run blocks
-knox alone, for a project with Django REST framework and no knox (US1 scenario 3).
+makes any import of either raise, which is what an uninstalled package does. One run covers both
+of US1's absence scenarios: a package that imports neither when both are missing imports neither
+when only knox is.
 
 The demo's API view imports Django REST framework. It moves out of `demo/views.py` into a module
 of its own, so the settings and routes used by those subprocess runs can leave it out.

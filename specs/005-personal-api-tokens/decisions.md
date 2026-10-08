@@ -173,7 +173,7 @@ that deletes the tokens or checks in its own API.
 
 FR-008 says the package keeps the complete value in no lasting form. The prototype used the
 session, which Django writes to a database table by default. The build sets a signed, HTTP-only
-cookie on the redirect after creating, scoped to the tokens page and good for a minute, and the
+cookie on the redirect after creating, scoped to the tokens pages and good for a minute, and the
 tokens page deletes it as it shows the value. The server stores nothing, and a reload finds
 nothing. Rendering the token in the response to the form submission was the other candidate, and
 a reload would then create a second token. `research.md` R3 has the comparison.
@@ -201,7 +201,7 @@ missing one. One response does both.
 ## D17 — The setting is `MVP_ACCOUNTS_API_TOKEN_ACCESS`, and a bad path raises
 
 The name is the package, the thing and what it decides. The path is resolved with Django's
-`import_string` each time it is asked, and a path that does not import raises `ImportError` naming
+`import_string`, which caches the import, and a path that does not import raises `ImportError` naming
 it. No system check is added, in line with FR-012.
 
 **ADR:** none.
@@ -215,3 +215,22 @@ the recommendation goes to the maintainer at review: a follow-up feature on a on
 with the gap raised upstream.
 
 **ADR:** none, nothing is built.
+
+## D19 — What the design review changed
+
+One review of the plan, before any code. Two findings changed the plan and the rest were applied
+as smaller edits or carried as notes for the build.
+
+- All three routes are registered in the first story, because the approved list template reverses
+  the create and revoke routes on every render.
+- The two things every view asks about a person's tokens are methods of the views' shared mixin,
+  not module-level functions (Article X).
+- The mixin is Django's `UserPassesTestMixin`, with no `dispatch` of its own.
+- The one-time cookie is deleted with the path it was set with, and its value is shown only to the
+  person whose token it is.
+- Revoking deletes one record, and the route's converter accepts a token prefix with a slash in it.
+- The suite runs the package's default for who may hold tokens. Only the demo limits it to staff.
+- Absence of knox and of Django REST framework is proved by one subprocess run, not two.
+- No test finds the "New" badge by its word. The test is on the value the view computes.
+
+**ADR:** none, corrections to the plan.

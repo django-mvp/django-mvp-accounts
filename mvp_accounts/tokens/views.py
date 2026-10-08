@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 from knox.models import get_token_model
+from knox.settings import knox_settings
 from mvp.views import MVPTemplateView
 from mvp.views.base import PageMixin
 
@@ -47,6 +48,16 @@ class TokenPageMixin(UserPassesTestMixin):
         )
         return tokens
 
+    def is_at_limit(self) -> bool:
+        """Say whether the person holds as many tokens as the project allows.
+
+        Returns:
+            True when knox's ``TOKEN_LIMIT_PER_USER`` is set and the person's
+            working tokens have reached it.
+        """
+        limit = knox_settings.TOKEN_LIMIT_PER_USER
+        return limit is not None and self.get_working_tokens().count() >= limit
+
 
 class TokensView(TokenPageMixin, MVPTemplateView):
     """List the signed-in person's tokens."""
@@ -66,8 +77,13 @@ class TokensView(TokenPageMixin, MVPTemplateView):
         ]
 
     def get_context_data(self, **kwargs):
-        """Add the signed-in person's tokens."""
-        return super().get_context_data(tokens=self.get_working_tokens(), **kwargs)
+        """Add the signed-in person's tokens and where they stand against the limit."""
+        return super().get_context_data(
+            tokens=self.get_working_tokens(),
+            token_limit=knox_settings.TOKEN_LIMIT_PER_USER,
+            at_limit=self.is_at_limit(),
+            **kwargs,
+        )
 
 
 class CreateTokenView(TokenPageMixin, PageMixin, FormView):

@@ -19,6 +19,7 @@ from knox.settings import CONSTANTS, knox_settings
 from mvp.views import MVPTemplateView
 from mvp.views.base import PageMixin
 
+from mvp_accounts.tokens.access import may_use_tokens
 from mvp_accounts.tokens.forms import CreateTokenForm
 
 SHOWN_ONCE_COOKIE = "mvp_accounts_new_token"
@@ -27,17 +28,18 @@ SHOWN_ONCE_MAX_AGE = 60
 
 
 class TokenPageMixin(UserPassesTestMixin):
-    """Let a signed-in person in and send a visitor to sign in.
+    """Let in whoever the host project allows, and send a visitor to sign in.
 
     Django's ``UserPassesTestMixin`` redirects an anonymous visitor to sign in
-    and refuses a signed-in person whose ``test_func`` fails.
+    and raises ``PermissionDenied`` for a signed-in person whose ``test_func``
+    fails.
     """
 
     request: HttpRequest
 
     def test_func(self) -> bool:
         """Say whether the person may use the tokens pages."""
-        return bool(self.request.user.is_authenticated)
+        return may_use_tokens(self.request.user)
 
     def get_working_tokens(self) -> QuerySet:
         """Return the signed-in person's tokens that have not expired, newest first.

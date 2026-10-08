@@ -59,6 +59,59 @@ class TestTokenPages:
         assert response["Location"] == f"{sign_in}?next={page_url}"
 
 
+@pytest.fixture
+def staff_only(settings) -> None:
+    """Let the project's function turn away everyone who is not staff."""
+    settings.MVP_ACCOUNTS_API_TOKEN_ACCESS = "tests.access.staff_only"
+
+
+class TestTokenPagesForAPersonTheProjectTurnsAway:
+    @pytest.fixture
+    def turned_away(self, staff_only, signed_in_client):
+        return signed_in_client
+
+    def test_every_page_refuses_a_get_with_403(self, turned_away, page_url) -> None:
+        assert turned_away.get(page_url).status_code == 403
+
+    def test_every_page_refuses_a_post_with_403(self, turned_away, page_url) -> None:
+        assert turned_away.post(page_url, {"lifetime": "30d"}).status_code == 403
+
+    def test_nothing_is_created_or_deleted(self, turned_away, token, page_urls) -> None:
+        turned_away.post(page_urls["create"], {"lifetime": "30d"})
+        turned_away.post(page_urls["revoke"])
+
+        assert list(get_token_model().objects.all()) == [token]
+
+    def test_a_person_at_the_limit_gets_403_and_not_the_limit_redirect(
+        self, turned_away, token, page_urls, settings
+    ) -> None:
+        settings.REST_KNOX = {**settings.REST_KNOX, "TOKEN_LIMIT_PER_USER": 1}
+
+        assert turned_away.get(page_urls["create"]).status_code == 403
+        assert (
+            turned_away.post(page_urls["create"], {"lifetime": "30d"}).status_code
+            == 403
+        )
+
+    def test_a_staff_person_is_served(self, staff_only, client, db, page_urls) -> None:
+        staff = UserFactory(is_staff=True)
+        client.force_login(staff)
+        token = AuthTokenFactory(user=staff)
+        urls = [
+            reverse("account_api_tokens"),
+            reverse("account_api_token_create"),
+            reverse("account_api_token_revoke", args=[token.token_key]),
+        ]
+
+        assert [client.get(url).status_code for url in urls] == [200, 200, 200]
+
+    def test_a_visitor_is_still_sent_to_sign_in(self, staff_only, page_url) -> None:
+        response = Client().get(page_url)
+
+        assert response.status_code == 302
+        assert response["Location"].startswith(resolve_url("account_login"))
+
+
 class TestTokensView:
     def test_it_renders_the_approved_list_template(self, signed_in_client) -> None:
         response = signed_in_client.get(reverse("account_api_tokens"))

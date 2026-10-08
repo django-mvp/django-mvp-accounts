@@ -69,3 +69,10 @@ Did: added TestSeededApiTokens (5 tests) to tests/test_demo.py; seed_demo now se
 Verified: uv run pytest tests/test_demo.py -> 48 passed. Red first: the tests failed with 0 tokens before the command seeded any. Probed by mutation and restored: no delete fails all 5, dropping the expired token fails 2, limit+1 fails 2, staff tokens all with an expiry fails 1, a token seeded for regular fails 1. Ran uv run python manage.py migrate (nothing to apply) and seed_demo twice; the demo database now holds 4 tokens for staff and 5 for super. uv run pre-commit run --all-files passed.
 Next: full suite, report, ledger.
 Watch: STAFF_TOKENS is a module constant in seed_demo.py, like OTHER_BROWSERS.
+
+## 2026-10-08T10:16:30Z · Implementer US2 · T011
+
+Did: tests/test_tokens/test_forms.py (TestCreateTokenForm, 8 tests) and mvp_accounts/tokens/forms.py: CreateTokenForm with one required radio choice, lifetime (7d, 30d, 90d, 1y, never), 30d initial, and get_expiry() returning a timedelta or None. The module imports nothing from knox.
+Verified: `uv run pytest tests/test_tokens/test_forms.py -x` failed at collection first (no module mvp_accounts.tokens.forms), then 8 passed. Refusals are asserted by field and code (invalid_choice, required). `uv run pre-commit run --all-files` passed.
+Next: T012, the create page.
+Watch: 1 year is 365 days, the same as knox's timedelta addition; no leap-year logic.

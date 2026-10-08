@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 12:46+0200\n"
+"POT-Creation-Date: 2026-10-08 12:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -344,7 +344,7 @@ msgid "Create a token"
 msgstr ""
 
 #: tokens/views.py:158
-msgid "You hold as many tokens as this site allows. Revoke one first."
+msgid "No token was created. You already hold as many as this site allows."
 msgstr ""
 
 #: tokens/views.py:191
@@ -359,6 +359,7 @@ msgstr ""
 msgid "That token no longer exists."
 msgstr ""
 
-#: tokens/views.py:245
-msgid "The token has been revoked."
+#: tokens/views.py:247
+#, python-format
+msgid "Token %(token)s… was revoked."
 msgstr ""

@@ -155,7 +155,7 @@ class CreateTokenView(TokenPageMixin, PageMixin, FormView):
         """
         messages.error(
             self.request,
-            _("You hold as many tokens as this site allows. Revoke one first."),
+            _("No token was created. You already hold as many as this site allows."),
         )
         return HttpResponseRedirect(self.get_success_url())
 
@@ -241,8 +241,11 @@ class RevokeTokenView(TokenPageMixin, MVPTemplateView):
         token = self.get_token()
         if token is None:
             return self.refuse_gone()
+        token_key = token.token_key
         token.delete()
-        messages.success(request, _("The token has been revoked."))
+        messages.success(
+            request, _("Token %(token)s… was revoked.") % {"token": token_key}
+        )
         return HttpResponseRedirect(reverse("account_api_tokens"))
 
     def get_context_data(self, **kwargs):

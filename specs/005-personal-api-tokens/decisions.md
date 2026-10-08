@@ -263,6 +263,9 @@ be shown with a row present. Everything else a page does belongs to a story with
 
 **Revisit if:** US2 or US4 find the stub shape gets in the way of the real behaviour.
 
+**ADR:** none, local to this feature's build.
+
+
 ## D22 — Two existing tests were changed on purpose in the first story
 
 `tests/test_without_allauth.py` asserted that the Account Center has no "Account" group without
@@ -289,3 +292,13 @@ check.
 
 **Revisit if:** a shared cache in front of a project ever strips or mishandles `Set-Cookie` on the
 tokens page, or a project asks for a lifetime that is not on the list.
+
+**ADR:** none, local to this feature's build.
+
+## D24 — The two messages read as the approved prototype's did
+
+After the stories were built, the message after revoking was put back to naming the token by its
+first characters, and the message at the limit back to saying that no token was created. Both are
+the sentences the maintainer saw on the prototype. Wording carries no test.
+
+**ADR:** none.

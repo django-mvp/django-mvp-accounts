@@ -146,3 +146,10 @@ Did: TokenPageMixin.test_func now returns may_use_tokens(self.request.user); no 
 Verified: `uv run pytest tests/test_tokens -q` -> 105 passed. Red first: 8 failed with 200/302/405 where 403 was expected. The staff and visitor tests passed on first run, so probed by mutation: test_func returning True failed 11 of 12, returning False failed the staff test. Mutations reverted. pre-commit passed.
 Next: T022, the menu entry's check and the card's tag.
 Watch: a POST to the list page is 403 for a refused person and 405 for a permitted one, because the mixin runs first.
+
+## 2026-10-08T10:43:29Z · Implementer US5 · T022
+
+Did: menus.py gets a module-level may_hold_tokens(request, **kwargs) calling may_use_tokens(request.user), used as check= on the api_tokens entry. New mvp_accounts/templatetags/{__init__,mvp_accounts}.py with the may_use_api_tokens simple_tag(takes_context=True): False without a request. overview.html loads it and draws the card only when `tokens_url and tokens_allowed`. Neither import path touches knox or rest_framework. Tests: tests/test_templatetags/test_mvp_accounts.py (signed-in, visitor, project's answer for staff and non-staff, no request), entry and card tests for a person turned away and a staff person in tests/test_menus.py and tests/test_account_center.py.
+Verified: `uv run pytest tests/test_templatetags tests/test_menus.py tests/test_account_center.py tests/test_without_knox.py -q` -> 40 passed (test_without_knox unchanged). Red first: collection error, tag library 'mvp_accounts' not registered. The entry and card tests passed on the first run after the code, so probed by mutation: removing check= failed the entry test; removing `and tokens_allowed` failed the card test and the entry test (the card's link is on that page too). Mutations reverted. pre-commit passed.
+Next: T023, the demo's staff-only setting, seed_demo, README, CHANGELOG.
+Watch: tests/test_apps.py and tests/test_without_allauth.py were not run per task; the full run at the end covers them.

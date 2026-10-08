@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 from mvp.menus import AccountCenterMenu
 
-from tests.factories import AuthTokenFactory
+from tests.factories import AuthTokenFactory, UserFactory
 
 WITHOUT_PHONE = ["email*", "password1*", "password2*"]
 
@@ -83,3 +83,20 @@ class TestApiTokensEntry:
         page = signed_in_client.get(reverse(name, args=args)).content.decode()
 
         assert href("account_email") in page
+
+
+class TestApiTokensEntryForAPersonTheProjectTurnsAway:
+    @pytest.fixture(autouse=True)
+    def staff_only(self, settings) -> None:
+        settings.MVP_ACCOUNTS_API_TOKEN_ACCESS = "tests.access.staff_only"
+
+    def test_there_is_none_for_a_person_who_is_not_staff(self, account_center) -> None:
+        assert href("account_api_tokens") not in account_center
+        assert href("account_email") in account_center
+
+    def test_there_is_one_for_a_staff_person(self, client, db) -> None:
+        client.force_login(UserFactory(is_staff=True))
+
+        page = client.get(reverse("account-center")).content.decode()
+
+        assert href("account_api_tokens") in page

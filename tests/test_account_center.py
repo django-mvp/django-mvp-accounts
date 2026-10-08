@@ -10,6 +10,7 @@ from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
 
+from tests.factories import UserFactory
 from tests.settings import BASE_DIR
 
 WITHOUT_PHONE = ["email*", "password1*", "password2*"]
@@ -83,6 +84,27 @@ class TestOverviewCards:
         response = client.get(reverse("account-center"))
         assert response.status_code == 302
         assert reverse("account_login") in response["Location"]
+
+
+class TestOverviewCardsForAPersonTheProjectTurnsAway:
+    @pytest.fixture(autouse=True)
+    def staff_only(self, settings) -> None:
+        settings.MVP_ACCOUNTS_API_TOKEN_ACCESS = "tests.access.staff_only"
+
+    def test_there_is_no_api_tokens_card_for_a_person_who_is_not_staff(
+        self, account_center
+    ) -> None:
+        cards = cards_of(account_center)
+
+        assert f'href="{reverse("account_api_tokens")}"' not in cards
+        assert f'href="{reverse("account_email")}"' in cards
+
+    def test_a_staff_person_has_the_card(self, client, db) -> None:
+        client.force_login(UserFactory(is_staff=True))
+
+        page = client.get(reverse("account-center")).content.decode()
+
+        assert f'href="{reverse("account_api_tokens")}"' in cards_of(page)
 
 
 class TestChainedCard:

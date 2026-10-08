@@ -1,5 +1,5 @@
 {% extends "mvp/account/overview.html" %}
-{% load i18n %}
+{% load i18n mvp_accounts %}
 {% comment %}
   `url … as` leaves the variable empty instead of raising, so a page allauth
   has not routed (phone numbers off, or no allauth) gets no card.
@@ -61,7 +61,8 @@
     </c-mvp.card>
   {% endif %}
   {% url "account_api_tokens" as tokens_url %}
-  {% if tokens_url %}
+  {% may_use_api_tokens as tokens_allowed %}
+  {% if tokens_url and tokens_allowed %}
     <c-mvp.card title="{% trans "API tokens" %}" icon="key">
       <c-mvp.text>{% trans "Create tokens for scripts and tools that use the API as you, and revoke any you no longer need." %}</c-mvp.text>
       <c-slot name="footer">

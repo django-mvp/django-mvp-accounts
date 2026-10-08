@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from flex_menu import MenuItem
 from mvp.menus import AccountCenterMenu, MenuGroup
 
+from mvp_accounts.tokens.access import may_use_tokens
+
 
 def signed_in_view_name(request: HttpRequest) -> str | None:
     """Return the URL name Django resolved a signed-in visitor's request to.
@@ -77,6 +79,19 @@ class AccountGroup(MenuGroup):
         if processed.visible and signed_in_view_name(request) in self.pages:
             processed.selected = True
         return processed
+
+
+def may_hold_tokens(request: HttpRequest, **kwargs) -> bool:
+    """Show the API tokens entry only to a person who may hold tokens.
+
+    Args:
+        request: The request being rendered.
+        **kwargs: Passed by the menu and not used.
+
+    Returns:
+        Whether the host project lets the request's user hold tokens.
+    """
+    return may_use_tokens(request.user)
 
 
 # django-flex-menus imports every app's menus module, so the group is added here
@@ -159,6 +174,7 @@ AccountCenterMenu.append(
                 name="api_tokens",
                 view_name="account_api_tokens",
                 pages=("account_api_token_create", "account_api_token_revoke"),
+                check=may_hold_tokens,
                 extra_context={"label": _("API tokens"), "icon": "key"},
             ),
         ],

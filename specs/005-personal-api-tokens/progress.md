@@ -104,3 +104,10 @@ Did: demo/api.py holds WhoAmIView (IsAuthenticated, returns the request user's e
 Verified: `uv run pytest tests/test_demo.py::TestDemoWhoAmI` red first (NoReverseMatch for api-whoami), then 2 passed; `uv run pytest tests/test_demo.py tests/test_without_knox.py -q` 55 passed. Probed by mutation and restored: permission_classes empty fails the no-token test, a fixed email fails the token test, authentication_classes empty fails both. pre-commit passed. Ran `uv run python manage.py migrate` (nothing to apply) and seed_demo.
 Next: T016, the README and CHANGELOG.
 Watch: none.
+
+## 2026-10-08T10:28:11Z · Implementer US2 · T016
+
+Did: README "Creating a token" under "API tokens": the five lifetimes and 30 days selected, CreateTokenForm named, shown once and what to do if a token is lost, the signed cookie that carries it, no name and no last-used time, TOKEN_TTL reaching only knox's own views, TOKEN_LIMIT_PER_USER honoured by the pages with how expired and no-expiry tokens count, that knox sets no limit so a project should set one (with the setting), the Authorization header and AUTH_HEADER_PREFIX, the demo's /api/whoami/. CHANGELOG: the one Added entry US1 wrote now also says what creating does; no second entry. No other page under docs/ describes anything this story changed (ADR 0005 and the roadmap speak of "a page to create one" and stay true).
+Verified: `forge docs-check --repo . --base 906f348` first reported CreateTokenForm undocumented; after naming it in the README it is clean. `forge conformance --repo . --base 906f348` clean. pre-commit passed.
+Next: the full suite and lint once, the report and the ledger.
+Watch: the README says a person who loses a token revokes it and creates another, which the list page already says; the revoke action itself is a later story.

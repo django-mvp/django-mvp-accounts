@@ -160,3 +160,10 @@ Did: demo/access.py staff_only(user) returns user.is_staff; demo/settings.py set
 Verified: `uv run pytest tests/test_demo.py -q` -> 56 passed. Red first: 4 of 5 new tests failed (no demo.access, no demo setting). The rest passed on first run so probed by mutation: staff_only returning True failed the regular-refused and no-link tests; removing the `del` from tests/settings.py failed the suite-carries-no-setting test. Reverted. `forge docs-check --repo . --base df6473d` first named may_use_tokens and may_hold_tokens as undocumented; after the README names them it reports clean. `forge conformance` clean. pre-commit passed.
 Next: T024, regenerate django.po.
 Watch: none.
+
+## 2026-10-08T10:46:46Z · Implementer US5 · T024
+
+Did: ran `uv run django-admin makemessages -l en` from inside mvp_accounts/. The django.po header is unchanged apart from the creation date; the catalogue went from 31 to 74 msgids and now has entries for the tokens templates, the created component, tokens/views.py, tokens/forms.py, menus.py and the card.
+Verified: a script read each of those files for _("..."), {% trans %} and {% blocktrans %} strings and looked each up as a msgid: 81 strings, 77 found directly; the other four are blocktrans with variables (the at-limit sentence with its plural, "%(count)s of %(limit)s", "Revoke token %(token)s…", the Authorization header sentence) and are in the catalogue with %(name)s placeholders (checked by grep). `grep -c '^#: .*tokens'` -> 42 reference lines. "Account" was moved, not dropped (menus.py:169). There is no test for a catalogue. pre-commit passed.
+Next: the full suite and lint, the report, the ledger.
+Watch: none.

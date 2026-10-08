@@ -132,3 +132,10 @@ Did: README "Revoking a token" (confirms first, immediate, password change does 
 Verified: `uv run pre-commit run --all-files` -> all hooks passed after the change.
 Next: full suite and lint, then the report.
 Watch: none.
+
+## 2026-10-08T10:40:19Z · Implementer US5 · T020
+
+Did: mvp_accounts/tokens/access.py with may_use_tokens(user): False for a visitor who is not signed in without asking the project's function; True when MVP_ACCOUNTS_API_TOKEN_ACCESS is unset or None; otherwise bool of import_string(path)(user), and a bad path lets ImportError through. Imports nothing from knox or rest_framework. tests/access.py holds the small access functions later tests name in override_settings.
+Verified: `uv run pytest tests/test_tokens/test_access.py -q` -> 7 passed (red first: collection error, the module did not exist). Probed by mutation: dropping the is_authenticated guard failed 2 tests (anonymous refused, function not asked); returning the function's answer without bool() failed the always-a-bool test. Mutations reverted. pre-commit passed.
+Next: T021, TokenPageMixin.test_func asks may_use_tokens.
+Watch: none.

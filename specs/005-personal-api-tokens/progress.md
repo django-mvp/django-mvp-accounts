@@ -41,3 +41,10 @@ Did: added the API tokens card after Sessions in mvp_accounts/templates/mvp/acco
 Verified: `uv run pytest tests/test_account_center.py tests/test_without_allauth.py -q` 21 passed. Red step: the CARDS case and the no-allauth card test failed before the template change. Probe, reverted: replacing the guard with `{% if True %}` fails the no-tokens test (a first version of that test, which counted links, did not catch it because an empty href renders no anchor; it now counts the cards in the grid). pre-commit passed.
 Next: T007, without knox and without Django REST framework.
 Watch: none.
+
+## 2026-10-08T10:00:12Z · Implementer US1 · T007
+
+Did: tests/settings_without_knox.py (the suite's settings without the knox and rest_framework apps and without REST_FRAMEWORK and REST_KNOX, routed by tests.urls_without_knox) and tests/test_without_knox.py: one subprocess run with sys.modules["knox"] and sys.modules["rest_framework"] set to None before django.setup(). It asserts the package is installed and neither app is, the tokens route does not reverse, no knox.* or rest_framework.* module is loaded, the landing page and the Account Center answer 200, and the Account Center has no link to the tokens page. Declared the module in pyproject.toml non-mirror-paths.
+Verified: `uv run pytest tests/test_without_knox.py -q` 5 passed. Red step: the run failed while the settings module did not exist; once it did, the tests passed on first run because T005 and T006 had already built the behaviour. So probes, each reverted: `import knox` at the top of mvp_accounts/menus.py makes every test in the module error; pointing the settings at urls_without_allauth (which includes the tokens pages) does the same. pre-commit passed.
+Next: T008, the decision record and documentation.
+Watch: none.

@@ -82,6 +82,20 @@
         "SPEC-006 low: created override written by update \u2014 T003 edited",
         "SEC-004 low: README says to set a limit \u2014 T016 edited"
       ]
+    },
+    "review": {
+      "approved_by": "review-panel",
+      "at": "2026-10-08T11:03:24Z",
+      "self_resolved": [
+        "COR-001 medium: README covers AUTO_REFRESH \u2014 fixed",
+        "COR-002 low: line lengths and comment \u2014 fixed",
+        "COR-003 low: unused underscore names \u2014 fixed",
+        "COR-004 low: menu helper removed from README and code \u2014 fixed",
+        "SEC-001 low: cookie Secure follows SESSION_COOKIE_SECURE too \u2014 fixed with a test (T025)",
+        "SEC-002 low: limit race \u2014 accepted, documented in README",
+        "SEC-003 low: no ceiling when knox sets no limit \u2014 open for the maintainer, documented",
+        "found while fixing: lifetime field restored to the approved drop-down (T026)"
+      ]
     }
   },
   "stories": [

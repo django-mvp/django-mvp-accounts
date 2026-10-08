@@ -235,10 +235,13 @@ class RevokeTokenView(TokenPageMixin, MVPTemplateView):
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        """Leave a token that is gone alone."""
-        if self.get_token() is None:
+        """Revoke the one token the address names, or leave a gone one alone."""
+        token = self.get_token()
+        if token is None:
             return self.refuse_gone()
-        return self.http_method_not_allowed(request, *args, **kwargs)
+        token.delete()
+        messages.success(request, _("The token has been revoked."))
+        return HttpResponseRedirect(reverse("account_api_tokens"))
 
     def get_context_data(self, **kwargs):
         """Add the token being revoked."""

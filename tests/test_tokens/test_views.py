@@ -343,6 +343,67 @@ class TestRevokeTokenView:
         assert list(listed.context["tokens"]) == [token]
 
 
+class TestRevokingAToken:
+    @pytest.fixture
+    def other(self, signed_in_client):
+        """A second token of the same person, which must survive."""
+        return AuthTokenFactory(user=signed_in_client.user)
+
+    def test_it_deletes_that_token_and_no_other(
+        self, signed_in_client, token, other, page_urls
+    ) -> None:
+        signed_in_client.post(page_urls["revoke"])
+
+        assert list(get_token_model().objects.all()) == [other]
+
+    def test_it_adds_a_success_message_and_returns_to_the_tokens_page(
+        self, signed_in_client, token, page_urls
+    ) -> None:
+        response = signed_in_client.post(page_urls["revoke"])
+
+        assert response.status_code == 302
+        assert response["Location"] == page_urls["list"]
+        added = [m.level for m in get_messages(response.wsgi_request)]
+        assert added == [messages.SUCCESS]
+
+    def test_the_page_it_returns_to_lists_the_rest(
+        self, signed_in_client, token, other, page_urls
+    ) -> None:
+        response = signed_in_client.post(page_urls["revoke"], follow=True)
+
+        assert list(response.context["tokens"]) == [other]
+
+    def test_another_person_posting_to_the_address_deletes_nothing(
+        self, token, page_urls
+    ) -> None:
+        stranger = Client()
+        stranger.force_login(UserFactory())
+
+        response = stranger.post(page_urls["revoke"])
+
+        assert get_token_model().objects.filter(pk=token.pk).exists()
+        assert response["Location"] == page_urls["list"]
+
+    def test_a_visitor_posting_to_the_address_deletes_nothing(
+        self, token, page_urls
+    ) -> None:
+        Client().post(page_urls["revoke"])
+
+        assert get_token_model().objects.filter(pk=token.pk).exists()
+
+    def test_it_deletes_only_the_newest_of_two_that_share_a_key(
+        self, signed_in_client, token, page_urls
+    ) -> None:
+        older = AuthTokenFactory(
+            user=signed_in_client.user, created=token.created - timedelta(days=1)
+        )
+        get_token_model().objects.filter(pk=older.pk).update(token_key=token.token_key)
+
+        signed_in_client.post(page_urls["revoke"])
+
+        assert list(get_token_model().objects.all()) == [older]
+
+
 class TestRevokeTokenViewForATokenThatIsGone:
     """A stranger's token, an expired one and an unknown key are one response."""
 

@@ -483,3 +483,31 @@ class TestDemoWhoAmI:
         response = Client().get(whoami)
 
         assert response.status_code == 401
+
+
+class TestDemoRevokedToken:
+    @pytest.fixture
+    def whoami(self) -> str:
+        return reverse("api-whoami")
+
+    @staticmethod
+    def answer(token, whoami: str):
+        """Present ``token`` to the demo endpoint the way a script would."""
+        header = f"{knox_settings.AUTH_HEADER_PREFIX} {token.token}"
+        return Client().get(whoami, headers={"Authorization": header})
+
+    def test_a_revoked_token_is_refused_and_the_persons_other_token_is_answered(
+        self, signed_in_client, whoami
+    ) -> None:
+        revoked = AuthTokenFactory(user=signed_in_client.user)
+        kept = AuthTokenFactory(user=signed_in_client.user)
+        assert self.answer(revoked, whoami).status_code == 200
+
+        signed_in_client.post(
+            reverse("account_api_token_revoke", args=[revoked.token_key])
+        )
+
+        assert self.answer(revoked, whoami).status_code in (401, 403)
+        answered = self.answer(kept, whoami)
+        assert answered.status_code == 200
+        assert answered.json() == {"email": signed_in_client.user.email}

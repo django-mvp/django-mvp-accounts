@@ -1,0 +1,18 @@
+{% extends "mvp/account/overview.html" %}
+{% load i18n mvp_accounts_tokens %}
+{% comment %}
+  The card is drawn when the tokens page is routed and the person may use it.
+{% endcomment %}
+{% block account.cards %}
+  {{ block.super }}
+  {% url "account_api_tokens" as tokens_url %}
+  {% may_use_api_tokens as tokens_allowed %}
+  {% if tokens_url and tokens_allowed %}
+    <c-mvp.card title="{% trans "API tokens" %}" icon="key">
+      <c-mvp.text>{% trans "Create tokens for scripts and tools that use the API as you, and revoke any you no longer need." %}</c-mvp.text>
+      <c-slot name="footer">
+        <c-button href="{{ tokens_url }}" variant="primary" size="sm">{% trans "Manage API tokens" %}</c-button>
+      </c-slot>
+    </c-mvp.card>
+  {% endif %}
+{% endblock account.cards %}

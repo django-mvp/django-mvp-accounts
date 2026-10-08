@@ -31,6 +31,9 @@ CSRF_COOKIE_SECURE = False
 # every page.
 INSTALLED_APPS = [
     "demo",
+    # The API tokens pages. Ahead of mvp_accounts so its Account Center card is
+    # drawn after the others.
+    "mvp_accounts.tokens",
     # Ahead of allauth so its layouts and elements win, and ahead of mvp so its
     # Account Center overview is the one Django finds first.
     "mvp_accounts",
@@ -151,9 +154,9 @@ MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
 # it on so that column can be seen; the package leaves it to the project.
 USERSESSIONS_TRACK_ACTIVITY = True
 
-# A token is what the demo's API accepts. knox's own default lifetime is ten
-# hours, which suits a browser and not a script, so tokens here last thirty
-# days and a person may hold five.
+# A token is what the demo's API accepts. A person chooses how long a token
+# made on the tokens page lasts, so the lifetime here only reaches tokens made
+# by knox's own sign-in view. A person may hold five.
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["knox.auth.TokenAuthentication"],
 }
@@ -161,6 +164,10 @@ REST_KNOX = {
     "TOKEN_TTL": timedelta(days=30),
     "TOKEN_LIMIT_PER_USER": 5,
 }
+
+# Only staff hold API tokens in the demo, so the pages can be looked at both as
+# someone who has them and as someone who must see nothing of them.
+MVP_ACCOUNTS_API_TOKEN_ACCESS = "demo.access.staff_only"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

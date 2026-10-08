@@ -1,5 +1,6 @@
 {# @description A token that was created a moment ago, shown whole for the only time, with a button that copies it. #}
 {# @prop value:text | description:"The complete token." #}
+{# @prop name:text | description:"The name the person gave the token." #}
 {# @prop header_prefix:text | default:"Token" | description:"The word that goes before the token in the Authorization header." #}
 {# @prop done_url:text | description:"Where the person goes once they have the token." #}
 {% comment %}
@@ -7,10 +8,11 @@
   copying the selected field. Without scripts the field can still be selected by hand.
 {% endcomment %}
 {% load i18n %}
-<c-vars value header_prefix="Token" done_url />
+<c-vars value name header_prefix="Token" done_url />
 {% trans "Copy" as copy_label %}
 {% trans "Copied" as copied_label %}
-<c-mvp.card title="{% trans "Your new token" %}"
+{% blocktrans asvar card_title %}Your new token, “{{ name }}”{% endblocktrans %}
+<c-mvp.card title="{{ card_title }}"
             icon="key"
             class="border border-warning"
             :attrs="attrs">

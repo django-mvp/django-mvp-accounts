@@ -60,13 +60,4 @@
       </c-slot>
     </c-mvp.card>
   {% endif %}
-  {% url "account_api_tokens" as tokens_url %}
-  {% if tokens_url %}
-    <c-mvp.card title="{% trans "API tokens" %}" icon="key">
-      <c-mvp.text>{% trans "Create tokens for scripts and tools that use the API as you, and revoke any you no longer need." %}</c-mvp.text>
-      <c-slot name="footer">
-        <c-button href="{{ tokens_url }}" variant="primary" size="sm">{% trans "Manage API tokens" %}</c-button>
-      </c-slot>
-    </c-mvp.card>
-  {% endif %}
 {% endblock account.cards %}

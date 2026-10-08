@@ -1,1 +1,1 @@
-"""The API tokens page: a person's own django-rest-knox tokens."""
+"""API tokens: an app a project adds when people should hold their own."""

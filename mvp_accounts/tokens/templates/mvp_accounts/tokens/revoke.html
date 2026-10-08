@@ -6,17 +6,21 @@
     <c-mvp.page.title :title="page.title" />
     <c-mvp.card>
       <div class="grid gap-4 sm:grid-cols-3">
-        <c-mvp.data_field label="{% trans "Token" %}">
-          <code class="font-mono">{{ token.token_key }}…</code>
+        <c-mvp.data_field label="{% trans "Name" %}">
+          {% if token.name %}
+            {{ token.name }}
+          {% else %}
+            <span class="italic text-base-content/60">{% trans "No name" %}</span>
+          {% endif %}
         </c-mvp.data_field>
         <c-mvp.data_field label="{% trans "Created" %}">
-          <time datetime="{{ token.created|date:"c" }}">{{ token.created|date:"DATETIME_FORMAT" }}</time>
+          <time datetime="{{ token.created|date:"Y-m-d" }}">{{ token.created|date:"DATE_FORMAT" }}</time>
         </c-mvp.data_field>
         <c-mvp.data_field label="{% trans "Expires" %}">
           {% if token.expiry %}
-            <time datetime="{{ token.expiry|date:"c" }}">{{ token.expiry|date:"DATETIME_FORMAT" }}</time>
+            <time datetime="{{ token.expiry|date:"Y-m-d" }}">{{ token.expiry|date:"DATE_FORMAT" }}</time>
           {% else %}
-            {% trans "Never expires" %}
+            {% trans "Never" %}
           {% endif %}
         </c-mvp.data_field>
       </div>

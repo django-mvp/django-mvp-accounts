@@ -22,6 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- API tokens pages for projects that use [django-rest-knox](https://github.com/jazzband/django-rest-knox):
+  a list of a person's tokens, a page to create one and a page to revoke one, drawn in the
+  Account Center, with an "API tokens" entry in its menu and a card on its landing page. They
+  appear only when the project installs the new `api` extra, adds `knox` to `INSTALLED_APPS` and
+  includes `mvp_accounts.tokens.urls`; a project without django-rest-knox or Django REST
+  framework gets nothing and is otherwise unchanged. See "API tokens" in the README.
+- The "Account" heading is now drawn in a project without django-allauth too, when the API tokens
+  pages are routed.
+
 ### Changed
 
 - **Breaking: django-mvp 0.27.0 is now the minimum.** That release draws forms with

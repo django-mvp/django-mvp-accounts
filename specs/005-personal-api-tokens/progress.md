@@ -48,3 +48,10 @@ Did: tests/settings_without_knox.py (the suite's settings without the knox and r
 Verified: `uv run pytest tests/test_without_knox.py -q` 5 passed. Red step: the run failed while the settings module did not exist; once it did, the tests passed on first run because T005 and T006 had already built the behaviour. So probes, each reverted: `import knox` at the top of mvp_accounts/menus.py makes every test in the module error; pointing the settings at urls_without_allauth (which includes the tokens pages) does the same. pre-commit passed.
 Next: T008, the decision record and documentation.
 Watch: none.
+
+## 2026-10-08T10:02:42Z · Implementer US1 · T008
+
+Did: ADR 0005 (the package provides the API tokens pages itself) in the shape of ADR 0002; docs/adr/README.md gained a Records list naming all five; ADR 0002 gained one sentence pointing at ADR 0005 where it says the menu adds nothing without allauth; README gained an "API tokens" section (the extra, knox and Django REST framework in INSTALLED_APPS and migrate, the tokens include, knox's authentication class in the project's own settings, that none of it is checked, the three views and the mixin by name) and API tokens in the Account Center list, with the sentence about no allauth corrected; CONTEXT.md's API token entry corrected; CHANGELOG Added entry. Nothing on creating, lifetimes, revoking or the access setting in the README.
+Verified: `forge conformance --repo . --base b34bd5b` clean; `forge docs-check --repo . --base b34bd5b` first reported six undocumented public names (the three views, the mixin, and two working names in menus.py), fixed by documenting the views and moving the menu's working names into the allauth branch (separate commit, T005); then clean. pre-commit run --all-files passed; the menu, apps and no-allauth tests pass (21).
+Next: the full suite and lint, then the report.
+Watch: the CHANGELOG entry and CONTEXT.md describe the whole feature (creating, choosing an expiry), which later stories build; the README does not.

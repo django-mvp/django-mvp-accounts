@@ -47,9 +47,10 @@ authorisation, which this package does not handle (see below).
 
 **API token**:
 A secret a person creates for themselves to reach the host project's API
-without a browser. They can create several, see when each was last used, and
-revoke any of them. Only exists when the host project has installed Django REST
-framework.
+without a browser. They can create several, choose when each expires, see the
+first characters of each and the days it was created and expires, and revoke
+any of them. There is no last-used time. Exists when the host project has
+installed django-rest-knox and routed this package's tokens pages.
 _Avoid_: API key (a key usually identifies a program rather than a person),
 access token (OAuth's term, for a token issued to a third-party application),
 password.

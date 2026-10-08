@@ -97,12 +97,16 @@ With django-allauth installed, this package adds to django-mvp's Account Center:
   authentication and Sessions, listed under an "Account" heading below its Overview entry.
 - **A card for each of those pages** on the Account Center landing page, linking to it.
 
+API tokens join the same entries and cards when the project has turned them on, with or
+without allauth (see [API tokens](#api-tokens)).
+
 A page allauth has not routed gets neither. With phone numbers turned off
 (`"phone"` left out of `ACCOUNT_SIGNUP_FIELDS`), there is no Phone number entry or card.
 Connected accounts appears only with the social account app (`allauth.socialaccount`)
 installed, Two-factor authentication only with the multi-factor app (`allauth.mfa`)
 installed, and Sessions only with the user sessions app (`allauth.usersessions`) installed.
-Without allauth installed the package adds nothing and raises nothing.
+Without allauth installed the package adds none of those and raises nothing; the API tokens
+entry and card, which need nothing from allauth, are the only ones it can still add.
 
 allauth's account management pages (email, change email, password change and set, phone
 change and verification, connected accounts, sessions, and re-authentication) render in the
@@ -116,6 +120,64 @@ The Account Center itself, the "Account Center" and "Log out" entries in the use
 the sign-out form are django-mvp's. Another installed app can add its own card the same way:
 ship a template named `mvp/account/overview.html` that extends `mvp/account/overview.html`
 and adds to `{% block account.cards %}` after `{{ block.super }}`.
+
+## API tokens
+
+A person can see and manage their own API tokens in the Account Center when the project uses
+[django-rest-knox](https://github.com/jazzband/django-rest-knox), which keeps the tokens but ships
+no pages for them. This package adds the pages, an "API tokens" entry under the "Account" heading
+and an "API tokens" card on the landing page. The pages are signed-in only, and a visitor is sent
+to sign in.
+
+Nothing is on until the project turns it on:
+
+1. Install the `api` extra, which brings in Django REST framework 3.16 or later and
+   django-rest-knox 5:
+
+   ```bash
+   pip install "django-mvp-accounts[api]"
+   ```
+
+2. Add both to `INSTALLED_APPS` and run `migrate`, which creates knox's token table:
+
+   ```python
+   INSTALLED_APPS = [
+       # ...
+       "rest_framework",
+       "knox",
+   ]
+   ```
+
+3. Include the pages' routes at an address of your choice, as the demo does:
+
+   ```python
+   urlpatterns = [
+       # ...
+       path("account/tokens/", include("mvp_accounts.tokens.urls")),
+       path("", include("mvp.urls")),
+   ]
+   ```
+
+4. Make your API accept the tokens, in your own settings, as
+   [knox documents](https://jazzband.co/projects/django-rest-knox):
+
+   ```python
+   REST_FRAMEWORK = {
+       "DEFAULT_AUTHENTICATION_CLASSES": ["knox.auth.TokenAuthentication"],
+   }
+   ```
+
+The routes are served by `TokensView`, `CreateTokenView` and `RevokeTokenView` in
+`mvp_accounts.tokens.views`, which share `TokenPageMixin`. Include the routes as above rather
+than the views, so that the pages and their names stay together.
+
+None of that is checked or configured for you: the package adds no system check and sets no
+default, so a missing route or setting shows as the entry and card not appearing, or as tokens
+your API does not accept. The package adds no model and no migration of its own.
+
+The entry and the card are drawn only where the tokens routes resolve. A project that has not
+installed django-rest-knox or Django REST framework, or has not included the routes, gets neither,
+and the rest of the package works as before.
 
 ## Two-factor authentication
 

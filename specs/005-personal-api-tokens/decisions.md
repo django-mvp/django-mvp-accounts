@@ -262,3 +262,13 @@ made to keep each page the smallest thing that renders, so that US2, US3 and US4
 be shown with a row present. Everything else a page does belongs to a story with its own tests.
 
 **Revisit if:** US2 or US4 find the stub shape gets in the way of the real behaviour.
+
+## D22 — Two existing tests were changed on purpose in the first story
+
+`tests/test_without_allauth.py` asserted that the Account Center has no "Account" group without
+allauth. That is no longer the rule: the group now exists for the API tokens entry (D3). Its
+assertion became "the group holds only the API tokens entry", and the same run now also requests
+the tokens page. `tests/conftest.py` gained a fixture for knox's token. Neither change weakens a
+check.
+
+**ADR:** none.

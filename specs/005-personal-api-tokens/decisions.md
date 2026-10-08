@@ -25,7 +25,7 @@ under `docs/adr/`. Browser pages for account management are outside what knox se
 no upstream issue is proposed, and the spec requires the decision record (FR-014). The pages are
 kept to three actions over knox's own records: list, create, revoke.
 
-**ADR:** required, written in the build (FR-014).
+**ADR:** docs/adr/0005-the-package-provides-the-api-tokens-pages.md
 
 ## D2 — knox being installed turns it on, and the project routes the pages
 
@@ -83,7 +83,7 @@ through knox, so expired records can linger. They cannot be used, and listing th
 tokens would make the list harder to trust. The list shows tokens that have not expired, which is
 also how knox counts tokens against the per-person limit.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D7 — The page honours knox's per-person limit
 
@@ -100,7 +100,7 @@ a sensitive change. Using that here would tie the tokens page to allauth, agains
 from a hijacked session lasts as long as whoever made it chose, which can be for good, and shows up
 in the list, where it can be revoked. Left out, and named as an open risk on the pull request.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D9 — "Shown once" is a storage rule as well as a display rule
 
@@ -108,7 +108,7 @@ The spec says the package keeps the complete value in no lasting form (FR-008). 
 from the create action to the one response that shows it is for planning, with that rule as the
 constraint: nothing that survives that response may hold it.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D10 — The feature gets a prototype before it is planned
 
@@ -121,7 +121,7 @@ therefore stops for a prototype review before any planning.
 The review settled both. The one-time token is shown on the tokens page, in a card above the
 list. Revoking confirms on a page of its own. `sketch.md` records the screens as reviewed.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D11 — A person chooses a lifetime from a short fixed list
 
@@ -148,7 +148,7 @@ The list shows the first characters of each token, the day it was created and th
 The time of day is left out: it made the table cramped, and the shortest lifetime on offer is a
 week.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D13 — One setting says who may hold tokens
 
@@ -196,7 +196,7 @@ back to the tokens page with a message that the token no longer exists. The spec
 message when a token is already gone and for a stranger's token to be indistinguishable from a
 missing one. One response does both.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D17 — The setting is `MVP_ACCOUNTS_API_TOKEN_ACCESS`, and a bad path raises
 
@@ -204,7 +204,7 @@ The name is the package, the thing and what it decides. The path is resolved wit
 `import_string`, which caches the import, and a path that does not import raises `ImportError` naming
 it. No system check is added, in line with FR-012.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D18 — Token names are answered in research and left for the maintainer
 
@@ -242,7 +242,7 @@ form, access check, routes, template tag, menu entry, card and demo wiring. Ever
 starts from a failing test. The four approved templates were kept untouched. `tests/test_app.py`
 pins the list of this package's components, and gained the one-time card that stays on disk.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D21 — The first routed pages are stubs where a later story owns the behaviour
 
@@ -274,7 +274,7 @@ assertion became "the group holds only the API tokens entry", and the same run n
 the tokens page. `tests/conftest.py` gained a fixture for knox's token. Neither change weakens a
 check.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.
 
 ## D23 — The create page's choices that the plan left open
 
@@ -301,4 +301,4 @@ After the stories were built, the message after revoking was put back to naming 
 first characters, and the message at the limit back to saying that no token was created. Both are
 the sentences the maintainer saw on the prototype. Wording carries no test.
 
-**ADR:** none.
+**ADR:** none, local to this feature and nothing downstream inherits it.

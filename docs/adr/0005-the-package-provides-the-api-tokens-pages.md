@@ -21,6 +21,13 @@ those three actions over knox's own records.
   installed, because the API tokens entry needs nothing from allauth. It holds allauth's entries
   and the re-authentication pages only when allauth is installed, and the API tokens entry last.
   A group with no visible entry is still not drawn.
+- A host project says who may hold tokens through one setting, `MVP_ACCOUNTS_API_TOKEN_ACCESS`,
+  that names a function of its own. The setting is read in one function, and the pages, the entry
+  and the card all ask it. With no setting, every signed-in person may. The package decides
+  nothing about what a person or a token may do.
+- A new token's complete value is carried from the create page to the tokens page in a signed,
+  short-lived cookie that the tokens page deletes as it shows the value. The package never writes
+  the value to the session or the database.
 
 ## Why
 
@@ -34,6 +41,14 @@ Keeping to three actions keeps knox the owner of what a token is. It creates, ha
 checks tokens, and the pages call its manager and query its model. Naming tokens or showing when
 one was last used would need a table of this package's own, with a migration every host project
 would have to run, and is left out for that reason.
+
+Who gets API access differs between sites, and only the host project knows. Asking it one
+question keeps permissions, roles and groups where they belong, in the host project, while still
+letting a site keep the pages from people who must not have them.
+
+A token is worth as much as a password, so its value is shown once and stored nowhere by this
+package. The session would have written it to the database, and showing it in the reply to the
+form would have created a second token on a reload.
 
 The tokens pages need a signed-in person and the Account Center and nothing from allauth, and this
 package is not tied to one authentication package. Gating the group on allauth would hide the

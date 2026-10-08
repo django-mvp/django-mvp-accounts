@@ -62,3 +62,10 @@ Did: wrote TestTokensList (9 tests) in tests/test_tokens/test_views.py; added To
 Verified: uv run pytest tests/test_tokens/test_views.py -> 26 passed. Red first: 3 failed (token_limit missing from context, create link still shown at the limit); the other 6 passed first time because US1 already supplied `tokens`. Probed each by mutation and restored: dropping the user filter fails the other-person test, dropping the expiry filter fails the expired test, a per-row user lookup fails the query-count test, an always-present <time> fails the no-expiry test, an always-present table fails the no-tokens test, expiry showing the created day fails the three-rows test, and removing the create href fails the no-tokens link check. uv run pre-commit run --all-files passed.
 Next: T010, seeded tokens in seed_demo.
 Watch: the query-count test makes one request before measuring, because a client's first request also records its session and costs two more queries.
+
+## 2026-10-08T10:12:37Z · Implementer US3 · T010
+
+Did: added TestSeededApiTokens (5 tests) to tests/test_demo.py; seed_demo now seeds staff.user with three working tokens (one with no expiry) and one expired, super.user with TOKEN_LIMIT_PER_USER tokens, regular.user with none, deleting those accounts' tokens first. The module docstring and closing output say who holds what.
+Verified: uv run pytest tests/test_demo.py -> 48 passed. Red first: the tests failed with 0 tokens before the command seeded any. Probed by mutation and restored: no delete fails all 5, dropping the expired token fails 2, limit+1 fails 2, staff tokens all with an expiry fails 1, a token seeded for regular fails 1. Ran uv run python manage.py migrate (nothing to apply) and seed_demo twice; the demo database now holds 4 tokens for staff and 5 for super. uv run pre-commit run --all-files passed.
+Next: full suite, report, ledger.
+Watch: STAFF_TOKENS is a module constant in seed_demo.py, like OTHER_BROWSERS.

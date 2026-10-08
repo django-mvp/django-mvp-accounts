@@ -83,13 +83,10 @@ class AccountGroup(MenuGroup):
 # whether or not allauth is installed: the API tokens page needs nothing from it.
 # django-mvp drops an entry whose page is not routed, and a group left with
 # nothing to show is not drawn.
-account_entries = []
-reauthentication_pages: tuple[str, ...] = ()
-
 if apps.is_installed("allauth"):
     # Confirming who you are comes before a change on any of the pages below, so
     # it belongs to the area rather than to one entry.
-    reauthentication_pages = (
+    reauthentication_pages: tuple[str, ...] = (
         "account_reauthenticate",
         "mfa_reauthenticate",
         "mfa_reauthenticate_webauthn",
@@ -147,6 +144,9 @@ if apps.is_installed("allauth"):
             extra_context={"label": _("Sessions"), "icon": "login"},
         ),
     ]
+else:
+    reauthentication_pages = ()
+    account_entries = []
 
 AccountCenterMenu.append(
     AccountGroup(

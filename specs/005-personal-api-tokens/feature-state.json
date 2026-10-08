@@ -498,28 +498,101 @@
       "tasks": [
         {
           "id": "T020",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_access.py::TestMayUseTokens"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_access.py -q (7 passed, exit 0; red first: collection error, the module did not exist)",
+              "mutation probes: dropping the is_authenticated guard failed 2 tests, dropping bool() failed 1; reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/access.py:12",
+              "mvp_accounts/tokens/access.py:32"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T021",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestTokenPagesForAPersonTheProjectTurnsAway"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens -q (105 passed, exit 0; red first: 8 failed with 200/302/405 where 403 was expected)",
+              "mutation probes: test_func returning True failed 11 of 12, returning False failed the staff test; reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:40"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T022",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_templatetags/test_mvp_accounts.py::TestMayUseApiTokens",
+              "tests/test_menus.py::TestApiTokensEntryForAPersonTheProjectTurnsAway",
+              "tests/test_account_center.py::TestOverviewCardsForAPersonTheProjectTurnsAway"
+            ],
+            "commands": [
+              "uv run pytest tests/test_templatetags tests/test_menus.py tests/test_account_center.py tests/test_without_knox.py -q (40 passed, exit 0; red first: tag library not registered)",
+              "mutation probes: removing check= failed the entry test, removing the card condition failed the card test; reverted"
+            ],
+            "code": [
+              "mvp_accounts/menus.py:84",
+              "mvp_accounts/menus.py:177",
+              "mvp_accounts/templatetags/mvp_accounts.py:15",
+              "mvp_accounts/templates/mvp/account/overview.html:65"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T023",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestDemoTokenAccess"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py -q (56 passed, exit 0; red first: 4 of 5 new tests failed)",
+              "mutation probes: staff_only returning True failed 2 tests, removing the del in tests/settings.py failed 1; reverted",
+              "uv run python manage.py migrate; uv run python manage.py seed_demo (both exit 0)",
+              "forge docs-check --repo . --base df6473d (clean); forge conformance --repo . --base df6473d (clean)"
+            ],
+            "code": [
+              "demo/access.py:4",
+              "demo/settings.py:152",
+              "tests/settings.py:56"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T024",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "cd mvp_accounts && uv run django-admin makemessages -l en (exit 0; 31 -> 74 msgids)",
+              "script over the tokens templates, created component, menus.py, tokens/*.py and the card: 81 strings, 77 matched directly, the 4 blocktrans with variables matched by grep; grep -c '^#: .*tokens' django.po -> 42"
+            ],
+            "code": [
+              "mvp_accounts/locale/en/LC_MESSAGES/django.po:19"
+            ],
+            "verified_by_ci": false
+          }
         }
       ]
     }

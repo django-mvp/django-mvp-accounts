@@ -7,7 +7,7 @@ which is why it may import django-rest-knox where nothing else in the package ma
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q, QuerySet
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -191,7 +191,7 @@ class CreateTokenView(TokenPageMixin, PageMixin, FormView):
 
 
 class RevokeTokenView(TokenPageMixin, MVPTemplateView):
-    """Show the page that asks before one token is revoked."""
+    """Ask before one token is revoked, then revoke it."""
 
     template_name = "mvp_accounts/tokens/revoke.html"
     page_title = _("Revoke this token?")
@@ -207,14 +207,39 @@ class RevokeTokenView(TokenPageMixin, MVPTemplateView):
     def get_token(self):
         """Return the newest of the person's tokens that the address names.
 
-        Raises:
-            Http404: When the person holds no such token.
+        Returns:
+            The token record, or ``None`` when the address names a key that is
+            unknown, expired or another person's.
         """
-        token = self.get_working_tokens().filter(token_key=self.kwargs["token_key"])
-        if (found := token.first()) is None:
-            raise Http404
-        return found
+        return (
+            self.get_working_tokens().filter(token_key=self.kwargs["token_key"]).first()
+        )
+
+    def refuse_gone(self) -> HttpResponse:
+        """Say the token no longer exists and return to the tokens page.
+
+        A key that is unknown, expired or another person's all end here, so the
+        response never tells them apart.
+
+        Returns:
+            A redirect to the tokens page, with a warning message added.
+        """
+        messages.warning(self.request, _("That token no longer exists."))
+        return HttpResponseRedirect(reverse("account_api_tokens"))
+
+    def get(self, request, *args, **kwargs):
+        """Show the token being revoked, and delete nothing."""
+        self.token = self.get_token()
+        if self.token is None:
+            return self.refuse_gone()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Leave a token that is gone alone."""
+        if self.get_token() is None:
+            return self.refuse_gone()
+        return self.http_method_not_allowed(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Add the token being revoked."""
-        return super().get_context_data(token=self.get_token(), **kwargs)
+        return super().get_context_data(token=self.token, **kwargs)

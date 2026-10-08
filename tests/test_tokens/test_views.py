@@ -323,6 +323,108 @@ class TestRevokeTokenView:
         assert response.status_code != 200
         assert expired.token_key not in response.content.decode()
 
+    def test_loading_the_page_deletes_nothing(
+        self, signed_in_client, token, page_urls
+    ) -> None:
+        signed_in_client.get(page_urls["revoke"])
+
+        assert get_token_model().objects.filter(pk=token.pk).exists()
+
+    def test_backing_out_leaves_the_token_working(
+        self, signed_in_client, token, page_urls
+    ) -> None:
+        page = BeautifulSoup(
+            signed_in_client.get(page_urls["revoke"]).content, "html.parser"
+        )
+
+        back = page.find("a", href=page_urls["list"])
+        assert back is not None
+        listed = signed_in_client.get(back["href"])
+        assert list(listed.context["tokens"]) == [token]
+
+
+class TestRevokeTokenViewForATokenThatIsGone:
+    """A stranger's token, an expired one and an unknown key are one response."""
+
+    @pytest.fixture
+    def gone_urls(self, signed_in_client) -> dict[str, str]:
+        stranger = AuthTokenFactory(user=UserFactory())
+        expired = AuthTokenFactory(
+            user=signed_in_client.user, expiry=timezone.now() - timedelta(days=1)
+        )
+        keys = {
+            "someone else's": stranger.token_key,
+            "expired": expired.token_key,
+            "unknown": "0" * len(stranger.token_key),
+        }
+        return {
+            kind: reverse("account_api_token_revoke", args=[key])
+            for kind, key in keys.items()
+        }
+
+    @staticmethod
+    def outcome(response) -> tuple:
+        """Return what a person is told: where they go and the messages added."""
+        added = tuple(
+            (message.level, str(message))
+            for message in get_messages(response.wsgi_request)
+        )
+        return response.status_code, response["Location"], added
+
+    @pytest.fixture
+    def person_at(self, signed_in_client):
+        """Return a function that requests a URL as the signed-in person.
+
+        Each request gets a client of its own, so the messages one adds are not
+        waiting for the next.
+        """
+
+        def request(method: str, url: str):
+            client = Client()
+            client.force_login(signed_in_client.user)
+            return getattr(client, method)(url)
+
+        return request
+
+    @pytest.mark.parametrize("method", ["get", "post"])
+    @pytest.mark.parametrize("kind", ["someone else's", "expired", "unknown"])
+    def test_it_redirects_to_the_tokens_page_with_a_warning(
+        self, person_at, gone_urls, method, kind
+    ) -> None:
+        response = person_at(method, gone_urls[kind])
+
+        status, location, added = self.outcome(response)
+        assert status == 302
+        assert location == reverse("account_api_tokens")
+        assert [level for level, _ in added] == [messages.WARNING]
+
+    @pytest.mark.parametrize("method", ["get", "post"])
+    def test_the_three_are_indistinguishable(
+        self, person_at, gone_urls, method
+    ) -> None:
+        outcomes = {
+            kind: self.outcome(person_at(method, url))
+            for kind, url in gone_urls.items()
+        }
+
+        assert len(set(outcomes.values())) == 1, outcomes
+
+    def test_submitting_deletes_nothing(self, signed_in_client, gone_urls) -> None:
+        before = get_token_model().objects.count()
+
+        for url in gone_urls.values():
+            signed_in_client.post(url)
+
+        assert get_token_model().objects.count() == before
+
+    def test_the_tokens_page_it_returns_to_shows_the_message(
+        self, signed_in_client, gone_urls
+    ) -> None:
+        response = signed_in_client.get(gone_urls["unknown"], follow=True)
+
+        shown = [message.level for message in response.context["messages"]]
+        assert shown == [messages.WARNING]
+
 
 COOKIE = "mvp_accounts_new_token"
 

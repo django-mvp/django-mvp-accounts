@@ -1,4 +1,4 @@
-"""Template tags for the API tokens pages."""
+"""Template tags for this package's account pages."""
 
 from django import template
 

@@ -31,9 +31,6 @@ CSRF_COOKIE_SECURE = False
 # every page.
 INSTALLED_APPS = [
     "demo",
-    # The API tokens pages. Ahead of mvp_accounts so its Account Center card is
-    # drawn after the others.
-    "mvp_accounts.tokens",
     # Ahead of allauth so its layouts and elements win, and ahead of mvp so its
     # Account Center overview is the one Django finds first.
     "mvp_accounts",

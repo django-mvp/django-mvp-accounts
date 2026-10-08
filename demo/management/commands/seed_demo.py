@@ -13,9 +13,8 @@ allauth refuses to remove. regular.user is also signed in from two other
 browsers, so signing in as that account shows three sessions on the sessions
 page and offers to sign out the others. Any other account shows one.
 Only staff may hold API tokens in the demo, so regular.user sees no sign of
-them. staff.user holds three with names, one of which never expires, one with no
-name, as a token made outside the tokens page has, and one that has expired and
-is not listed. super.user holds as many as the demo allows. Revoking
+them. staff.user holds three, one of which never expires, and a fourth that has
+expired and is not listed. super.user holds as many as the demo allows. Revoking
 staff.user's tokens shows the page with none. A reviewer
 opening this project should not have to invent a login or read the code to find
 out what exists.
@@ -47,7 +46,6 @@ from knox.models import get_token_model
 from knox.settings import knox_settings
 
 from demo.models import PhoneNumber
-from mvp_accounts.tokens.models import TokenName
 
 PASSWORD = "password"
 
@@ -77,24 +75,9 @@ OTHER_BROWSERS = [
     ),
 ]
 
-# staff.user's API tokens: the name, how many days ago each was created, and
-# how many days from now it expires. No name is a token made outside the tokens
-# page, None never expires, and a negative number already has.
-STAFF_TOKENS = [
-    ("Nightly backup", 40, None),
-    ("Reporting notebook", 6, 84),
-    ("Phone shortcut", 0, 30),
-    (None, 2, 28),
-    ("Old laptop", 45, -15),
-]
-# super.user's, which fill the demo's limit.
-ADMIN_TOKEN_NAMES = [
-    "Deploy pipeline",
-    "Monitoring",
-    "Data export",
-    "Staging sync",
-    "Spreadsheet add-on",
-]
+# staff.user's API tokens: how many days ago each was created, and how many
+# days from now it expires. None never expires, and a negative number already has.
+STAFF_TOKENS = [(40, None), (6, 84), (0, 30), (45, -15)]
 
 ACCOUNTS = [
     ("regular.user@example.com", {"is_staff": False, "is_superuser": False}),
@@ -159,7 +142,7 @@ class Command(BaseCommand):
                 f"provider as uid {SOCIAL_UID}; staff.user@example.com has uid "
                 f"{STAFF_UID} connected. regular.user@example.com is signed in from two "
                 "other browsers, so its sessions page lists three. Only staff "
-                "may hold API tokens: staff.user@example.com holds four and "
+                "may hold API tokens: staff.user@example.com holds three and "
                 "super.user@example.com holds as many as the demo allows."
             )
         )
@@ -236,32 +219,28 @@ class Command(BaseCommand):
         )
         token_model.objects.filter(user__in=[regular, staff, admin]).delete()
         now = timezone.now()
-        for name, created_days_ago, expires_in_days in STAFF_TOKENS:
+        for created_days_ago, expires_in_days in STAFF_TOKENS:
             self.seed_token(
                 staff,
-                name,
                 now - timedelta(days=created_days_ago, hours=3),
                 None
                 if expires_in_days is None
                 else now + timedelta(days=expires_in_days),
             )
         limit = knox_settings.TOKEN_LIMIT_PER_USER or 0
-        for number, name in enumerate(ADMIN_TOKEN_NAMES[:limit]):
+        for number in range(limit):
             self.seed_token(
                 admin,
-                name,
                 now - timedelta(days=number * 4, hours=1),
                 now + timedelta(days=90 - number * 4),
             )
 
-    def seed_token(self, user, name, created, expiry):
-        """Create one token with the dates given, and its name when it has one."""
+    def seed_token(self, user, created, expiry):
+        """Create one token with the dates given."""
         token_model = get_token_model()
         token, _value = token_model.objects.create(user=user, expiry=None)
         # `created` is set on save, so both dates are written afterwards.
         token_model.objects.filter(pk=token.pk).update(created=created, expiry=expiry)
-        if name:
-            TokenName.objects.create(token=token, name=name)
 
     def seed_social_user(self, user_model, username_field):
         """Create the account that has no password and one connected account."""

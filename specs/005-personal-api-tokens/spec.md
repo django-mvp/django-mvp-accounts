@@ -8,8 +8,8 @@
 
 **Serves**: G4, when the project has a REST API a person can create, see and revoke their own API
 tokens. G2, the tokens pages look like part of the host project. G3, the pages, their menu entry
-and their card appear only in a project that has added the tokens app and routed the pages, and
-only for the people the project lets hold tokens.
+and their card appear only in a project that has installed the token package and routed the pages,
+and only for the people the project lets hold tokens.
 
 **Roadmap**: R5, personal API tokens
 
@@ -19,8 +19,8 @@ only for the people the project lets hold tokens.
 Center. The tokens page is one more of them.
 
 **Input**: When a project has a REST API built on Django REST framework, a person creates API
-tokens for reaching it from their account pages, gives each a name and chooses when it expires,
-sees which tokens they hold, and revokes any of them. A token is shown once, when it is created, so
+tokens for reaching it from their account pages, chooses when each expires, sees which tokens they
+hold, and revokes any of them. A token is shown once, when it is created, so
 a script or another tool can be given access without sharing a password. Tokens are
 django-rest-knox's: it creates them, stores them hashed, expires them and checks them on each API
 request. A project that has not turned the feature on gets no page, no menu entry and no import
@@ -30,50 +30,45 @@ error, and a project that has can say which people may hold tokens.
 
 FS-001 to FS-004 each restyled pages that django-allauth already draws. This feature has no such
 page to restyle. django-rest-knox ships API views for signing in and out with a token, and nothing
-a person can open in a browser. So for the first time the package provides pages of its own, in an
-app of its own, `mvp_accounts.tokens`, which a project adds to `INSTALLED_APPS` when it wants them:
+a person can open in a browser. So for the first time the package provides pages of its own:
 
 - account management pages that list a person's API tokens, create one and revoke one;
-- the name a person gives each token, kept in one small model beside knox's record;
 - the entry and card for those pages in the Account Center;
 - one setting that lets the project say which people may hold tokens;
 - an optional install extra, so Django REST framework and django-rest-knox arrive at versions the
   package is tested against.
 
-That is all of it. The package does not subclass or swap knox's token model. Its one model holds a
-token's name and nothing else, points at whichever token model is active, and is deleted with the
-token. The package generates no token, hashes nothing and checks no request. Creating a token is a
-call to knox, with the lifetime the person chose, and revoking one deletes knox's record.
+That is all of it. The package adds no model and no migration, and it does not subclass or swap
+knox's token model. It generates no token, hashes nothing and checks no request. Creating a token
+is a call to knox, with the lifetime the person chose, and revoking one deletes knox's record.
 Authenticating an API request is the job of knox's authentication class, which the host project
 turns on in its own Django REST framework settings. The package ships no API endpoint and sets no
 knox or Django REST framework setting.
 
-Because the pages and the name are built here and not upstream, Article XII asks for the decision
-to be written down under `docs/adr/`. FR-014 requires that.
+Because the pages are built here and not upstream, Article XII asks for the decision to be written
+down under `docs/adr/`. FR-014 requires that.
 
 ## Clarifications
 
 ### Session 2026-10-07
 
-- Q: What turns the feature on? → A: Adding the package's tokens app, `mvp_accounts.tokens`, to
-  `INSTALLED_APPS` and including its URLs. The app needs django-rest-knox, which needs Django REST
-  framework, so a project adds all three together. A project that has not added the app gets
-  nothing, and nothing from knox or Django REST framework is imported in it.
+- Q: What turns the feature on, Django REST framework or the token package? → A: The token package.
+  The pages need django-rest-knox's records to exist, so they appear when knox is installed and the
+  host project has routed them. A project with Django REST framework and no knox gets nothing,
+  the same as a project with neither.
 - Q: Does the tokens page need django-allauth? → A: No. It needs a signed-in person and
   django-mvp's Account Center, and nothing from allauth. A project that signs people in some other
   way still gets the pages, their entry and their card.
-- Q: Can a person name a token? → A: Yes, and a name is required. Naming a token is how a person
-  knows later what they made it for. knox records no name, so the package keeps it in a model of
-  its own beside knox's record. A token made somewhere other than the tokens page, such as by
-  knox's own sign-in view, has no name. It is listed as having none and can be revoked like any
-  other.
+- Q: Can a person name a token? → A: Not in this specification. knox records no name for a token,
+  and the package adds no model of its own to hold one (FR-012). A person tells their tokens apart
+  by what knox keeps: the first characters of the token, the day it was created and the day it
+  expires. The maintainer wants a way to name tokens, and how to provide one is an open question
+  for planning and review, recorded in `planning-notes.md`.
 - Q: Can a person choose how long a token lasts? → A: Yes. Creating a token asks for a lifetime
   from a short list that includes one that never expires. The project's knox `TOKEN_TTL` setting
   then decides the lifetime only of tokens knox's own views create.
-- Q: Is any part of the token shown in the list? → A: No. A row shows the token's name, the day it
-  was created and the day it expires. The name is how a person tells their tokens apart.
 - Q: `CONTEXT.md` says a person can see when each token was last used. Is that shown? → A: No.
-  knox does not record it. The page shows what is recorded, and the glossary entry is corrected in
+  knox does not record it. The page shows what knox records, and the glossary entry is corrected in
   the same pull request (FR-013).
 - Q: Does revoking ask first? → A: Yes. A revoked token cannot be brought back and whatever was
   using it stops working at once, so the person confirms before it is deleted. FS-004 asks for no
@@ -88,32 +83,30 @@ to be written down under `docs/adr/`. FR-014 requires that.
 
 A developer whose project has a Django REST framework API wants the people using the site to be
 able to reach that API from a script. They install this package with its API extra, add
-django-rest-knox and this package's tokens app to the project, run the migrations, include the
-tokens URLs, and name knox's authentication class in their Django REST framework settings. The
-Account Center now has an API tokens entry and card. A developer whose project has no API does none
-of this, and their project is unchanged: nothing new appears and nothing fails to import.
+django-rest-knox to the project and run its migrations, include this package's tokens URLs, and
+name knox's authentication class in their Django REST framework settings. The Account Center now
+has an API tokens entry and card. A developer whose project has no API does none of this, and
+their project is unchanged: nothing new appears and nothing fails to import.
 
 **Why this priority**: Nothing else in the feature exists until a project can turn it on, and a
 project that has not turned it on must be left alone. Both halves are the adoption promise in G3.
 
-**Independent Test**: In a project with the tokens app added and its URLs included, open the
+**Independent Test**: In a project with knox installed and the tokens URLs included, open the
 Account Center signed in and check the entry and card are there and lead to the tokens page. In a
 project without Django REST framework, check the package imports, the Account Center renders, and
 it has no tokens entry or card.
 
 **Acceptance Scenarios**:
 
-1. **Given** a project with the tokens app added and the tokens URLs included, **When** a
+1. **Given** a project with django-rest-knox installed and the tokens URLs included, **When** a
    signed-in person opens the Account Center, **Then** it has an entry and a card that lead to the
    tokens page.
-2. **Given** a project without Django REST framework installed and without the tokens app,
-   **When** the project starts and the Account Center renders, **Then** nothing raises and there is
-   no tokens entry or card.
-3. **Given** a project with Django REST framework and django-rest-knox installed that has not
-   added the tokens app, **When** the Account Center renders, **Then** there is no tokens entry or
-   card and nothing raises.
-4. **Given** a project with the tokens app added that has not included the tokens URLs, **When**
-   the Account Center renders, **Then** there is no tokens entry or card.
+2. **Given** a project without Django REST framework installed, **When** the project starts and
+   the Account Center renders, **Then** nothing raises and there is no tokens entry or card.
+3. **Given** a project with Django REST framework installed and django-rest-knox absent, **When**
+   the Account Center renders, **Then** there is no tokens entry or card and nothing raises.
+4. **Given** a project with django-rest-knox installed that has not included the tokens URLs,
+   **When** the Account Center renders, **Then** there is no tokens entry or card.
 5. **Given** a project with the tokens pages turned on and django-allauth absent, **When** a
    signed-in person opens the Account Center, **Then** the tokens entry and card are there.
 6. **Given** the tokens pages are turned on, **When** someone who is not signed in requests one,
@@ -124,8 +117,8 @@ it has no tokens entry or card.
 ### User Story 2 - A person creates an API token (Priority: P1)
 
 A signed-in person wants a script to reach the site's API as them. They open the tokens page and
-choose to create a token. A short form asks what the token is for and when it should expire. They
-name it, pick a lifetime and create it. The tokens page then shows them the whole token, this one
+choose to create a token. A short form asks when the token should expire. They pick a lifetime and
+create it. The tokens page then shows them the whole token, this one
 time, and warns them it will not be shown again. They copy it into their script, and requests the
 script sends with the token are answered as that person.
 
@@ -133,14 +126,14 @@ script sends with the token are answered as that person.
 give a script access without handing it a password.
 
 **Independent Test**: In the demo, sign in as a person who may hold tokens, open the tokens page,
-create a token with a name and a lifetime, copy the value shown, and call the demo's API endpoint
+create a token with a chosen lifetime, copy the value shown, and call the demo's API endpoint
 with it. The endpoint answers as the signed-in person. Reload the tokens page and check the token's
-value is no longer anywhere on it, and that its row shows the name and the expiry that was chosen.
+value is no longer anywhere on it, and that its row shows the expiry that was chosen.
 
 **Acceptance Scenarios**:
 
-1. **Given** a signed-in person on the create page, **When** they give a name, choose a lifetime
-   and create the token, **Then** they land on the tokens page and it shows the complete token
+1. **Given** a signed-in person on the create page, **When** they choose a lifetime and create the
+   token, **Then** they land on the tokens page and it shows the complete token
    value.
 2. **Given** a token has just been created and shown, **When** the person loads the tokens page
    again, **Then** the complete value appears nowhere on it.
@@ -153,30 +146,28 @@ value is no longer anywhere on it, and that its row shows the name and the expir
    **Then** it is knox's own record and it expires when the chosen lifetime says.
 6. **Given** a person chooses a token that never expires, **When** it is created, **Then** knox's
    record has no expiry.
-7. **Given** a person on the create page, **When** they submit it without a name, **Then** no
-   token is created and the form says a name is needed.
-8. **Given** a person on the create page, **When** they back out, **Then** no token is created.
+7. **Given** a person on the create page, **When** they back out, **Then** no token is created.
 
 ---
 
 ### User Story 3 - A person sees the tokens they hold (Priority: P2)
 
 A signed-in person opens the tokens page to check what has access to the API as them. They see one
-row for each token they hold that still works: the name they gave it, the day it was created and
-the day it expires. No part of the token itself is shown. With no tokens, the page says so and
-still offers to create one.
+row for each token they hold that still works: the first characters of the token, the day it was
+created and the day it expires. With no tokens, the page says so and still offers to create one.
 
 **Why this priority**: A person cannot decide what to revoke until they can see what they hold,
-and the name is how they recognise a token after its value is gone.
+and the list is how they recognise a token after its full value is gone.
 
 **Independent Test**: In the demo, sign in as the seeded person who holds several tokens, open the
-tokens page, and check each token has a row with its name, the day it was created and the day it
-expires. Revoke them all and check the page shows an empty state.
+tokens page, and check each token has a row with its first characters, the day it was created and
+the day it expires. Revoke them all and check the page shows an empty state.
 
 **Acceptance Scenarios**:
 
 1. **Given** a person who holds three tokens, **When** they open the tokens page, **Then** it lists
-   three rows, each with the token's name, the day it was created and the day it expires.
+   three rows, each with the first characters of the token, the day it was created and the day it
+   expires.
 2. **Given** two people who each hold tokens, **When** one of them opens the tokens page, **Then**
    it lists only their own.
 3. **Given** a person with no tokens, **When** they open the tokens page, **Then** it shows an
@@ -185,10 +176,6 @@ expires. Revoke them all and check the page shows an empty state.
    expiring, and does not show an empty or zero date.
 5. **Given** a token whose expiry has passed, **When** the tokens page renders, **Then** that token
    is not listed.
-6. **Given** a token that was not made on the tokens page and so has no name, **When** it is
-   listed, **Then** its row says it has no name and it can be revoked like any other.
-7. **Given** any token a person holds, **When** the tokens page renders outside the moment the
-   token was created, **Then** no part of the token's value is on the page.
 
 ---
 
@@ -220,8 +207,6 @@ that was kept: the first is refused and the second is answered.
    exist.
 6. **Given** a request to revoke a token that arrives by following a link, with no form
    submission, **When** it is handled, **Then** no token is deleted.
-7. **Given** a token with a name, **When** it is revoked, **Then** the name the package kept for it
-   is deleted with it.
 
 ---
 
@@ -261,15 +246,13 @@ there.
 ### Edge Cases
 
 - knox also creates a token when someone signs in through its own API sign-in view. Those are the
-  same records, so they appear in the list and can be revoked like any other. They have no name,
-  and the list says so.
+  same records, so they appear in the list and can be revoked like any other.
 - A token deleted by other means, such as knox's "sign out everywhere" endpoint or the Django
   admin, no longer appears. Revoking a token that is already gone tells the person it no longer
   exists and raises nothing.
 - A token made on the tokens page lasts as long as the person chose. The project's knox `TOKEN_TTL`
   setting decides the lifetime only of tokens knox's own views create, and its default of ten hours
   suits a browser client. The README says which is which.
-- Two tokens may be given the same name. The list shows both, told apart by their dates.
 - Limiting who may hold tokens does not revoke tokens a person already holds. Someone who held
   tokens and is later shut out keeps working tokens until they expire or the project deletes them,
   because the package checks no API request. The README says so.
@@ -292,13 +275,13 @@ there.
   the host project's application shell and theme in the Account Center, with the shell's
   navigation, like the other account management pages: one that lists a person's tokens, one that
   creates a token, and one that confirms revoking a token.
-- **FR-002**: The pages MUST exist only when the host project has added the package's tokens app
-  to its installed apps and included the tokens URLs. The Account Center MUST show an entry and a
-  card for them exactly when the tokens page is routed and the person may hold tokens (FR-021), and
+- **FR-002**: The pages MUST exist only when django-rest-knox is installed and the host project has
+  included the package's tokens URLs. The Account Center MUST show an entry and a
+  card for them exactly when the tokens page is routed and the person may hold tokens (FR-019), and
   neither otherwise.
-- **FR-003**: In a project that has not added the tokens app, the package MUST import, its pages
-  MUST render and its menus MUST build, whether or not Django REST framework or django-rest-knox is
-  installed. Nothing from either package may be imported outside the tokens app.
+- **FR-003**: In a project without Django REST framework or without django-rest-knox, the package
+  MUST import, its pages MUST render and its menus MUST build. Nothing from either package may be
+  imported except in code that runs only when it is installed.
 - **FR-004**: Django REST framework and django-rest-knox MUST be offered as an optional install
   extra and MUST NOT be runtime dependencies. Each MUST be bounded to the major versions the
   package's tests run against.
@@ -307,7 +290,7 @@ there.
 - **FR-006**: Only a signed-in person may reach the pages, and every list, create and revoke on
   them MUST act on that person's tokens and nobody else's.
 - **FR-007**: A person MUST be able to create a token from the pages. The token MUST be created by
-  django-rest-knox, with the lifetime the person chose (FR-019). The package MUST NOT generate,
+  django-rest-knox, with the lifetime the person chose (FR-018). The package MUST NOT generate,
   hash or store a token itself.
 - **FR-008**: The complete token value MUST be shown to the person once, on the tokens page they
   reach after creating it, with a warning that it cannot be shown again. The package MUST NOT keep
@@ -316,46 +299,39 @@ there.
   create one past the limit, counting tokens the way knox does, and MUST tell the person the limit
   has been reached.
 - **FR-010**: The tokens page MUST list each of the person's tokens that has not expired, showing
-  its name, the day it was created and the day it expires. A token with no expiry MUST be marked as
-  not expiring. A token with no name MUST be listed as having none. No part of a token's value may
-  appear in the list. With no tokens, the page MUST show an empty state.
+  the first characters of the token, the day it was created and the day it expires, as knox records
+  them. A token with no expiry MUST be marked as not expiring. With no tokens, the page MUST show
+  an empty state.
 - **FR-011**: A person MUST be able to revoke one chosen token. Revoking MUST ask for confirmation,
   MUST delete knox's record so the token stops authenticating at once, MUST leave every other
   token alone, and MUST confirm to the person that it was done.
-- **FR-012**: The package MUST NOT subclass or replace knox's token model, ship an API endpoint,
-  set any knox or Django REST framework setting, or check how either is configured. The only model
-  and migration it adds are those FR-020 describes.
-- **FR-013**: `CONTEXT.md` MUST describe an API token as the pages present it: a person names each
-  token, chooses when it expires, and sees its name, the day it was created and the day it expires.
+- **FR-012**: The package MUST NOT add a model or migration, subclass or replace knox's token
+  model, ship an API endpoint, set any knox or Django REST framework setting, or check how either
+  is configured.
+- **FR-013**: `CONTEXT.md` MUST describe an API token as the pages present it: a person chooses
+  when each token expires, and sees its first characters, the day it was created and the day it
+  expires.
   The claim that they see when it was last used MUST be removed.
 - **FR-014**: A record under `docs/adr/` MUST state that the package provides the tokens pages
-  itself because django-rest-knox ships no browser pages, and keeps a token's name in a model of
-  its own because knox records none and its model is not to be replaced. It MUST say what the pages
-  and the model are limited to, and what would make either worth revisiting.
+  itself because django-rest-knox ships no browser pages, what the pages are limited to, and what
+  would make that worth revisiting.
 - **FR-015**: The README MUST cover how a project turns API tokens on, and that authenticating API
   requests is done by knox's authentication class, which the project sets. It MUST cover the
   setting that says who may hold tokens, and that it does not revoke tokens already held. It MUST
   name the knox setting for the limit per person, and say that knox's lifetime setting reaches only
   tokens knox's own views create. It MUST say that a token is shown once, that tokens carry no
-  last-used time, and that changing a password does not revoke them. The CHANGELOG MUST record the
-  feature.
+  name or last-used time, and that changing a password does not revoke them. The CHANGELOG MUST
+  record the feature.
 - **FR-016**: The demo MUST install Django REST framework and django-rest-knox with the tokens
   pages turned on and limited to staff, expose one API endpoint that answers with the person a
-  token belongs to, and seed one staff account with several named tokens, one account at the limit
+  token belongs to, and seed one staff account with several tokens, one account at the limit
   and one account that may not hold tokens, so creating, listing, revoking and being shut out can
   all be tried and a token can be checked against a real request.
 - **FR-017**: Every string the package adds MUST be marked for translation.
-- **FR-018**: Creating a token MUST ask for a name and MUST refuse to create one without it. The
-  name MUST be kept with the token and shown wherever the token is listed or named.
-- **FR-019**: Creating a token MUST ask the person to choose its lifetime from a short fixed list
+- **FR-018**: Creating a token MUST ask the person to choose its lifetime from a short fixed list
   that includes a token that never expires, with one choice already selected. The choice MUST be
   passed to django-rest-knox as the token's expiry.
-- **FR-020**: The package MUST keep a token's name in one model of its own, in the tokens app,
-  holding the name and a one-to-one link to whichever knox token model is active, and nothing else.
-  The name MUST be deleted when its token is deleted, by whatever means. The model's fields MUST
-  carry a verbose name and help text, each field's indexing MUST be a recorded choice, and the
-  feature MUST add exactly one migration (Article IX).
-- **FR-021**: A host project MUST be able to say which people may hold API tokens, through one
+- **FR-019**: A host project MUST be able to say which people may hold API tokens, through one
   setting that names a function taking a person and returning whether they may. Without the
   setting, every signed-in person may. The same answer MUST decide the Account Center entry, the
   card and every tokens page: a person who may not hold tokens sees no entry and no card, and
@@ -366,10 +342,10 @@ there.
 | Requirement | Story |
 |---|---|
 | FR-002, FR-003, FR-004, FR-005, FR-012, FR-014 | US1 |
-| FR-007, FR-008, FR-009, FR-018, FR-019, FR-020 | US2 |
+| FR-007, FR-008, FR-009, FR-018 | US2 |
 | FR-010, FR-013 | US3 |
 | FR-011 | US4 |
-| FR-021 | US5 |
+| FR-019 | US5 |
 | FR-001, FR-006, FR-015, FR-016, FR-017 | US1, US2, US3, US4, US5 |
 
 ### Key Entities
@@ -378,9 +354,6 @@ there.
   a browser (`CONTEXT.md`). It is django-rest-knox's record. knox keeps a hash of the token, its
   first characters, the person it belongs to, when it was created and when it expires. The
   complete value exists only at the moment of creation.
-- **Token name**: what a person calls one of their tokens, so they know what it is for. It is the
-  one thing this package stores: a name and a link to the token it belongs to. A token made outside
-  the tokens page has none.
 - **Tokens pages**: the account management pages where a signed-in person creates, sees and
   revokes their own API tokens. They are the only pages in this package that no upstream package
   draws.
@@ -396,14 +369,11 @@ there.
 - **SC-003**: A person can see every working token they hold and none that belong to anyone else.
 - **SC-004**: After a person revokes a token, the next API request carrying it is refused, and
   their other tokens still work.
-- **SC-005**: A project that has not added the tokens app starts, renders the Account Center and
-  has no tokens entry, card or page, with or without Django REST framework installed. A test
-  asserts it.
+- **SC-005**: A project without Django REST framework starts, renders the Account Center and has no
+  tokens entry, card or page. A test asserts it.
 - **SC-006**: A developer following the README alone can turn API tokens on in a project that
   already has a Django REST framework API.
-- **SC-007**: A person looking at their tokens can say what each one is for from its name, without
-  any part of the token being on the page.
-- **SC-008**: On a site that limits tokens to some people, a person outside that group finds no
+- **SC-007**: On a site that limits tokens to some people, a person outside that group finds no
   entry, no card and no page that serves them. A test asserts each.
 
 ## Assumptions
@@ -413,9 +383,9 @@ there.
   same way on a narrow screen.
 - django-rest-knox is the token package, as the roadmap settles, for the reasons given there: it
   allows several tokens per person, lets them expire, and does not store them in a readable form.
-- Installing django-rest-knox, adding it and this package's tokens app to the installed apps,
-  running the migrations, including the tokens URLs and setting knox's authentication class are the
-  host project's steps. The package checks none of them.
+- Installing django-rest-knox, running its migrations, including this package's tokens URLs and
+  setting knox's authentication class are the host project's steps. The package checks none of
+  them.
 - How many tokens a person may hold, the token prefix and whether expiry extends on use are knox's
   settings and the project's choices. The lifetimes a person can choose from are the package's and
   are the same for every project.
@@ -423,9 +393,9 @@ there.
   nothing about what a token is allowed to do.
 - The pages do not ask a person to confirm their password or second factor before creating a
   token. That step is django-allauth's, and these pages do not depend on allauth.
-- A last-used time is a gap in django-rest-knox, and so is a name. Raising either there is the
-  maintainer's decision. The name is built here in the meantime, and the decision record says what
-  would let it be removed.
+- Names for tokens and a last-used time are gaps in django-rest-knox. Raising them there is the
+  maintainer's decision. How a person might name a token is an open question for planning and
+  review (`planning-notes.md`), and building it here would need its own decision record.
 - Tokens issued to third-party applications on a person's behalf are OAuth and out of scope
   (Article XIV). So is anything about what a token is allowed to do: a token acts as the person,
   with whatever the host project permits them.

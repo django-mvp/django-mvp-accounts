@@ -17,7 +17,6 @@
     </c-mvp.page.title>
     {% if new_token %}
       <c-mvp_accounts.token.created value="{{ new_token.value }}"
-                                    name="{{ new_token.name }}"
                                     header_prefix="{{ header_prefix }}"
                                     done_url="{{ tokens_url }}" />
     {% endif %}
@@ -46,7 +45,7 @@
         <c-table aria-label="{% trans "Your API tokens" %}">
           <thead>
             <tr>
-              <th scope="col">{% trans "Name" %}</th>
+              <th scope="col">{% trans "Token" %}</th>
               <th scope="col">{% trans "Created" %}</th>
               <th scope="col">{% trans "Expires" %}</th>
               <th scope="col">
@@ -57,12 +56,8 @@
           <tbody>
             {% for token in tokens %}
               <tr>
-                <th scope="row" class="font-normal">
-                  {% if token.name %}
-                    {{ token.name }}
-                  {% else %}
-                    <span class="italic text-base-content/60">{% trans "No name" %}</span>
-                  {% endif %}
+                <th scope="row" class="font-normal whitespace-nowrap">
+                  <code class="font-mono">{{ token.token_key }}…</code>
                   {% if new_token.digest == token.digest %}
                     <c-badge size="sm" variant="success">{% trans "New" %}</c-badge>
                   {% endif %}
@@ -78,11 +73,7 @@
                   {% endif %}
                 </td>
                 <td class="text-end">
-                  {% if token.name %}
-                    {% blocktrans asvar revoke_label with name=token.name %}Revoke {{ name }}{% endblocktrans %}
-                  {% else %}
-                    {% blocktrans asvar revoke_label with created=token.created|date:"DATE_FORMAT" %}Revoke the token with no name, created {{ created }}{% endblocktrans %}
-                  {% endif %}
+                  {% blocktrans asvar revoke_label with token=token.token_key %}Revoke token {{ token }}…{% endblocktrans %}
                   <c-button href="{% url "account_api_token_revoke" token.digest %}"
                             variant="error"
                             size="sm"
@@ -95,7 +86,7 @@
           </tbody>
         </c-table>
         <c-mvp.text muted tight size="sm">
-          {% trans "A token is shown once, when you create it. Lost one? Revoke it and create another." %}
+          {% trans "Only the first characters of each token are kept. Lost the rest of one? Revoke it and create another." %}
         </c-mvp.text>
       {% else %}
         <c-mvp.page.list.empty icon="key"

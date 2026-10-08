@@ -5,8 +5,7 @@ from datetime import timedelta
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-# How long a token may last, as the choice a person sees. An empty number of
-# days is a token that never expires.
+# How long a token may last, as the choice a person sees.
 LIFETIMES = [
     ("7", _("7 days")),
     ("30", _("30 days")),
@@ -18,13 +17,8 @@ DEFAULT_LIFETIME = "30"
 
 
 class CreateTokenForm(forms.Form):
-    """A name for the token and how long it lasts."""
+    """How long the new token lasts."""
 
-    name = forms.CharField(
-        label=_("Name"),
-        max_length=64,
-        help_text=_("What the token is for, such as “Backup script”. Only you see it."),
-    )
     lifetime = forms.ChoiceField(
         label=_("Expires after"),
         choices=LIFETIMES,

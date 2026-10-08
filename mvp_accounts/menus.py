@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from flex_menu import MenuItem
 from mvp.menus import AccountCenterMenu, MenuGroup
 
+from mvp_accounts.tokens.access import may_use_tokens
+
 
 def signed_in_view_name(request: HttpRequest) -> str | None:
     """Return the URL name Django resolved a signed-in visitor's request to.
@@ -79,6 +81,11 @@ class AccountGroup(MenuGroup):
         return processed
 
 
+def may_hold_tokens(request, **kwargs) -> bool:
+    """Show the API tokens entry only to a person who may hold tokens."""
+    return may_use_tokens(request.user)
+
+
 # django-flex-menus imports every app's menus module, so the group is added only
 # when allauth is installed. django-mvp drops an entry whose page is not routed.
 if apps.is_installed("allauth"):
@@ -148,3 +155,26 @@ if apps.is_installed("allauth"):
             ],
         )
     )
+
+# The API tokens page needs nothing from allauth, so its entry joins the
+# "Account" group when there is one and brings the group when there is not.
+# django-mvp drops the entry when the tokens page is not routed, and a group
+# left with nothing to show is not drawn.
+tokens_entry = AccountEntry(
+    name="api_tokens",
+    view_name="account_api_tokens",
+    pages=("account_api_token_create", "account_api_token_revoke"),
+    check=may_hold_tokens,
+    extra_context={"label": _("API tokens"), "icon": "key"},
+)
+account_group = AccountCenterMenu.get("account")
+if account_group is None:
+    AccountCenterMenu.append(
+        AccountGroup(
+            name="account",
+            extra_context={"label": _("Account")},
+            children=[tokens_entry],
+        )
+    )
+else:
+    account_group.append(tokens_entry)

@@ -7,7 +7,7 @@ rebuilt once the screens are settled.
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import F, Q
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -18,23 +18,17 @@ from mvp.views import MVPTemplateView
 
 from mvp_accounts.tokens.access import may_use_tokens
 from mvp_accounts.tokens.forms import CreateTokenForm
-from mvp_accounts.tokens.models import TokenName
 
 # Where the prototype keeps a new token between creating it and showing it.
 JUST_CREATED = "mvp_accounts_just_created"
 
 
 def working_tokens(user):
-    """Return the person's tokens that have not expired, newest first.
-
-    Each carries ``name``, which is empty for a token made somewhere other
-    than the tokens page.
-    """
+    """Return the person's tokens that have not expired, newest first."""
     return (
         get_token_model()
         .objects.filter(user=user)
         .filter(Q(expiry__isnull=True) | Q(expiry__gt=timezone.now()))
-        .annotate(name=F("mvp_accounts_name__name"))
         .order_by("-created")
     )
 
@@ -85,7 +79,7 @@ class TokensView(TokenPageMixin, MVPTemplateView):
 
 
 class CreateTokenView(TokenPageMixin, MVPTemplateView):
-    """Ask for a name and a lifetime, then create the token."""
+    """Ask for a lifetime, then create the token."""
 
     template_name = "mvp_accounts/tokens/create.html"
     page_title = _("Create a token")
@@ -120,19 +114,16 @@ class CreateTokenView(TokenPageMixin, MVPTemplateView):
         return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
-        """Create the token and its name, or show the form again."""
+        """Create the token, or show the form again."""
         form = CreateTokenForm(request.POST)
         if not form.is_valid():
             return self.render_to_response(self.get_context_data(form=form))
         instance, value = get_token_model().objects.create(
             user=request.user, expiry=form.get_expiry()
         )
-        name = form.cleaned_data["name"]
-        TokenName.objects.create(token=instance, name=name)
         request.session[JUST_CREATED] = {
             "value": value,
             "digest": instance.digest,
-            "name": name,
         }
         return redirect("account_api_tokens")
 
@@ -164,12 +155,9 @@ class RevokeTokenView(TokenPageMixin, MVPTemplateView):
     def post(self, request, *args, **kwargs):
         """Delete the token and say so."""
         token = self.get_token()
-        name = token.name
+        token_key = token.token_key
         token.delete()
         messages.success(
-            request,
-            _("“%(name)s” was revoked.") % {"name": name}
-            if name
-            else _("The token was revoked."),
+            request, _("Token %(token)s… was revoked.") % {"token": token_key}
         )
         return redirect("account_api_tokens")

@@ -116,7 +116,7 @@ Serves G1, G2 and G3.
 
 ### R5 — Personal API tokens
 
-*feature · advances G4, G2, G3*
+*delivered in [#35](https://github.com/django-mvp/django-mvp-accounts/issues/35) · advances G4, G2, G3*
 
 When the project has a REST API built on Django REST framework, a person can
 create tokens to reach it, see the tokens they have, and revoke any of them.

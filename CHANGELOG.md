@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.0] - 2026-10-08
+
 ### Added
 
 - API tokens pages for projects that use [django-rest-knox](https://github.com/jazzband/django-rest-knox):

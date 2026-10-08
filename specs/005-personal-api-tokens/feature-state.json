@@ -2,7 +2,7 @@
   "feature": "005-personal-api-tokens",
   "branch": "005-personal-api-tokens",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "PR_READY",
+  "state": "MERGED",
   "state_history": [
     {
       "state": "QUEUED",
@@ -38,6 +38,11 @@
       "state": "PR_READY",
       "at": "2026-10-08T11:05:37Z",
       "note": "review recorded, walkthrough laid out"
+    },
+    {
+      "state": "MERGED",
+      "at": "2026-10-08T12:03:59Z",
+      "note": "PR #36 merged; approved by SamuelJennings"
     }
   ],
   "gates": {
@@ -66,8 +71,8 @@
       "self_resolved": []
     },
     "merge": {
-      "approved_by": null,
-      "at": null
+      "approved_by": "SamuelJennings",
+      "at": "2026-10-08T12:03:28Z"
     },
     "design_review": {
       "approved_by": "design-panel",
@@ -103,9 +108,13 @@
       ]
     },
     "walkthrough": {
-      "approved_by": null,
-      "at": "2026-10-08T11:04:27Z",
-      "self_resolved": []
+      "approved_by": "Sam",
+      "at": "2026-10-08T11:49:41Z",
+      "self_resolved": [
+        "I've confirmed the walkthrough. Otherwise, everything looks good. \u2014 nothing asked for on the pages",
+        "Definitely no model in this feature. \u2014 token names stay unbuilt; no follow-up issue opened",
+        "Raise the no-re-authentication risk as a separate issue \u2014 filed by the orchestrating session"
+      ]
     }
   },
   "stories": [

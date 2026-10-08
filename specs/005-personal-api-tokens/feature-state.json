@@ -99,38 +99,147 @@
         },
         {
           "id": "T002",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_demo.py::TestApiExtra",
+              "tests/test_demo.py::TestDemoApiTokens"
+            ],
+            "commands": [
+              "uv run pytest tests/test_demo.py::TestApiExtra tests/test_demo.py::TestDemoApiTokens -q (5 passed, exit 0)",
+              "uv lock && uv sync (exit 0)"
+            ],
+            "code": [
+              "pyproject.toml:37"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T003",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_factories.py::TestAuthTokenFactory"
+            ],
+            "commands": [
+              "uv run pytest tests/test_factories.py -q (10 passed, exit 0)"
+            ],
+            "code": [
+              "tests/factories.py:180"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T004",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_urls.py::TestTokenRoutes",
+              "tests/test_tokens/test_views.py::TestTokenPages",
+              "tests/test_tokens/test_views.py::TestTokensView",
+              "tests/test_tokens/test_views.py::TestCreateTokenView",
+              "tests/test_tokens/test_views.py::TestRevokeTokenView"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens -q (24 passed, exit 0)",
+              "uv run deptry . (exit 0)",
+              "uv run python manage.py migrate && uv run python manage.py seed_demo (exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/tokens/urls.py:7",
+              "mvp_accounts/tokens/views.py:20",
+              "mvp_accounts/tokens/views.py:51",
+              "mvp_accounts/tokens/views.py:73",
+              "mvp_accounts/tokens/views.py:90",
+              "demo/urls.py:11",
+              "pyproject.toml:174"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T005",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_menus.py::TestApiTokensEntry",
+              "tests/test_apps.py::TestStartup",
+              "tests/test_without_allauth.py::TestWithoutAllauth"
+            ],
+            "commands": [
+              "uv run pytest tests/test_apps.py tests/test_menus.py tests/test_without_allauth.py tests/test_tokens -q (44 passed, exit 0)",
+              "forge docs-check --repo . --base b34bd5b (clean)"
+            ],
+            "code": [
+              "mvp_accounts/menus.py:86",
+              "mvp_accounts/menus.py:151",
+              "tests/urls_without_knox.py:1",
+              "tests/urls_without_allauth.py:1"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T006",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 2,
+          "evidence": {
+            "tests": [
+              "tests/test_account_center.py::TestOverviewCards",
+              "tests/test_without_allauth.py::TestWithoutAllauth"
+            ],
+            "commands": [
+              "uv run pytest tests/test_account_center.py tests/test_without_allauth.py -q (21 passed, exit 0)"
+            ],
+            "code": [
+              "mvp_accounts/templates/mvp/account/overview.html:63"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T007",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_without_knox.py::TestWithoutKnox"
+            ],
+            "commands": [
+              "uv run pytest tests/test_without_knox.py -q (5 passed, exit 0)"
+            ],
+            "code": [
+              "tests/settings_without_knox.py:16",
+              "tests/test_without_knox.py:1"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T008",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "forge conformance --repo . --base b34bd5b (clean)",
+              "forge docs-check --repo . --base b34bd5b (clean)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "README.md:124",
+              "CONTEXT.md:48",
+              "CHANGELOG.md:25",
+              "docs/adr/0005-the-package-provides-the-api-tokens-pages.md:1"
+            ],
+            "verified_by_ci": false
+          }
         }
       ]
     },

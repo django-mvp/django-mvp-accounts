@@ -76,3 +76,10 @@ Did: tests/test_tokens/test_forms.py (TestCreateTokenForm, 8 tests) and mvp_acco
 Verified: `uv run pytest tests/test_tokens/test_forms.py -x` failed at collection first (no module mvp_accounts.tokens.forms), then 8 passed. Refusals are asserted by field and code (invalid_choice, required). `uv run pre-commit run --all-files` passed.
 Next: T012, the create page.
 Watch: 1 year is 365 days, the same as knox's timedelta addition; no leap-year logic.
+
+## 2026-10-08T10:17:51Z · Implementer US2 · T012
+
+Did: CreateTokenView now uses CreateTokenForm, accepts POST, and in form_valid creates the person's token through get_token_model().objects.create(user=..., expiry=form.get_expiry()); get_success_url is always the tokens page. Seven tests added to TestCreateTokenView (lifetime field present with the five choices, GET creates nothing, valid POST makes one token for the person expiring 90 days out and redirects to the tokens page, never stores no expiry, invalid choice creates nothing and shows the form with the error on lifetime, ?next= and a posted next are ignored, a visitor's POST creates nothing and is sent to sign in).
+Verified: `uv run pytest tests/test_tokens/test_views.py::TestCreateTokenView` red first (4 failed: the POST answered 405); then 8 passed; `uv run pytest tests/test_tokens -q` 48 passed. The visitor test passed first time because TokenPageMixin already guards dispatch; probed by mutation and restored: test_func returning True fails it. Also: success URL taken from POST next fails the ignored-next test; expiry=None fails the 90-day test. pre-commit passed after ruff-format reflowed one test.
+Next: T013, the token shown once.
+Watch: none.

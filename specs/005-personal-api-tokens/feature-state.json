@@ -2,7 +2,7 @@
   "feature": "005-personal-api-tokens",
   "branch": "005-personal-api-tokens",
   "repo": "django-mvp/django-mvp-accounts",
-  "state": "REVIEW",
+  "state": "PR_READY",
   "state_history": [
     {
       "state": "QUEUED",
@@ -33,6 +33,11 @@
       "state": "REVIEW",
       "at": "2026-10-08T10:52:16Z",
       "note": "one review round: correctness and security lenses"
+    },
+    {
+      "state": "PR_READY",
+      "at": "2026-10-08T11:05:37Z",
+      "note": "review recorded, walkthrough laid out"
     }
   ],
   "gates": {
@@ -96,6 +101,11 @@
         "SEC-003 low: no ceiling when knox sets no limit \u2014 open for the maintainer, documented",
         "found while fixing: lifetime field restored to the approved drop-down (T026)"
       ]
+    },
+    "walkthrough": {
+      "approved_by": null,
+      "at": "2026-10-08T11:04:27Z",
+      "self_resolved": []
     }
   },
   "stories": [
@@ -662,12 +672,12 @@
       "max": 1
     },
     "tokens": {
-      "used": 23.94,
+      "used": 35.31,
       "max": 120
     }
   },
   "pr": {
     "number": 36,
-    "draft": true
+    "draft": false
   }
 }

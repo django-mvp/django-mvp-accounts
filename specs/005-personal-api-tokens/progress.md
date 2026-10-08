@@ -167,3 +167,10 @@ Did: ran `uv run django-admin makemessages -l en` from inside mvp_accounts/. The
 Verified: a script read each of those files for _("..."), {% trans %} and {% blocktrans %} strings and looked each up as a msgid: 81 strings, 77 found directly; the other four are blocktrans with variables (the at-limit sentence with its plural, "%(count)s of %(limit)s", "Revoke token %(token)s…", the Authorization header sentence) and are in the catalogue with %(name)s placeholders (checked by grep). `grep -c '^#: .*tokens'` -> 42 reference lines. "Account" was moved, not dropped (menus.py:169). There is no test for a catalogue. pre-commit passed.
 Next: the full suite and lint, the report, the ledger.
 Watch: none.
+
+## 2026-10-08T11:05:37Z · Ready for review · T026
+
+Did: all five stories accepted, review fixes made, walkthrough laid out on the pull request.
+Verified: lint, type check, 413 tests and the build pass; every state walked on the demo as the three accounts.
+Next: the maintainer walks the pages and merges.
+Watch: nothing is pushed to the branch after it is marked ready unless he asks.

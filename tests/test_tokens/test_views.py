@@ -1,9 +1,11 @@
 """The mirror of ``mvp_accounts/tokens/views.py``: the three tokens pages."""
 
 from datetime import timedelta
+from unittest import mock
 
 import pytest
 from bs4 import BeautifulSoup
+from django.contrib.sessions.models import Session
 from django.db import connection
 from django.shortcuts import resolve_url
 from django.template.defaultfilters import date
@@ -11,6 +13,7 @@ from django.test import Client
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
+from knox.crypto import hash_token
 from knox.models import get_token_model
 
 from tests.factories import AuthTokenFactory, UserFactory
@@ -317,3 +320,164 @@ class TestRevokeTokenView:
 
         assert response.status_code != 200
         assert expired.token_key not in response.content.decode()
+
+
+COOKIE = "mvp_accounts_new_token"
+
+
+class TestNewTokenShownOnce:
+    @pytest.fixture
+    def create_url(self) -> str:
+        return reverse("account_api_token_create")
+
+    @pytest.fixture
+    def list_url(self) -> str:
+        return reverse("account_api_tokens")
+
+    @pytest.fixture
+    def created(self, signed_in_client, create_url):
+        """Create a token as the signed-in person and return the redirect."""
+        return signed_in_client.post(create_url, {"lifetime": "30d"})
+
+    @staticmethod
+    def shown_value(response) -> str | None:
+        """Return what the page holds in the new token's field, if it has one."""
+        field = BeautifulSoup(response.content, "html.parser").find(id="new-api-token")
+        return field["value"] if field else None
+
+    def test_following_the_redirect_shows_the_complete_value(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        response = signed_in_client.get(created["Location"])
+
+        value = self.shown_value(response)
+        record = get_token_model().objects.get()
+        assert hash_token(value) == record.digest
+
+    def test_the_context_names_the_record_just_created(
+        self, signed_in_client, created
+    ) -> None:
+        response = signed_in_client.get(created["Location"])
+
+        record = get_token_model().objects.get()
+        assert response.context["new_token"]["token_key"] == record.token_key
+
+    def test_the_header_prefix_is_in_the_context(
+        self, signed_in_client, created, settings
+    ) -> None:
+        settings.REST_KNOX = {**settings.REST_KNOX, "AUTH_HEADER_PREFIX": "Bearer"}
+
+        response = signed_in_client.get(created["Location"])
+
+        assert response.context["header_prefix"] == "Bearer"
+
+    def test_a_second_load_holds_the_value_nowhere(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        first = signed_in_client.get(list_url)
+        value = self.shown_value(first)
+
+        second = signed_in_client.get(list_url)
+
+        assert value
+        assert value not in second.content.decode()
+        assert "new_token" not in second.context or not second.context["new_token"]
+
+    def test_nothing_the_server_keeps_holds_the_value(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        value = self.shown_value(signed_in_client.get(list_url))
+
+        record = get_token_model().objects.get()
+        columns = [
+            str(getattr(record, field.attname))
+            for field in record._meta.concrete_fields
+        ]
+        assert not any(value in column for column in columns)
+        assert record.token_key == value[: len(record.token_key)]
+        assert value not in str(dict(signed_in_client.session))
+        assert not any(
+            value in session.session_data for session in Session.objects.all()
+        )
+
+    def test_the_redirect_sets_a_signed_cookie_for_the_tokens_page_only(
+        self, created, list_url
+    ) -> None:
+        cookie = created.cookies[COOKIE]
+
+        assert cookie["path"] == list_url
+        assert cookie["httponly"]
+        assert cookie["samesite"] == "Strict"
+        assert cookie["max-age"] == 60
+        assert not cookie["secure"]
+
+    def test_the_cookie_is_secure_on_a_secure_request(
+        self, signed_in_client, create_url
+    ) -> None:
+        response = signed_in_client.post(create_url, {"lifetime": "30d"}, secure=True)
+
+        assert response.cookies[COOKIE]["secure"]
+
+    def test_the_response_that_reads_the_cookie_deletes_it_from_the_same_path(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        response = signed_in_client.get(list_url)
+
+        cookie = response.cookies[COOKIE]
+        assert cookie["max-age"] == 0
+        assert cookie["path"] == list_url
+        assert cookie["samesite"] == "Strict"
+
+    def test_a_tampered_cookie_shows_nothing(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        signed_in_client.cookies[COOKIE] = created.cookies[COOKIE].value + "x"
+
+        response = signed_in_client.get(list_url)
+
+        assert self.shown_value(response) is None
+        assert not response.context["new_token"]
+
+    def test_an_expired_cookie_shows_nothing(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        assert COOKIE in created.cookies
+        later = timezone.now().timestamp() + 61
+        with mock.patch("django.core.signing.time.time", return_value=later):
+            response = signed_in_client.get(list_url)
+
+        assert self.shown_value(response) is None
+        assert not response.context["new_token"]
+
+    def test_another_person_with_the_cookie_is_shown_no_value(
+        self, created, list_url
+    ) -> None:
+        stranger_client = Client()
+        stranger_client.force_login(UserFactory())
+        stranger_client.cookies[COOKIE] = created.cookies[COOKIE].value
+
+        response = stranger_client.get(list_url)
+
+        assert self.shown_value(response) is None
+        assert not response.context["new_token"]
+
+    def test_the_tokens_page_is_not_cacheable(
+        self, signed_in_client, created, list_url
+    ) -> None:
+        shown = signed_in_client.get(created["Location"])
+        plain = signed_in_client.get(list_url)
+
+        for response in (shown, plain):
+            assert "no-store" in response["Cache-Control"]
+
+    def test_submitting_twice_makes_two_tokens_and_reloading_makes_none(
+        self, signed_in_client, create_url, list_url
+    ) -> None:
+        signed_in_client.post(create_url, {"lifetime": "30d"})
+        signed_in_client.post(create_url, {"lifetime": "30d"})
+        assert get_token_model().objects.count() == 2
+
+        signed_in_client.get(list_url)
+        signed_in_client.get(list_url)
+
+        assert get_token_model().objects.count() == 2

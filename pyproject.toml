@@ -145,6 +145,7 @@ ignore_missing_model_attributes = "True"
 non-mirror-paths = [
     "tests/test_account_center.py",
     "tests/test_app.py",
+    "tests/test_components/",
     "tests/test_connections_page.py",
     "tests/test_demo.py",
     "tests/test_elements.py",

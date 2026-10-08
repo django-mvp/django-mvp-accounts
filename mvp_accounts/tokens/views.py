@@ -9,14 +9,20 @@ from django.db.models import Q, QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
 from django.views.generic import FormView
 from knox.models import get_token_model
-from knox.settings import knox_settings
+from knox.settings import CONSTANTS, knox_settings
 from mvp.views import MVPTemplateView
 from mvp.views.base import PageMixin
 
 from mvp_accounts.tokens.forms import CreateTokenForm
+
+SHOWN_ONCE_COOKIE = "mvp_accounts_new_token"
+SHOWN_ONCE_SALT = "mvp_accounts.tokens.new_token"
+SHOWN_ONCE_MAX_AGE = 60
 
 
 class TokenPageMixin(UserPassesTestMixin):
@@ -60,8 +66,9 @@ class TokenPageMixin(UserPassesTestMixin):
         return limit is not None and self.get_working_tokens().count() >= limit
 
 
+@method_decorator(never_cache, name="dispatch")
 class TokensView(TokenPageMixin, MVPTemplateView):
-    """List the signed-in person's tokens."""
+    """List the signed-in person's tokens, and show a new one the one time."""
 
     template_name = "mvp_accounts/tokens/list.html"
     page_title = _("API tokens")
@@ -77,14 +84,45 @@ class TokensView(TokenPageMixin, MVPTemplateView):
             {"text": _("API tokens")},
         ]
 
+    def get_new_token(self) -> dict[str, str] | None:
+        """Return the token just created, if the cookie names one of the person's.
+
+        Returns:
+            The complete ``value`` and its ``token_key``, or ``None`` when the
+            cookie is missing, tampered with, too old, or holds a token that is
+            not one of the signed-in person's working tokens.
+        """
+        value = self.request.get_signed_cookie(
+            SHOWN_ONCE_COOKIE,
+            default=None,
+            salt=SHOWN_ONCE_SALT,
+            max_age=SHOWN_ONCE_MAX_AGE,
+        )
+        if value is None:
+            return None
+        token_key = value[: CONSTANTS.TOKEN_KEY_LENGTH]
+        if not self.get_working_tokens().filter(token_key=token_key).exists():
+            return None
+        return {"value": value, "token_key": token_key}
+
     def get_context_data(self, **kwargs):
-        """Add the signed-in person's tokens and where they stand against the limit."""
+        """Add the person's tokens, the limit, and a token created a moment ago."""
         return super().get_context_data(
             tokens=self.get_working_tokens(),
             token_limit=knox_settings.TOKEN_LIMIT_PER_USER,
             at_limit=self.is_at_limit(),
+            new_token=self.get_new_token(),
+            header_prefix=knox_settings.AUTH_HEADER_PREFIX,
             **kwargs,
         )
+
+    def get(self, request, *args, **kwargs):
+        """Delete the new-token cookie on the response that reads it."""
+        response = super().get(request, *args, **kwargs)
+        response.delete_cookie(
+            SHOWN_ONCE_COOKIE, path=reverse("account_api_tokens"), samesite="Strict"
+        )
+        return response
 
 
 class CreateTokenView(TokenPageMixin, PageMixin, FormView):
@@ -99,11 +137,24 @@ class CreateTokenView(TokenPageMixin, PageMixin, FormView):
         return reverse("account_api_tokens")
 
     def form_valid(self, form: CreateTokenForm) -> HttpResponse:
-        """Create the person's token with the chosen lifetime."""
-        get_token_model().objects.create(
+        """Create the person's token and hand its value to the next page, once."""
+        created = get_token_model().objects.create(
             user=self.request.user, expiry=form.get_expiry()
         )
-        return super().form_valid(form)
+        # knox returns the record and the complete value, which only it ever holds.
+        value = created[1]
+        response = super().form_valid(form)
+        response.set_signed_cookie(
+            SHOWN_ONCE_COOKIE,
+            value,
+            salt=SHOWN_ONCE_SALT,
+            max_age=SHOWN_ONCE_MAX_AGE,
+            path=self.get_success_url(),
+            secure=self.request.is_secure(),
+            httponly=True,
+            samesite="Strict",
+        )
+        return response
 
     def get_breadcrumbs(self) -> list[dict]:
         """Lead back to the tokens page."""

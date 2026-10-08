@@ -1,0 +1,241 @@
+{
+  "feature": "005-personal-api-tokens",
+  "branch": "005-personal-api-tokens",
+  "repo": "django-mvp/django-mvp-accounts",
+  "state": "PLAN",
+  "state_history": [
+    {
+      "state": "QUEUED",
+      "at": "2026-10-07T19:03:17Z",
+      "note": "specification approved on pull request #36 at c3e4442"
+    },
+    {
+      "state": "PLAN",
+      "at": "2026-10-08T09:36:29Z",
+      "note": "research.md, plan.md, tasks.md written after the prototype was approved"
+    }
+  ],
+  "gates": {
+    "spec": {
+      "approved_by": "delegated review",
+      "at": "2026-10-07T19:03:17Z",
+      "self_resolved": [
+        "approved at c3e4442203b889381a58d620490e2b202e72d66f under the orchestrating run's open spec gate"
+      ]
+    },
+    "sketch": {
+      "approved_by": "Sam",
+      "at": "2026-10-08T09:30:45Z",
+      "self_resolved": [
+        "Create token button must not wrap: sits beside the heading at every width, text cannot wrap",
+        "A person chooses when a token expires: create page with a lifetime choice passed to knox as expiry",
+        "Dates only for created and expires: done in the list and on the confirmation",
+        "A developer can limit who may hold tokens: one setting naming a callable; demo staff only",
+        "Token names with a model and an app: built then removed on his correction; open question in planning-notes.md",
+        "Lifetime list, 30-day default and 403 refusal kept as built; approved at 8e708c71a54c3501621d042e33a5069d96b73cef"
+      ]
+    },
+    "plan": {
+      "approved_by": null,
+      "at": null
+    },
+    "merge": {
+      "approved_by": null,
+      "at": null
+    }
+  },
+  "stories": [
+    {
+      "id": "US1",
+      "priority": "P1",
+      "issue": 37,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "todo",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T001",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T002",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T003",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T004",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T005",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T006",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T007",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T008",
+          "status": "todo",
+          "attempts": 0
+        }
+      ]
+    },
+    {
+      "id": "US3",
+      "priority": "P2",
+      "issue": 39,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "todo",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T009",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T010",
+          "status": "todo",
+          "attempts": 0
+        }
+      ]
+    },
+    {
+      "id": "US2",
+      "priority": "P1",
+      "issue": 38,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "todo",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T011",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T012",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T013",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T014",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T015",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T016",
+          "status": "todo",
+          "attempts": 0
+        }
+      ]
+    },
+    {
+      "id": "US4",
+      "priority": "P2",
+      "issue": 40,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "todo",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T017",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T018",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T019",
+          "status": "todo",
+          "attempts": 0
+        }
+      ]
+    },
+    {
+      "id": "US5",
+      "priority": "P2",
+      "issue": 41,
+      "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
+      "status": "todo",
+      "replans": 0,
+      "tasks": [
+        {
+          "id": "T020",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T021",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T022",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T023",
+          "status": "todo",
+          "attempts": 0
+        },
+        {
+          "id": "T024",
+          "status": "todo",
+          "attempts": 0
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "converge_cycles": {
+      "used": 0,
+      "max": 2
+    },
+    "review_cycles": {
+      "used": 0,
+      "max": 1
+    },
+    "design_review_cycles": {
+      "used": 0,
+      "max": 1
+    },
+    "tokens": {
+      "used": 0,
+      "max": 120
+    }
+  },
+  "pr": {
+    "number": 36,
+    "draft": true
+  }
+}

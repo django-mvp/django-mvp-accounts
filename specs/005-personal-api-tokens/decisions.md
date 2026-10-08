@@ -168,3 +168,50 @@ consulted when a token is used, because the package checks no API request. A pro
 that deletes the tokens or checks in its own API.
 
 **ADR:** none, covered by the decision record D1 requires.
+
+## D14 — The new token travels in a signed cookie, not the session
+
+FR-008 says the package keeps the complete value in no lasting form. The prototype used the
+session, which Django writes to a database table by default. The build sets a signed, HTTP-only
+cookie on the redirect after creating, scoped to the tokens page and good for a minute, and the
+tokens page deletes it as it shows the value. The server stores nothing, and a reload finds
+nothing. Rendering the token in the response to the form submission was the other candidate, and
+a reload would then create a second token. `research.md` R3 has the comparison.
+
+**ADR:** none, local to one redirect. Covered by the decision record D1 requires.
+
+## D15 — A token is named in an address by knox's `token_key`
+
+The confirmation page needs an address for one token. knox's primary key is its stored hash,
+which does not belong in browser history or server logs. `token_key`, the token's first
+characters, is what the list already shows and what knox itself looks tokens up by. Every lookup
+starts from the signed-in person's own working tokens.
+
+**ADR:** none, local to one route.
+
+## D16 — One response for a token that is gone, expired or someone else's
+
+The confirmation page answers all three the same way: nothing is deleted, and the person is sent
+back to the tokens page with a message that the token no longer exists. The spec asks for a
+message when a token is already gone and for a stranger's token to be indistinguishable from a
+missing one. One response does both.
+
+**ADR:** none.
+
+## D17 — The setting is `MVP_ACCOUNTS_API_TOKEN_ACCESS`, and a bad path raises
+
+The name is the package, the thing and what it decides. The path is resolved with Django's
+`import_string` each time it is asked, and a path that does not import raises `ImportError` naming
+it. No system check is added, in line with FR-012.
+
+**ADR:** none.
+
+## D18 — Token names are answered in research and left for the maintainer
+
+`planning-notes.md` asks for a way to name a token. `research.md` compares the ways. The only one
+that works on every project without replacing knox's model is a model of this package's own, which
+FR-012 and the maintainer's ruling keep out of this build. The feature is built without names, and
+the recommendation goes to the maintainer at review: a follow-up feature on a one-to-one model,
+with the gap raised upstream.
+
+**ADR:** none, nothing is built.

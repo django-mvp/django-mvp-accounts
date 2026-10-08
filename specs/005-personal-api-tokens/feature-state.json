@@ -248,7 +248,7 @@
       "priority": "P2",
       "issue": 39,
       "worktree": "/home/sam/projects/django-mvp/django-mvp-accounts-005",
-      "status": "todo",
+      "status": "done",
       "replans": 0,
       "tasks": [
         {
@@ -411,7 +411,7 @@
       "max": 1
     },
     "tokens": {
-      "used": 8.06,
+      "used": 16.04,
       "max": 120
     }
   },

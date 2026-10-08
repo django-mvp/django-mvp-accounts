@@ -179,6 +179,40 @@ The entry and the card are drawn only where the tokens routes resolve. A project
 installed django-rest-knox or Django REST framework, or has not included the routes, gets neither,
 and the rest of the package works as before.
 
+### Creating a token
+
+The create page asks for a lifetime: 7 days, 30 days, 90 days, 1 year or never, with 30 days
+selected. The lifetime is the token's expiry, and "never" stores none. The list is fixed in the
+package. The page's form is `CreateTokenForm` in `mvp_accounts.tokens.forms`: its `lifetime`
+field holds the choice, and `get_expiry()` turns a valid choice into a `timedelta`, or `None`
+for "never".
+
+A new token is shown once. The page the person returns to after creating it holds the complete
+value, and no later page does: the package stores nothing but what django-rest-knox keeps, which
+is a digest and the token's first characters. A person who loses a token revokes it and creates
+another. The value travels from the create page to the tokens page in a signed cookie that lasts a
+minute, is sent only to the tokens page and is deleted as the page shows it. Tokens carry no name
+and no last-used time.
+
+Two of knox's settings matter here:
+
+- `TOKEN_TTL` reaches only the tokens knox's own views create. The create page passes the chosen
+  lifetime instead.
+- `TOKEN_LIMIT_PER_USER` is the number of working tokens a person may hold, and the pages honour
+  it: at the limit the create page creates nothing and returns to the tokens page with a message,
+  and the tokens page stops offering to create one. A token that has expired does not count, and
+  one with no expiry does. knox sets no limit by default, so a project should set one:
+
+  ```python
+  REST_KNOX = {
+      "TOKEN_LIMIT_PER_USER": 5,
+  }
+  ```
+
+A request carries the token in the `Authorization` header, as `Authorization: Token <token>`.
+The word before the token is knox's `AUTH_HEADER_PREFIX`, and the page shows the one your project
+uses. The demo answers at `/api/whoami/` with the email of the person the token belongs to.
+
 ## Two-factor authentication
 
 To offer two-factor authentication, install allauth's multi-factor app with its `mfa`

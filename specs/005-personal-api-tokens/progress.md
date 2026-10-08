@@ -118,3 +118,10 @@ Did: RevokeTokenView.get/post redirect with a warning for a key that is unknown,
 Verified: `uv run pytest tests/test_tokens/test_views.py -q` -> 65 passed. Gone-token tests were red first (KeyError 'location': the view raised 404). Passed first time, probed by mutation: loading deletes nothing (GET made to delete -> 3 tests failed), the lookup scoping (unscoped lookup -> 8 failed), the indistinguishable response (key echoed in message -> 2 failed), the list row link (href changed -> test_a_row_links_to_the_revoke_page_by_token_key failed). Mutations reverted.
 Next: T018, POST deletes the one record.
 Watch: the earlier tests asserted `status_code != 200` rather than 404, so none needed changing.
+
+## 2026-10-08T10:35:34Z · Implementer US4 · T018
+
+Did: RevokeTokenView.post deletes the one record found (token.delete(), not a queryset delete), adds messages.success and redirects to the tokens page. Replaced the temporary 405 from T017. Tests in TestRevokingAToken (tests/test_tokens/test_views.py) and TestDemoRevokedToken (tests/test_demo.py, real requests to api-whoami).
+Verified: `uv run pytest tests/test_tokens/test_views.py tests/test_demo.py::TestDemoRevokedToken -q` -> 72 passed. Red first: 5 of 7 new tests failed (405, token not deleted, revoked token still answered 200). The stranger and visitor POST tests passed first time (the T017 redirect and the mixin already did it), so probed by mutation: unscoped lookup failed the stranger test; test_func returning True failed the visitor test; queryset delete over the filter failed the shared-key test; a no-op delete failed 4 tests including the demo one. Mutations reverted.
+Next: T019, README and CHANGELOG.
+Watch: none.

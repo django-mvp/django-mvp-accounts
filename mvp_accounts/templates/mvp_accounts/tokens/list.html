@@ -58,7 +58,7 @@
               <tr>
                 <th scope="row" class="font-normal whitespace-nowrap">
                   <code class="font-mono">{{ token.token_key }}…</code>
-                  {% if new_token.digest == token.digest %}
+                  {% if new_token.token_key == token.token_key %}
                     <c-badge size="sm" variant="success">{% trans "New" %}</c-badge>
                   {% endif %}
                 </th>
@@ -74,7 +74,7 @@
                 </td>
                 <td class="text-end">
                   {% blocktrans asvar revoke_label with token=token.token_key %}Revoke token {{ token }}…{% endblocktrans %}
-                  <c-button href="{% url "account_api_token_revoke" token.digest %}"
+                  <c-button href="{% url "account_api_token_revoke" token.token_key %}"
                             variant="error"
                             size="sm"
                             outline

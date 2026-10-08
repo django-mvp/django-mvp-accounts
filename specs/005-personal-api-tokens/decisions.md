@@ -243,3 +243,22 @@ starts from a failing test. The four approved templates were kept untouched. `te
 pins the list of this package's components, and gained the one-time card that stays on disk.
 
 **ADR:** none.
+
+## D21 — The first routed pages are stubs where a later story owns the behaviour
+
+T004 routes all three pages so the approved list template can reverse them. Three choices were
+made to keep each page the smallest thing that renders, so that US2, US3 and US4 start red:
+
+- **`CreateTokenView`** is `PageMixin` and `FormView` over Django's empty `forms.Form`, limited to
+  GET, because the approved create template reads a `form` and the lifetime form is US2's. A POST
+  answers 405 until US2 replaces both.
+- **`RevokeTokenView`** answers 404 for a token the person does not hold, expired or someone
+  else's. US4 replaces that with the message and redirect research R5 gives.
+- **`TokensView`** supplies `tokens` (the person's working tokens) and nothing else. It is the one
+  line the approved template needs to be rendered with a token present; the limit, the one-time
+  value and the header prefix come with US2.
+
+**Why:** the template reverses the revoke route for every row, so the `token_key` change can only
+be shown with a row present. Everything else a page does belongs to a story with its own tests.
+
+**Revisit if:** US2 or US4 find the stub shape gets in the way of the real behaviour.

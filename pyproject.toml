@@ -34,7 +34,7 @@ classifiers = [
 [project.optional-dependencies]
 # What the API tokens page runs on. Neither is a runtime dependency: a project
 # with no API installs neither and gets no tokens page.
-api = ["djangorestframework>=3.15,<4", "django-rest-knox>=5.0,<6"]
+api = ["djangorestframework>=3.16,<4", "django-rest-knox>=5.0,<6"]
 
 [project.urls]
 Homepage = "https://github.com/django-mvp/django-mvp-accounts"

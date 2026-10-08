@@ -7,7 +7,9 @@ None of those raise, so the demo is asserted against its rendered pages rather
 than against the objects that built them.
 """
 
+import tomllib
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from allauth.account.models import EmailAddress
@@ -15,10 +17,13 @@ from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
 from allauth.usersessions.models import UserSession
 from bs4 import BeautifulSoup
+from django.apps import apps
 from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
 from django.urls import NoReverseMatch, reverse
+from knox.models import get_token_model
+from packaging.requirements import Requirement
 
 from demo import settings as demo_settings
 from demo.adapter import DemoAccountAdapter
@@ -354,3 +359,43 @@ class TestSeededSessionsWalkthrough:
         form = soup.find("form", attrs={"action": reverse("usersessions_list")})
         assert form is not None
         assert form.find("button", attrs={"type": "submit"}) is not None
+
+
+class TestApiExtra:
+    @pytest.fixture
+    def project(self) -> dict:
+        path = Path(__file__).resolve().parent.parent / "pyproject.toml"
+        return tomllib.loads(path.read_text())["project"]
+
+    @pytest.fixture
+    def extra(self, project) -> dict[str, Requirement]:
+        requirements = map(Requirement, project["optional-dependencies"]["api"])
+        return {requirement.name: requirement for requirement in requirements}
+
+    def test_django_rest_framework_is_bounded_to_the_3_16_series(self, extra) -> None:
+        specifier = extra["djangorestframework"].specifier
+
+        assert specifier.contains("3.16.0")
+        assert not specifier.contains("3.15.2")
+        assert not specifier.contains("4.0")
+
+    def test_knox_is_bounded_to_the_5_series(self, extra) -> None:
+        specifier = extra["django-rest-knox"].specifier
+
+        assert specifier.contains("5.0.0")
+        assert not specifier.contains("4.2.0")
+        assert not specifier.contains("6.0")
+
+    def test_neither_is_a_runtime_dependency(self, project) -> None:
+        names = {Requirement(entry).name for entry in project["dependencies"]}
+
+        assert names.isdisjoint({"djangorestframework", "django-rest-knox"})
+
+
+class TestDemoApiTokens:
+    def test_knoxs_token_model_is_installed(self) -> None:
+        assert apps.is_installed("knox")
+        assert apps.get_model(get_token_model()._meta.label)
+
+    def test_the_package_adds_no_migration(self, db) -> None:
+        call_command("makemigrations", check=True, dry_run=True, stdout=StringIO())

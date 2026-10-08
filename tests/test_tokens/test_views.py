@@ -11,6 +11,7 @@ from django.test import Client
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
+from knox.models import get_token_model
 
 from tests.factories import AuthTokenFactory, UserFactory
 
@@ -205,6 +206,79 @@ class TestCreateTokenView:
 
         assert "mvp_accounts/tokens/create.html" in [t.name for t in response.templates]
         assert "form" in response.context
+
+    def test_the_page_asks_for_the_lifetime_in_a_field_of_that_name(
+        self, signed_in_client
+    ) -> None:
+        page = signed_in_client.get(reverse("account_api_token_create")).content
+
+        inputs = BeautifulSoup(page, "html.parser").select('input[name="lifetime"]')
+        assert {field["value"] for field in inputs} == {
+            "7d",
+            "30d",
+            "90d",
+            "1y",
+            "never",
+        }
+
+    def test_loading_the_page_creates_nothing(self, signed_in_client) -> None:
+        signed_in_client.get(reverse("account_api_token_create"))
+
+        assert get_token_model().objects.count() == 0
+
+    def test_a_valid_choice_creates_one_token_for_the_person_and_returns_to_the_list(
+        self, signed_in_client
+    ) -> None:
+        before = timezone.now()
+
+        response = signed_in_client.post(
+            reverse("account_api_token_create"), {"lifetime": "90d"}
+        )
+
+        created = get_token_model().objects.get()
+        assert created.user == signed_in_client.user
+        assert (
+            before + timedelta(days=90)
+            <= created.expiry
+            <= timezone.now() + timedelta(days=90)
+        )
+        assert response.status_code == 302
+        assert response["Location"] == reverse("account_api_tokens")
+
+    def test_never_stores_no_expiry(self, signed_in_client) -> None:
+        signed_in_client.post(
+            reverse("account_api_token_create"), {"lifetime": "never"}
+        )
+
+        assert get_token_model().objects.get().expiry is None
+
+    def test_an_invalid_choice_creates_nothing_and_shows_the_form_again(
+        self, signed_in_client
+    ) -> None:
+        response = signed_in_client.post(
+            reverse("account_api_token_create"), {"lifetime": "forever"}
+        )
+
+        assert response.status_code == 200
+        assert response.context["form"].has_error("lifetime", code="invalid_choice")
+        assert get_token_model().objects.count() == 0
+
+    def test_a_return_address_in_the_request_is_ignored(self, signed_in_client) -> None:
+        response = signed_in_client.post(
+            reverse("account_api_token_create") + "?next=/elsewhere/",
+            {"lifetime": "30d", "next": "/elsewhere/"},
+        )
+
+        assert response["Location"] == reverse("account_api_tokens")
+
+    def test_a_visitor_cannot_create_a_token(self, db) -> None:
+        url = reverse("account_api_token_create")
+
+        response = Client().post(url, {"lifetime": "30d"})
+
+        assert response.status_code == 302
+        assert response["Location"] == f"{resolve_url('account_login')}?next={url}"
+        assert get_token_model().objects.count() == 0
 
 
 class TestRevokeTokenView:

@@ -4,10 +4,9 @@ Only a project that routes ``mvp_accounts.tokens.urls`` ever imports this module
 which is why it may import django-rest-knox where nothing else in the package may.
 """
 
-from django import forms
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q, QuerySet
-from django.http import Http404, HttpRequest
+from django.http import Http404, HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -16,6 +15,8 @@ from knox.models import get_token_model
 from knox.settings import knox_settings
 from mvp.views import MVPTemplateView
 from mvp.views.base import PageMixin
+
+from mvp_accounts.tokens.forms import CreateTokenForm
 
 
 class TokenPageMixin(UserPassesTestMixin):
@@ -87,12 +88,22 @@ class TokensView(TokenPageMixin, MVPTemplateView):
 
 
 class CreateTokenView(TokenPageMixin, PageMixin, FormView):
-    """Show the page where a person asks for a new token."""
+    """Ask how long a new token should last, then create it through knox."""
 
     template_name = "mvp_accounts/tokens/create.html"
-    form_class = forms.Form
-    http_method_names = ["get", "head", "options"]
+    form_class = CreateTokenForm
     page_title = _("Create a token")
+
+    def get_success_url(self) -> str:
+        """Return to the tokens page, whatever the request asked for."""
+        return reverse("account_api_tokens")
+
+    def form_valid(self, form: CreateTokenForm) -> HttpResponse:
+        """Create the person's token with the chosen lifetime."""
+        get_token_model().objects.create(
+            user=self.request.user, expiry=form.get_expiry()
+        )
+        return super().form_valid(form)
 
     def get_breadcrumbs(self) -> list[dict]:
         """Lead back to the tokens page."""

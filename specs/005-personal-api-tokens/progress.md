@@ -111,3 +111,10 @@ Did: README "Creating a token" under "API tokens": the five lifetimes and 30 day
 Verified: `forge docs-check --repo . --base 906f348` first reported CreateTokenForm undocumented; after naming it in the README it is clean. `forge conformance --repo . --base 906f348` clean. pre-commit passed.
 Next: the full suite and lint once, the report and the ledger.
 Watch: the README says a person who loses a token revokes it and creates another, which the list page already says; the revoke action itself is a later story.
+
+## 2026-10-08T10:34:12Z · Implementer US4 · T017
+
+Did: RevokeTokenView.get/post redirect with a warning for a key that is unknown, expired or another person's (one refuse_gone response); GET renders the confirmation for the named working token and deletes nothing. Replaced the Http404 in get_token with None. POST for a held token is a temporary 405 until T018.
+Verified: `uv run pytest tests/test_tokens/test_views.py -q` -> 65 passed. Gone-token tests were red first (KeyError 'location': the view raised 404). Passed first time, probed by mutation: loading deletes nothing (GET made to delete -> 3 tests failed), the lookup scoping (unscoped lookup -> 8 failed), the indistinguishable response (key echoed in message -> 2 failed), the list row link (href changed -> test_a_row_links_to_the_revoke_page_by_token_key failed). Mutations reverted.
+Next: T018, POST deletes the one record.
+Watch: the earlier tests asserted `status_code != 200` rather than 404, so none needed changing.

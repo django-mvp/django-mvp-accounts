@@ -22,6 +22,7 @@ from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
 from django.db.models import Q
+from django.test import Client
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 from knox.models import get_token_model
@@ -452,3 +453,33 @@ class TestSeededApiTokens:
         assert self.tokens_of("super.user@example.com").count() == (
             knox_settings.TOKEN_LIMIT_PER_USER
         )
+
+
+class TestDemoWhoAmI:
+    @pytest.fixture
+    def whoami(self) -> str:
+        return reverse("api-whoami")
+
+    @pytest.fixture
+    def new_token(self, signed_in_client) -> str:
+        """Create a token on the create page and return the value it shows."""
+        response = signed_in_client.post(
+            reverse("account_api_token_create"), {"lifetime": "30d"}, follow=True
+        )
+        field = BeautifulSoup(response.content, "html.parser").find(id="new-api-token")
+        return field["value"]
+
+    def test_a_token_made_on_the_create_page_is_answered_as_its_person(
+        self, signed_in_client, new_token, whoami
+    ) -> None:
+        header = f"{knox_settings.AUTH_HEADER_PREFIX} {new_token}"
+
+        response = Client().get(whoami, headers={"Authorization": header})
+
+        assert response.status_code == 200
+        assert response.json() == {"email": signed_in_client.user.email}
+
+    def test_a_request_with_no_token_is_refused(self, signed_in_client, whoami) -> None:
+        response = Client().get(whoami)
+
+        assert response.status_code == 401

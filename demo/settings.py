@@ -162,10 +162,6 @@ REST_KNOX = {
     "TOKEN_LIMIT_PER_USER": 5,
 }
 
-# Only staff hold API tokens in the demo, so the pages can be looked at both as
-# someone who has them and as someone who must see nothing of them.
-MVP_ACCOUNTS_API_TOKEN_ACCESS = "demo.access.staff_only"
-
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 

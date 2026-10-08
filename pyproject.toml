@@ -170,7 +170,7 @@ extend_exclude = ["tests/", "demo/", "docs/"]
 # (see [project] dependencies).
 # Nor does one import Django REST framework: django-rest-knox is built on it,
 # and the extra names it so both arrive at versions that were tested together.
-DEP002 = ["django-mvp", "djangorestframework"]
+DEP002 = ["django-mvp", "djangorestframework", "django-rest-knox"]
 # flex_menu comes in through django-mvp, which builds its menus on it, so
 # django-mvp's requirement is the pin that matters.
 DEP003 = ["flex_menu"]

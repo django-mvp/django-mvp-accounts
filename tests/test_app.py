@@ -23,7 +23,7 @@ class TestPackagedApp:
 
     def test_the_public_surface_is_the_components_it_ships(self) -> None:
         components = sorted(path.name for path in COTTON_ROOT.rglob("*.html"))
-        assert components == ["example.html"]
+        assert components == ["created.html", "example.html"]
 
 
 class TestStarterComponent:

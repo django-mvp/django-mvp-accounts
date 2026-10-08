@@ -3,9 +3,6 @@
 from django.conf import settings
 from django.http import Http404
 from mvp.views import MVPTemplateView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from demo.models import SentMessage
 
@@ -42,17 +39,3 @@ class OutboxView(MVPTemplateView):
         return super().get_context_data(
             messages_sent=SentMessage.objects.all()[:20], **kwargs
         )
-
-
-class WhoAmIView(APIView):
-    """Answer with the person a token belongs to.
-
-    The one endpoint of the demo's API. It is there so a token made on the API
-    tokens page can be tried against a real request.
-    """
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """Name the person the request was authenticated as."""
-        return Response({"email": request.user.email})

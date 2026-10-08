@@ -34,3 +34,10 @@ Did: mvp_accounts/menus.py now appends the "Account" group whether or not allaut
 Verified: `uv run pytest tests/test_apps.py tests/test_menus.py tests/test_without_allauth.py tests/test_tokens -q` 44 passed. Against the previous menus.py, the new and updated tests fail (5 failed, 6 errors in the subprocess module). Probes: pointing the no-tokens test at tests.urls fails it; removing the tokens include from urls_without_allauth.py errors the subprocess module. pre-commit passed.
 Next: T006, the landing page card.
 Watch: the two pre-existing tests above were changed as the brief sanctions.
+
+## 2026-10-08T09:58:55Z · Implementer US1 · T006
+
+Did: added the API tokens card after Sessions in mvp_accounts/templates/mvp/account/overview.html, behind `{% url "account_api_tokens" as tokens_url %}`, with the words and icon of the prototype (8e708c7). Tests: API tokens added to the CARDS table in tests/test_account_center.py; a test that with tests.urls_without_knox the card count drops by one and no card links to the tokens page; a test in tests/test_without_allauth.py that the card's link is in the cards of the run without allauth.
+Verified: `uv run pytest tests/test_account_center.py tests/test_without_allauth.py -q` 21 passed. Red step: the CARDS case and the no-allauth card test failed before the template change. Probe, reverted: replacing the guard with `{% if True %}` fails the no-tokens test (a first version of that test, which counted links, did not catch it because an empty href renders no anchor; it now counts the cards in the grid). pre-commit passed.
+Next: T007, without knox and without Django REST framework.
+Watch: none.

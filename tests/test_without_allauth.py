@@ -82,5 +82,10 @@ class TestWithoutAllauth:
         _status, page = result["account_center"]
         assert f'href="{result["tokens_url"]}"' in page
 
+    def test_the_account_center_has_the_api_tokens_card(self, result) -> None:
+        _status, page = result["account_center"]
+        cards = page[page.index('id="account-center-cards"') :]
+        assert f'href="{result["tokens_url"]}"' in cards
+
     def test_the_tokens_page_answers_a_signed_in_person(self, result) -> None:
         assert result["tokens_page"] == 200

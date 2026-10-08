@@ -5,6 +5,7 @@ not mirror a source file.
 """
 
 import pytest
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
@@ -20,6 +21,7 @@ CARDS = {
     "Phone number": "account_change_phone",
     "Connected accounts": "socialaccount_connections",
     "Sessions": "usersessions_list",
+    "API tokens": "account_api_tokens",
 }
 
 
@@ -27,6 +29,12 @@ def cards_of(page: str) -> str:
     """The part of the page that holds the cards."""
     start = page.index('id="account-center-cards"')
     return page[start:]
+
+
+def card_count(page: str) -> int:
+    """How many cards the page holds."""
+    grid = BeautifulSoup(page, "html.parser").find(id="account-center-cards")
+    return len(grid.find_all(recursive=False))
 
 
 @pytest.fixture
@@ -52,6 +60,19 @@ class TestOverviewCards:
         assert f'href="{reverse("account_email")}"' in cards
         assert f'href="{reverse("account_change_password")}"' in cards
         assert f'href="{reverse("account_change_phone")}"' not in cards
+
+    def test_no_api_tokens_card_when_the_tokens_urls_are_not_included(
+        self, signed_in_client, account_center, settings
+    ) -> None:
+        tokens_link = f'href="{reverse("account_api_tokens")}"'
+        cards_with_tokens = cards_of(account_center)
+        settings.ROOT_URLCONF = "tests.urls_without_knox"
+
+        page = signed_in_client.get(reverse("account-center")).content.decode()
+
+        assert tokens_link in cards_with_tokens
+        assert tokens_link not in cards_of(page)
+        assert card_count(page) == card_count(account_center) - 1
 
     def test_the_two_factor_card_links_to_the_overview(self, account_center) -> None:
         cards = cards_of(account_center)

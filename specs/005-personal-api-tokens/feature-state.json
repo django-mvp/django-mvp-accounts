@@ -426,6 +426,33 @@
             ],
             "verified_by_ci": false
           }
+        },
+        {
+          "id": "T025",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestNewTokenShownOnce::test_the_cookie_is_secure_where_the_project_marks_its_session_cookie_so"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py -k secure (red before the change, green after)"
+            ]
+          }
+        },
+        {
+          "id": "T026",
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestCreateTokenView::test_the_page_asks_for_the_lifetime_in_a_field_of_that_name"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens -q (106 passed)",
+              "uv run pre-commit run --all-files (all hooks passed)"
+            ]
+          }
         }
       ]
     },

@@ -302,3 +302,18 @@ first characters, and the message at the limit back to saying that no token was 
 the sentences the maintainer saw on the prototype. Wording carries no test.
 
 **ADR:** none, local to this feature and nothing downstream inherits it.
+
+## D25 — What the code review changed
+
+Two reviews of the finished diff, one for correctness and documentation and one for security.
+Both approved, with nothing critical or high. Fixed: the one-time cookie is also marked Secure
+wherever the project marks its session cookie so; the README's account of knox's `TOKEN_TTL` now
+covers `AUTO_REFRESH`; the README says the limit is counted just before creating and can be
+passed by two simultaneous requests, as in knox's own view; small tidying. Left for the
+maintainer: with no knox limit set, a person can create any number of tokens, which the README
+tells a project to prevent by setting one.
+
+The same pass found the lifetime field drawn as radio buttons. It is a drop-down labelled
+"Expires after", as the maintainer approved.
+
+**ADR:** none, corrections to this feature.

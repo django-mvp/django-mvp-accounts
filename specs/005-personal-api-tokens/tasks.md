@@ -325,3 +325,26 @@ does not revoke tokens a person already holds and is not consulted when a token 
 
 FR-017, research R10. `makemessages -l en` from inside `mvp_accounts/`. Check that every string
 this feature added is in the catalogue.
+
+---
+
+## After the code review
+
+### T025 — The one-time cookie is Secure where the project's session cookie is
+
+**Files**: `mvp_accounts/tokens/views.py`, `tests/test_tokens/test_views.py`
+
+The cookie was marked Secure only on a request Django sees as HTTPS, which a proxy that hides the
+scheme defeats. It is now also Secure wherever the project sets `SESSION_COOKIE_SECURE`. Test:
+with that setting on and a plain request, the redirect's cookie carries Secure.
+
+### T026 — Review corrections that need no new test
+
+**Files**: `README.md`, `mvp_accounts/tokens/forms.py`, `mvp_accounts/menus.py`,
+`demo/management/commands/seed_demo.py`, `tests/test_without_knox.py`,
+`tests/test_tokens/test_views.py`, `mvp_accounts/locale/en/LC_MESSAGES/django.po`
+
+README: knox's `AUTO_REFRESH` extends a page-made token's expiry, the limit is counted just
+before creating, the cookie is sent to the tokens pages, and the menu's helper is no longer named.
+Two unused names and two over-long lines removed. The lifetime field is a drop-down labelled
+"Expires after" with its help text, as approved: the rebuild had drawn radio buttons.

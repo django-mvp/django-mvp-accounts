@@ -15,8 +15,10 @@ page and offers to sign out the others. Any other account shows one.
 staff.user holds three working API tokens, one of them with no expiry, and one
 that has expired and so is not listed. super.user holds as many working tokens
 as the demo's limit, so its tokens page offers no more. regular.user holds
-none. A reviewer opening this project should not have to invent a login or read the code to find
-out what exists.
+none, and may not: the demo lets in staff only (MVP_ACCOUNTS_API_TOKEN_ACCESS),
+so that account has no API tokens entry or card and is refused at the page.
+A reviewer opening this project should not have to invent a login or read the
+code to find out what exists.
 
 Safe to run repeatedly, and refuses to run at all unless DEBUG is on — these
 are known passwords, and the only thing standing between them and a deployed
@@ -143,7 +145,8 @@ class Command(BaseCommand):
                 "other browsers, so its sessions page lists three. "
                 "staff.user@example.com holds three API tokens, one with no expiry, "
                 "and one that has expired; super.user@example.com holds as many as "
-                "the demo's limit; regular.user@example.com holds none."
+                "the demo's limit; regular.user@example.com may not hold tokens, because "
+                "the demo lets in staff only."
             )
         )
 

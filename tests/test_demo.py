@@ -511,3 +511,49 @@ class TestDemoRevokedToken:
         answered = self.answer(kept, whoami)
         assert answered.status_code == 200
         assert answered.json() == {"email": signed_in_client.user.email}
+
+
+class TestDemoTokenAccess:
+    STAFF_ONLY = "demo.access.staff_only"
+
+    @pytest.fixture
+    def seeded(self, db, settings):
+        settings.DEBUG = True
+        settings.MVP_ACCOUNTS_API_TOKEN_ACCESS = self.STAFF_ONLY
+        call_command("seed_demo", stdout=StringIO())
+
+    @staticmethod
+    def signed_in_as(email: str) -> Client:
+        client = Client()
+        client.force_login(EmailAddress.objects.get(email=email).user)
+        return client
+
+    def test_the_demo_lets_in_staff_only(self) -> None:
+        assert demo_settings.MVP_ACCOUNTS_API_TOKEN_ACCESS == self.STAFF_ONLY
+
+    def test_the_suites_own_settings_do_not_carry_the_demos_setting(
+        self, settings
+    ) -> None:
+        assert not hasattr(settings, "MVP_ACCOUNTS_API_TOKEN_ACCESS")
+
+    def test_the_regular_account_is_refused_at_the_tokens_page(self, seeded) -> None:
+        client = self.signed_in_as("regular.user@example.com")
+
+        assert client.get(reverse("account_api_tokens")).status_code == 403
+
+    def test_the_staff_account_sees_its_three_tokens(self, seeded) -> None:
+        client = self.signed_in_as("staff.user@example.com")
+
+        response = client.get(reverse("account_api_tokens"))
+
+        assert response.status_code == 200
+        assert len(response.context["tokens"]) == 3
+
+    def test_the_regular_accounts_account_center_has_no_tokens_link(
+        self, seeded
+    ) -> None:
+        client = self.signed_in_as("regular.user@example.com")
+
+        page = client.get(reverse("account-center")).content.decode()
+
+        assert f'href="{reverse("account_api_tokens")}"' not in page

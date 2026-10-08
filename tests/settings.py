@@ -50,3 +50,7 @@ SOCIALACCOUNT_PROVIDERS = {
 # The demo accepts a fixed authenticator code. Every test enters a real one
 # computed from the secret, so the shortcut is switched off here.
 MFA_TOTP_INSECURE_BYPASS_CODE = None
+
+# The demo lets in staff only. The suite runs the package's default, every
+# signed-in person, and the tests of the setting name a function themselves.
+del MVP_ACCOUNTS_API_TOKEN_ACCESS  # noqa: F821

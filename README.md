@@ -126,8 +126,9 @@ and adds to `{% block account.cards %}` after `{{ block.super }}`.
 A person can see and manage their own API tokens in the Account Center when the project uses
 [django-rest-knox](https://github.com/jazzband/django-rest-knox), which keeps the tokens but ships
 no pages for them. This package adds the pages, an "API tokens" entry under the "Account" heading
-and an "API tokens" card on the landing page. The pages are signed-in only, and a visitor is sent
-to sign in.
+and an "API tokens" card on the landing page. Every signed-in person may use them unless the
+project says otherwise (see [Who may hold tokens](#who-may-hold-tokens)), and a visitor is sent to
+sign in.
 
 Nothing is on until the project turns it on:
 
@@ -224,6 +225,43 @@ else gets the same reply: a message that it no longer exists.
 Changing a password does not revoke a person's tokens, so a person who suspects a leak should
 revoke them here as well. knox's own sign-out-everywhere endpoint, `LogoutAllView`, deletes all
 of a person's tokens at once; the pages in this package revoke one at a time.
+
+### Who may hold tokens
+
+Some sites give API access to a few people, such as staff. Set
+`MVP_ACCOUNTS_API_TOKEN_ACCESS` to the dotted path of a function that takes the signed-in person
+and says whether they may hold tokens:
+
+```python
+# settings.py
+MVP_ACCOUNTS_API_TOKEN_ACCESS = "myproject.access.staff_only"
+```
+
+```python
+# myproject/access.py
+def staff_only(user):
+    return user.is_staff
+```
+
+Left unset, or set to `None`, every signed-in person may. A visitor who is not signed in never
+may, and your function is not called for one. Whatever your function returns is read as true or
+false.
+
+One answer decides everything. For a person it says no to, the tokens, create and revoke pages
+reply with 403 Forbidden, to a GET or a POST, so nothing is created or deleted, and the Account
+Center shows neither the "API tokens" entry nor the card. The demo sets the setting to
+`demo.access.staff_only`.
+
+The setting is read in one place, `may_use_tokens(user)` in `mvp_accounts.tokens.access`. The
+pages call it, and so do the menu entry's `may_hold_tokens` check and the `may_use_api_tokens`
+template tag the card uses. A project that adds its own page for tokens can call it too.
+
+The setting is not checked for you: a path that does not import raises `ImportError` the first
+time a page, the entry or the card asks.
+
+It decides who sees the pages and nothing more. It does not revoke tokens a person already
+holds, and it is not consulted when a token is used, because this package checks no API request.
+A project that needs either deletes those tokens itself or checks in its own API.
 
 ## Two-factor authentication
 

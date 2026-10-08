@@ -147,6 +147,10 @@ MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_TRUST_ENABLED = True
 MFA_TOTP_INSECURE_BYPASS_CODE = "123456"
 
+# Only staff may hold API tokens here, so the demo shows a site that limits them.
+# Left unset, every signed-in person may.
+MVP_ACCOUNTS_API_TOKEN_ACCESS = "demo.access.staff_only"
+
 # The sessions page can show when each session was last used. The demo turns
 # it on so that column can be seen; the package leaves it to the project.
 USERSESSIONS_TRACK_ACTIVITY = True

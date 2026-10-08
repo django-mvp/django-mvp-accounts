@@ -9,20 +9,33 @@ sign-up pages.
 import re
 
 import pytest
+from allauth.account.models import EmailConfirmationHMAC
 from django.core import mail
-from django.urls import reverse
+from django.urls import resolve, reverse
 
 from tests.factories import EmailAddressFactory
 from tests.test_entrance_pages import EntrancePageAssertions
 
 LINK = re.compile(r"https?://[^/\s]+(/\S+)")
 CODE = re.compile(r"^[A-Z0-9]{4}-[A-Z0-9]{4}$", re.MULTILINE)
+FORM_TAG = re.compile(r"<form\b[^>]*>", re.IGNORECASE)
+POST_METHOD = re.compile(r'\bmethod="post"', re.IGNORECASE)
+ACTION = re.compile(r'\baction="([^"]*)"')
 NEW_PASSWORD = "a-long-unusual-passphrase"
 
 
 def first_link_in_mail() -> str:
     """The path of the first link in the newest message in the outbox."""
     return LINK.search(mail.outbox[-1].body).group(1)
+
+
+def post_form_actions(html: str) -> list[str]:
+    """The action of every form on the page that is submitted by POST."""
+    return [
+        action.group(1)
+        for tag in FORM_TAG.findall(html)
+        if POST_METHOD.search(tag) and (action := ACTION.search(tag))
+    ]
 
 
 class TestPasswordResetByLink(EntrancePageAssertions):
@@ -163,12 +176,25 @@ class TestEmailVerification(EntrancePageAssertions):
         self.assert_entrance_page(response, "<h1")
 
     def test_confirmation_page_from_the_emailed_link(self, client, db) -> None:
+        """The page's form posts to a confirmation URL for the address.
+
+        allauth signs the key with the time, and the page signs it afresh when
+        it renders, so the form's action equals the emailed link only when both
+        happen within one second. The action is asserted on where it resolves
+        and whose address its key confirms, never on the link's exact text.
+        """
         self.sign_up(client, "confirm@example.com")
-        link = first_link_in_mail()
 
-        response = client.get(link, follow=True)
+        response = client.get(first_link_in_mail(), follow=True)
 
-        self.assert_entrance_page(response, f'action="{link}"')
+        html = self.assert_entrance_page(response)
+        actions = post_form_actions(html)
+        assert len(actions) == 1, "the page's own form is missing"
+        match = resolve(actions[0])
+        assert match.url_name == "account_confirm_email"
+        confirmation = EmailConfirmationHMAC.from_key(match.kwargs["key"])
+        assert confirmation is not None, "the form's key confirms nothing"
+        assert confirmation.email_address.email == "confirm@example.com"
 
     def test_verified_email_required_page(self, client, db) -> None:
         address = EmailAddressFactory(verified=False)

@@ -4,9 +4,10 @@ Only a project that routes ``mvp_accounts.tokens.urls`` ever imports this module
 which is why it may import django-rest-knox where nothing else in the package may.
 """
 
+from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q, QuerySet
-from django.http import Http404, HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -131,6 +132,30 @@ class CreateTokenView(TokenPageMixin, PageMixin, FormView):
     template_name = "mvp_accounts/tokens/create.html"
     form_class = CreateTokenForm
     page_title = _("Create a token")
+
+    def get(self, request, *args, **kwargs):
+        """Send a person who is at the limit back to the tokens page."""
+        if self.is_at_limit():
+            return self.refuse_at_limit()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Create nothing for a person who is at the limit."""
+        if self.is_at_limit():
+            return self.refuse_at_limit()
+        return super().post(request, *args, **kwargs)
+
+    def refuse_at_limit(self) -> HttpResponse:
+        """Say the limit is reached and return to the tokens page.
+
+        Returns:
+            A redirect to the tokens page, with an error message added.
+        """
+        messages.error(
+            self.request,
+            _("You hold as many tokens as this site allows. Revoke one first."),
+        )
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self) -> str:
         """Return to the tokens page, whatever the request asked for."""

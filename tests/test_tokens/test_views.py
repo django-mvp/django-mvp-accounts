@@ -5,6 +5,8 @@ from unittest import mock
 
 import pytest
 from bs4 import BeautifulSoup
+from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.sessions.models import Session
 from django.db import connection
 from django.shortcuts import resolve_url
@@ -481,3 +483,88 @@ class TestNewTokenShownOnce:
         signed_in_client.get(list_url)
 
         assert get_token_model().objects.count() == 2
+
+
+class TestCreateTokenAtTheLimit:
+    @pytest.fixture
+    def create_url(self) -> str:
+        return reverse("account_api_token_create")
+
+    @pytest.fixture
+    def at_limit(self, signed_in_client, settings):
+        """A signed-in person who holds the one token the project allows."""
+        settings.REST_KNOX = {**settings.REST_KNOX, "TOKEN_LIMIT_PER_USER": 1}
+        return AuthTokenFactory(user=signed_in_client.user)
+
+    @staticmethod
+    def levels(response) -> list[int]:
+        """Return the level of each message the response added."""
+        return [message.level for message in get_messages(response.wsgi_request)]
+
+    def test_loading_the_page_is_refused_with_an_error_and_a_redirect(
+        self, signed_in_client, at_limit, create_url
+    ) -> None:
+        response = signed_in_client.get(create_url)
+
+        assert response.status_code == 302
+        assert response["Location"] == reverse("account_api_tokens")
+        assert self.levels(response) == [messages.ERROR]
+
+    def test_submitting_the_page_creates_nothing(
+        self, signed_in_client, at_limit, create_url
+    ) -> None:
+        response = signed_in_client.post(create_url, {"lifetime": "30d"})
+
+        assert get_token_model().objects.count() == 1
+        assert response["Location"] == reverse("account_api_tokens")
+        assert self.levels(response) == [messages.ERROR]
+
+    def test_the_tokens_page_it_returns_to_has_no_link_to_create_one(
+        self, signed_in_client, at_limit, create_url
+    ) -> None:
+        response = signed_in_client.get(create_url, follow=True)
+
+        assert response.redirect_chain[-1][0] == reverse("account_api_tokens")
+        page = BeautifulSoup(response.content, "html.parser")
+        assert page.find("a", href=create_url) is None
+
+    def test_an_expired_token_does_not_count(
+        self, signed_in_client, at_limit, create_url
+    ) -> None:
+        get_token_model().objects.update(expiry=timezone.now() - timedelta(days=1))
+
+        response = signed_in_client.post(create_url, {"lifetime": "30d"})
+
+        assert get_token_model().objects.count() == 2
+        assert response["Location"] == reverse("account_api_tokens")
+        assert self.levels(response) == []
+
+    def test_a_token_with_no_expiry_counts(
+        self, signed_in_client, at_limit, create_url
+    ) -> None:
+        get_token_model().objects.update(expiry=None)
+
+        signed_in_client.post(create_url, {"lifetime": "30d"})
+
+        assert get_token_model().objects.count() == 1
+
+    def test_without_a_limit_creating_is_never_refused(
+        self, signed_in_client, settings, create_url
+    ) -> None:
+        settings.REST_KNOX = {**settings.REST_KNOX, "TOKEN_LIMIT_PER_USER": None}
+        AuthTokenFactory.create_batch(3, user=signed_in_client.user)
+
+        response = signed_in_client.post(create_url, {"lifetime": "30d"})
+
+        assert get_token_model().objects.count() == 4
+        assert self.levels(response) == []
+
+    def test_another_persons_tokens_do_not_count(
+        self, signed_in_client, settings, create_url
+    ) -> None:
+        settings.REST_KNOX = {**settings.REST_KNOX, "TOKEN_LIMIT_PER_USER": 1}
+        AuthTokenFactory(user=UserFactory())
+
+        signed_in_client.post(create_url, {"lifetime": "30d"})
+
+        assert get_token_model().objects.filter(user=signed_in_client.user).count() == 1

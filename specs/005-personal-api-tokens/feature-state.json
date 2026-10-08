@@ -429,18 +429,62 @@
       "tasks": [
         {
           "id": "T017",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestRevokeTokenView",
+              "tests/test_tokens/test_views.py::TestRevokeTokenViewForATokenThatIsGone",
+              "tests/test_tokens/test_views.py::TestTokensView::test_a_row_links_to_the_revoke_page_by_token_key"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py -q (65 passed, exit 0; red first: the gone-token tests failed on the 404)",
+              "mutation probes on the first-time-passing tests (GET deletes, unscoped lookup, distinct message, wrong row href) each failed the test that guards it, then reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:193",
+              "mvp_accounts/tokens/views.py:218",
+              "mvp_accounts/tokens/views.py:230"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T018",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [
+              "tests/test_tokens/test_views.py::TestRevokingAToken",
+              "tests/test_demo.py::TestDemoRevokedToken"
+            ],
+            "commands": [
+              "uv run pytest tests/test_tokens/test_views.py tests/test_demo.py::TestDemoRevokedToken -q (72 passed, exit 0; red first: 5 of 7 new tests failed)",
+              "mutation probes (queryset delete, unscoped lookup, test_func True, no-op delete) each failed a test, then reverted"
+            ],
+            "code": [
+              "mvp_accounts/tokens/views.py:237"
+            ],
+            "verified_by_ci": false
+          }
         },
         {
           "id": "T019",
-          "status": "todo",
-          "attempts": 0
+          "status": "done",
+          "attempts": 1,
+          "evidence": {
+            "tests": [],
+            "commands": [
+              "forge docs-check --repo . --base f3cb1c1 (clean, exit 0)",
+              "forge conformance --repo . --base f3cb1c1 (clean, exit 0)",
+              "uv run pre-commit run --all-files (exit 0)"
+            ],
+            "code": [
+              "README.md:218",
+              "CHANGELOG.md:28"
+            ],
+            "verified_by_ci": false
+          }
         }
       ]
     },

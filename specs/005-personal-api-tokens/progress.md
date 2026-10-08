@@ -27,3 +27,10 @@ Did: added mvp_accounts/tokens/urls.py (three routes, the revoke one on a path c
 Verified: `uv run pytest tests/test_tokens -q` 24 passed. Red step: collection failed with ImportError for the views before they existed, then the visitor tests failed on a fixture mistake of mine (fixed in the test). Mutation probes, each reverted: test_func returning True fails the three visitor tests; list.html back to token.digest fails the revoke-link test; dropping get_working_tokens() from the revoke lookup fails the stranger and expired tests. pre-commit run --all-files passed; deptry passes with knox off the ignore list.
 Next: T005, the API tokens entry.
 Watch: see decisions.md D21. TokensView already supplies `tokens`, so some of T009's row tests will pass before US3 writes any code.
+
+## 2026-10-08T09:56:55Z · Implementer US1 · T005
+
+Did: mvp_accounts/menus.py now appends the "Account" group whether or not allauth is installed: allauth's entries and the reauthentication pages only when it is, the api_tokens entry (pages: create and revoke routes, no check) always, last. Added tests/urls_without_knox.py (demo routes without the tokens include, not importing demo.urls); tests/urls_without_allauth.py gained the tokens include. New TestApiTokensEntry in tests/test_menus.py. Updated the two tests that pinned the old group: tests/test_apps.py (children list gains api_tokens) and tests/test_without_allauth.py (the "no account group without allauth" assertion became "the group holds only api_tokens"; the script now also requests the tokens page; two new tests for the entry and the 200).
+Verified: `uv run pytest tests/test_apps.py tests/test_menus.py tests/test_without_allauth.py tests/test_tokens -q` 44 passed. Against the previous menus.py, the new and updated tests fail (5 failed, 6 errors in the subprocess module). Probes: pointing the no-tokens test at tests.urls fails it; removing the tokens include from urls_without_allauth.py errors the subprocess module. pre-commit passed.
+Next: T006, the landing page card.
+Watch: the two pre-existing tests above were changed as the brief sanctions.

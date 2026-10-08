@@ -33,11 +33,17 @@ SCRIPT = textwrap.dedent(
 
     overview = client.get(reverse("overview"))
     account_center = client.get(reverse("account-center"))
+    tokens_url = reverse("account_api_tokens")
+    tokens_page = client.get(tokens_url)
+    group = AccountCenterMenu.get("account")
 
     print(json.dumps({
         "allauth_installed": apps.is_installed("allauth.account"),
         "package_installed": apps.is_installed("mvp_accounts"),
         "menu": [child.name for child in AccountCenterMenu.children],
+        "account_entries": [child.name for child in group.children],
+        "tokens_url": tokens_url,
+        "tokens_page": tokens_page.status_code,
         "overview": [overview.status_code, overview.content.decode()],
         "account_center": [account_center.status_code, account_center.content.decode()],
     }))
@@ -55,8 +61,9 @@ class TestWithoutAllauth:
         assert result["package_installed"]
         assert not result["allauth_installed"]
 
-    def test_the_menu_holds_none_of_this_packages_entries(self, result) -> None:
-        assert "account" not in result["menu"]
+    def test_the_account_group_holds_only_the_api_tokens_entry(self, result) -> None:
+        assert "account" in result["menu"]
+        assert result["account_entries"] == ["api_tokens"]
 
     def test_the_demo_overview_renders(self, result) -> None:
         status, _page = result["overview"]
@@ -70,3 +77,10 @@ class TestWithoutAllauth:
         assert 'href="/accounts/password/change/"' not in page
         assert 'href="/accounts/email/"' not in page
         assert 'href="/accounts/phone/change/"' not in page
+
+    def test_the_account_center_has_the_api_tokens_entry(self, result) -> None:
+        _status, page = result["account_center"]
+        assert f'href="{result["tokens_url"]}"' in page
+
+    def test_the_tokens_page_answers_a_signed_in_person(self, result) -> None:
+        assert result["tokens_page"] == 200

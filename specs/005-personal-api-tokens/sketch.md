@@ -129,8 +129,7 @@ when it was created and when it expires, says what will stop working, and offers
   django-rest-knox is installed, and the package's menu and template tag have not been tried in a
   project without it (FR-002, FR-003).
 - **The refusal for a person who may not hold tokens** is Django's bare "403 Forbidden" page in
-  the demo, which sets no error handlers. Whether refused means "forbidden" or "not found" is not
-  settled either.
+  the demo, which sets no error handlers.
 - **The limit refusal.** Opening the create page at the limit sends the person back to the list
   with a toast that fades after two seconds. The notice above the list is what a person reads.
 - **Revoking a token that is already gone** answers "not found". The specification asks for a
@@ -164,15 +163,17 @@ Ruled by the maintainer on 2026-10-08. The build may not undo these.
 | The **Create token** button | Its text stays on one line at every width |
 | A person sets the expiry | Creating is a form on a page of its own, with a choice of lifetime |
 | The list shows part of the token | Columns are the token's first characters, created and expires |
+| The lifetimes on offer | 7 days, 30 days, 90 days, 1 year and never, with 30 days selected |
+| Being refused | A person who may not hold tokens gets "forbidden" at a tokens address |
 | No model and no app of the package's own | The prototype stores nothing. Naming tokens is left to planning and review (`planning-notes.md`) |
 | Dates without a time of day | For created and expires, in the list and on the confirmation |
 | Who may hold tokens | The project can limit it. A person outside sees no entry and no card, and the pages refuse them |
 
-Choices the prototype made where no rule settles the answer. Each is the maintainer's to change.
+Choices the prototype made where no rule settles the answer. The maintainer saw each and approved
+the screens with them in.
 
 | Choice | Intent |
 |---|---|
-| Lifetimes of 7 days, 30 days, 90 days, 1 year and never, with 30 days selected | Short enough by default that a forgotten token goes away, with a long option and "never" for a script that runs unattended |
 | The lifetime is a drop-down list labelled "Expires after" | Five choices in the space of one field. The page stays as short as the revoke page |
 | A token that never expires reads "Never" in the Expires column | The column heading already says "Expires" |
 | The card is outlined in the warning colour and carries a warning alert | The one thing that cannot be recovered should be the loudest thing on the page |
@@ -198,9 +199,8 @@ Settled by a rule, and so not open to taste:
 - The table sits in a wrapper that scrolls sideways and can be reached by keyboard, as the
   sessions table does.
 
-## Open questions for the maintainer
+## Approved
 
-1. **The lifetimes.** Are 7 days, 30 days, 90 days, 1 year and never the right list, and is 30 days
-   the right one to start on?
-2. **Being refused.** Should a person who may not hold tokens be told "forbidden" at a tokens
-   address, as now, or "not found", so the pages give no sign they exist?
+The maintainer approved these screens on 2026-10-08. The two questions that were still open are
+settled as built: the lifetimes are 7 days, 30 days, 90 days, 1 year and never, with 30 days
+selected, and a person who may not hold tokens is refused with "forbidden".

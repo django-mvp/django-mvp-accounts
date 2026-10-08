@@ -55,3 +55,10 @@ Did: ADR 0005 (the package provides the API tokens pages itself) in the shape of
 Verified: `forge conformance --repo . --base b34bd5b` clean; `forge docs-check --repo . --base b34bd5b` first reported six undocumented public names (the three views, the mixin, and two working names in menus.py), fixed by documenting the views and moving the menu's working names into the allauth branch (separate commit, T005); then clean. pre-commit run --all-files passed; the menu, apps and no-allauth tests pass (21).
 Next: the full suite and lint, then the report.
 Watch: the CHANGELOG entry and CONTEXT.md describe the whole feature (creating, choosing an expiry), which later stories build; the README does not.
+
+## 2026-10-08T10:09:20Z · Implementer US3 · T009
+
+Did: wrote TestTokensList (9 tests) in tests/test_tokens/test_views.py; added TokenPageMixin.is_at_limit() and put token_limit and at_limit in TokensView's context.
+Verified: uv run pytest tests/test_tokens/test_views.py -> 26 passed. Red first: 3 failed (token_limit missing from context, create link still shown at the limit); the other 6 passed first time because US1 already supplied `tokens`. Probed each by mutation and restored: dropping the user filter fails the other-person test, dropping the expiry filter fails the expired test, a per-row user lookup fails the query-count test, an always-present <time> fails the no-expiry test, an always-present table fails the no-tokens test, expiry showing the created day fails the three-rows test, and removing the create href fails the no-tokens link check. uv run pre-commit run --all-files passed.
+Next: T010, seeded tokens in seed_demo.
+Watch: the query-count test makes one request before measuring, because a client's first request also records its session and costs two more queries.

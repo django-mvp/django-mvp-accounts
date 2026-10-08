@@ -21,14 +21,17 @@ from django.apps import apps
 from django.contrib.sessions.models import Session
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
+from django.db.models import Q
 from django.urls import NoReverseMatch, reverse
+from django.utils import timezone
 from knox.models import get_token_model
+from knox.settings import knox_settings
 from packaging.requirements import Requirement
 
 from demo import settings as demo_settings
 from demo.adapter import DemoAccountAdapter
 from demo.mail import OutboxEmailBackend
-from tests.factories import PhoneNumberFactory, UserFactory
+from tests.factories import AuthTokenFactory, PhoneNumberFactory, UserFactory
 
 
 class TestOverviewPage:
@@ -399,3 +402,53 @@ class TestDemoApiTokens:
 
     def test_the_package_adds_no_migration(self, db) -> None:
         call_command("makemigrations", check=True, dry_run=True, stdout=StringIO())
+
+
+class TestSeededApiTokens:
+    @pytest.fixture(autouse=True)
+    def debug_on(self, settings):
+        settings.DEBUG = True
+
+    @staticmethod
+    def tokens_of(email: str):
+        return get_token_model().objects.filter(user__email=email)
+
+    @staticmethod
+    def working(tokens):
+        return tokens.filter(Q(expiry__isnull=True) | Q(expiry__gt=timezone.now()))
+
+    @pytest.fixture
+    def seeded_twice(self, db):
+        call_command("seed_demo", stdout=StringIO())
+        call_command("seed_demo", stdout=StringIO())
+
+    def test_staff_has_three_working_tokens_and_one_without_an_expiry(
+        self, seeded_twice
+    ) -> None:
+        working = self.working(self.tokens_of("staff.user@example.com"))
+
+        assert working.count() == 3
+        assert working.filter(expiry__isnull=True).count() == 1
+
+    def test_staff_has_one_token_that_has_expired(self, seeded_twice) -> None:
+        tokens = self.tokens_of("staff.user@example.com")
+
+        assert tokens.filter(expiry__lte=timezone.now()).count() == 1
+
+    def test_super_holds_exactly_the_demos_limit(self, seeded_twice) -> None:
+        working = self.working(self.tokens_of("super.user@example.com"))
+
+        assert working.count() == knox_settings.TOKEN_LIMIT_PER_USER
+
+    def test_regular_holds_none_even_after_making_one(self, db) -> None:
+        AuthTokenFactory(user=UserFactory(username="regular.user@example.com"))
+
+        call_command("seed_demo", stdout=StringIO())
+
+        assert not self.tokens_of("regular.user@example.com").exists()
+
+    def test_each_run_replaces_the_tokens_it_seeded(self, seeded_twice) -> None:
+        assert self.tokens_of("staff.user@example.com").count() == 4
+        assert self.tokens_of("super.user@example.com").count() == (
+            knox_settings.TOKEN_LIMIT_PER_USER
+        )

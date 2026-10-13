@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.12, <4.0"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -551,6 +551,20 @@ wheels = [
 ]
 
 [[package]]
+name = "daisy-cotton-ext"
+version = "0.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "daisy-cotton" },
+    { name = "django" },
+    { name = "django-cotton" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/79/7a/1db639d982d08288429add195404fccc6ecabdbcaf9914b8090ef32f63e1/daisy_cotton_ext-0.5.0.tar.gz", hash = "sha256:ee0294ada8b2fc9ff61467329a1d5813bbb5847817811407d82aef666f4cb0e6", size = 88274, upload-time = "2026-10-12T21:39:36.133Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/61/823b28504a28594e18976a73396e2975e5c5f38463b7644a0e362fb051c5/daisy_cotton_ext-0.5.0-py3-none-any.whl", hash = "sha256:7928193ec1bea89375e0d20a53ee2218072cda797fd80c401812ea80b43283e8", size = 134374, upload-time = "2026-10-12T21:39:34.643Z" },
+]
+
+[[package]]
 name = "deptry"
 version = "0.25.1"
 source = { registry = "https://pypi.org/simple" }
@@ -779,6 +793,7 @@ api = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "daisy-cotton-ext" },
     { name = "django-allauth", extra = ["mfa"] },
     { name = "django-mvp-accounts", extra = ["api"] },
     { name = "mvp-shared", extra = ["dev", "test"] },
@@ -795,6 +810,7 @@ provides-extras = ["api"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "daisy-cotton-ext", specifier = ">=0.5.0" },
     { name = "django-allauth", extras = ["mfa"], specifier = ">=65.19.4,<66" },
     { name = "django-mvp-accounts", extras = ["api"] },
     { name = "mvp-shared", extras = ["dev", "test"], git = "https://github.com/django-mvp/shared.git?tag=v0.6.0" },

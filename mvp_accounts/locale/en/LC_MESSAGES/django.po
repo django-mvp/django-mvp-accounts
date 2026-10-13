@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 13:01+0200\n"
+"POT-Creation-Date: 2026-10-13 11:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,37 +22,62 @@ msgstr ""
 msgid "Accounts"
 msgstr ""
 
-#: menus.py:112 templates/mvp/account/overview.html:11
+#: menus.py:99 templates/mvp/account/overview.html:11
 msgid "Email"
 msgstr ""
 
-#: menus.py:124 templates/mvp/account/overview.html:20
+#: menus.py:111 templates/mvp/account/overview.html:20
 msgid "Password"
 msgstr ""
 
-#: menus.py:130 templates/mvp/account/overview.html:29
+#: menus.py:117 templates/mvp/account/overview.html:29
 msgid "Phone number"
 msgstr ""
 
-#: menus.py:135 templates/mvp/account/overview.html:38
+#: menus.py:122 templates/mvp/account/overview.html:38
 msgid "Connected accounts"
 msgstr ""
 
-#: menus.py:151 templates/mvp/account/overview.html:47
+#: menus.py:138 templates/mvp/account/overview.html:47
 msgid "Two-factor authentication"
 msgstr ""
 
-#: menus.py:158 templates/mvp/account/overview.html:56
+#: menus.py:145 templates/mvp/account/overview.html:56
 msgid "Sessions"
 msgstr ""
 
-#: menus.py:168
+#: menus.py:155
 msgid "Account"
 msgstr ""
 
-#: menus.py:177 templates/mvp/account/overview.html:66 tokens/views.py:78
+#: menus.py:165 templates/mvp/account/overview.html:66 tokens/views.py:78
 #: tokens/views.py:88 tokens/views.py:193 tokens/views.py:208
 msgid "API tokens"
+msgstr ""
+
+#: templates/account/login.html:9 templates/account/login.html:24
+#: templates/socialaccount/login_redirect.html:9
+msgid "Sign In"
+msgstr ""
+
+#: templates/account/login.html:11 templates/account/signup.html:41
+msgid "Sign in"
+msgstr ""
+
+#: templates/account/login.html:33
+msgid "Sign in with a passkey"
+msgstr ""
+
+#: templates/account/login.html:38
+msgid "Send me a sign-in code"
+msgstr ""
+
+#: templates/account/login.html:48
+msgid "No account yet?"
+msgstr ""
+
+#: templates/account/login.html:48
+msgid "Create one"
 msgstr ""
 
 #: templates/account/logout.html:8 templates/account/logout.html:12
@@ -62,6 +87,26 @@ msgstr ""
 
 #: templates/account/logout.html:15
 msgid "Are you sure you want to sign out?"
+msgstr ""
+
+#: templates/account/signup.html:8
+msgid "Signup"
+msgstr ""
+
+#: templates/account/signup.html:10
+msgid "Create your account"
+msgstr ""
+
+#: templates/account/signup.html:23
+msgid "Sign Up"
+msgstr ""
+
+#: templates/account/signup.html:32
+msgid "Sign up using a passkey"
+msgstr ""
+
+#: templates/account/signup.html:41
+msgid "Already have an account?"
 msgstr ""
 
 #: templates/account/snippets/warn_no_email.html:8
@@ -100,6 +145,10 @@ msgstr ""
 msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
 "email address</a>."
+msgstr ""
+
+#: templates/cotton/mvp_accounts/entrance/card.html:13
+msgid "or"
 msgstr ""
 
 #: templates/cotton/mvp_accounts/token/created.html:11
@@ -202,6 +251,10 @@ msgstr ""
 msgid "Manage API tokens"
 msgstr ""
 
+#: templates/mvp_accounts/entrance/layout.html:11
+msgid "Home"
+msgstr ""
+
 #: templates/mvp_accounts/tokens/create.html:10
 msgid ""
 "The token is shown once, on the next page. Have somewhere ready to keep it."
@@ -295,10 +348,6 @@ msgstr ""
 
 #: templates/mvp_accounts/tokens/revoke.html:28
 msgid "Revoke token"
-msgstr ""
-
-#: templates/socialaccount/login_redirect.html:9
-msgid "Sign In"
 msgstr ""
 
 #: templates/socialaccount/login_redirect.html:16

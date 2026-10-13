@@ -1,7 +1,7 @@
-{% extends "mvp/entrance.html" %}
+{% extends "mvp_accounts/entrance/base.html" %}
 {% comment %}
-  django-mvp's entrance page draws no messages, and allauth adds them here
-  ("Confirmation email sent"), so they are drawn above the card.
+  Maps allauth's block names onto the shell's. The layout around the page is
+  mvp_accounts/entrance/base.html, the file a project replaces to choose one.
 {% endcomment %}
 {% block title %}
   {% block head_title %}
@@ -12,13 +12,6 @@
   {% block extra_head %}
   {% endblock extra_head %}
 {% endblock head %}
-{% block entrance %}
-  <c-mvp.messages :messages="messages" dismissible />
-  <c-mvp.entrance size="md" full-height>
-    {% block content %}
-    {% endblock content %}
-  </c-mvp.entrance>
-{% endblock entrance %}
 {% block extra_js %}
   {% block extra_body %}
   {% endblock extra_body %}

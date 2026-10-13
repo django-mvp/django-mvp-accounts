@@ -22,6 +22,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A project can choose how the pages seen before signing in are laid out. Add
+  `mvp_accounts/entrance/base.html` to your templates, extend `mvp_accounts/entrance/layout.html`,
+  and wrap `{{ block.super }}` in a Cotton component inside `{% block layout %}`. The sign-in and
+  sign-up page blocks in [daisy-cotton-ext](https://github.com/django-mvp/daisy-cotton-ext) fit as
+  they are. A project that adds no template keeps the centred card. The README's "Choosing the
+  entrance layout" section has the details.
+- Entrance pages show the project's brand logo, from django-mvp's `<c-mvp.brand.logo>`, linking
+  home. Fill `{% block logo %}` in `mvp_accounts/entrance/base.html` to draw something else, or
+  leave the block empty to draw nothing.
+
+### Changed
+
+- The sign-in and sign-up pages are arranged differently. The passkey, emailed-code and social
+  provider buttons now sit together, separated from the form by "or", and the link to the other
+  page is at the foot of the card in place of the sentence under the heading. The sign-up heading
+  reads "Create your account". A project that overrides `account/login.html` or
+  `account/signup.html` keeps its own page.
+- `allauth/layouts/entrance.html` now extends `mvp_accounts/entrance/base.html`. A project that
+  replaced `allauth/layouts/entrance.html` to change the frame around these pages should move that
+  to `mvp_accounts/entrance/base.html`.
+- Form fields sit closer together on every account page.
+
 ## [v0.2.0] - 2026-10-08
 
 ### Added

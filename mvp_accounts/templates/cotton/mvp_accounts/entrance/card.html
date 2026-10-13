@@ -1,0 +1,17 @@
+{# @description The entrance layout a project gets by default: one centred card on a plain background. #}
+{# @slot:logo — The project's logo, above the heading #}
+{# @slot:title — The page's heading, when the page hands it over separately #}
+{# @slot:providers — Buttons that skip the form: third-party providers, a passkey, an emailed code #}
+{# @slot:footer — The link across to the other page #}
+{# @slot The page — The form, or the whole page when it hands over nothing else #}
+{% load i18n %}
+<c-mvp.entrance size="md" full-height>
+  {% if logo.strip %}<div class="flex justify-center mb-6">{{ logo }}</div>{% endif %}
+  {% if title.strip %}<h1 class="text-2xl font-bold mb-2">{{ title }}</h1>{% endif %}
+  {{ slot }}
+  {% if providers.strip %}
+    <c-divider class="my-4">{% translate "or" %}</c-divider>
+    <div class="flex flex-col gap-3">{{ providers }}</div>
+  {% endif %}
+  {% if footer.strip %}<div class="mt-4 text-sm text-center">{{ footer }}</div>{% endif %}
+</c-mvp.entrance>

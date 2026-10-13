@@ -1,0 +1,42 @@
+{% extends "account/base_entrance.html" %}
+{% load allauth i18n %}
+{% comment %}
+  allauth 65.19.4's page, taken apart so an entrance layout can place the
+  heading, the form, the buttons that skip the form and the sign-in link.
+{% endcomment %}
+{% block head_title %}
+  {% trans "Signup" %}
+{% endblock head_title %}
+{% block heading %}{% trans "Create your account" %}{% endblock heading %}
+{% block content %}
+  {% if not SOCIALACCOUNT_ONLY %}
+    {% url 'account_signup' as action_url %}
+    {% element form form=form method="post" action=action_url tags="entrance,signup" %}
+      {% slot body %}
+        {% csrf_token %}
+        {% element fields form=form unlabeled=True %}
+        {% endelement %}
+        {{ redirect_field }}
+      {% endslot %}
+      {% slot actions %}
+        {% element button tags="prominent,signup" type="submit" %}
+          {% trans "Sign Up" %}
+        {% endelement %}
+      {% endslot %}
+    {% endelement %}
+  {% endif %}
+{% endblock content %}
+{% block providers %}
+  {% if PASSKEY_SIGNUP_ENABLED %}
+    {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
+      {% trans "Sign up using a passkey" %}
+    {% endelement %}
+  {% endif %}
+  {% if SOCIALACCOUNT_ENABLED %}
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+    {% include "socialaccount/snippets/login_extra.html" %}
+  {% endif %}
+{% endblock providers %}
+{% block footer %}
+  {% trans "Already have an account?" %} <a class="link" href="{{ login_url }}">{% trans "Sign in" %}</a>
+{% endblock footer %}

@@ -10,6 +10,7 @@ One file per architecturally significant decision, named
 - [0003 — Provider icons come from the host project](0003-provider-icons-come-from-the-host-project.md)
 - [0004 — Reskinned elements keep the ids allauth's scripts look up](0004-elements-keep-allauths-script-hooks.md)
 - [0005 — The package provides the API tokens pages itself](0005-the-package-provides-the-api-tokens-pages.md)
+- [0006 — The entrance layout is a template a project replaces](0006-the-entrance-layout-is-a-template-a-project-replaces.md)
 
 ## What earns a record
 

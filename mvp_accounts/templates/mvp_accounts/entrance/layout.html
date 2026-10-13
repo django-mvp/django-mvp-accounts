@@ -1,0 +1,18 @@
+{% extends "mvp/entrance.html" %}
+{% load i18n %}
+{% comment %}
+  The pieces of an entrance page, each a Cotton slot, for whatever component a
+  project wraps around `layout` (docs/adr/0006-the-entrance-layout-is-a-template-a-project-replaces.md).
+  django-mvp's entrance page draws no messages, so allauth's are drawn here.
+{% endcomment %}
+{% block entrance %}
+  <c-mvp.messages :messages="messages" dismissible />
+  {% block layout %}
+    <c-slot name="logo">{% block logo %}<a href="/" aria-label="{% trans "Home" %}"><c-mvp.brand.logo style="height: 2.5rem" /></a>{% endblock logo %}</c-slot>
+    <c-slot name="title">{% block heading %}{% endblock heading %}</c-slot>
+    <c-slot name="providers">{% block providers %}{% endblock providers %}</c-slot>
+    {% block content %}
+    {% endblock content %}
+    <c-slot name="footer">{% block footer %}{% endblock footer %}</c-slot>
+  {% endblock layout %}
+{% endblock entrance %}

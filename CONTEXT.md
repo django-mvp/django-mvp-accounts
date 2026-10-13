@@ -88,6 +88,17 @@ reset and email verification. They render outside the application shell's
 navigation, because a person who is not signed in has nowhere to navigate to.
 _Avoid_: auth pages, login screens.
 
+**Entrance layout**:
+What is drawn around an entrance page: a centred card unless the host project chooses otherwise. The
+host project chooses by writing `mvp_accounts/entrance/base.html`, which wraps the page's pieces in
+a component.
+_Avoid_: theme (the colours, which are django-mvp's), style, skin.
+
+**Piece**:
+One part of an entrance page handed to the entrance layout to place: the logo, the heading, the form,
+the buttons that skip the form, and the link to the other page.
+_Avoid_: section, block (a Django template block is how a page fills a piece, not the piece).
+
 ## Terms deliberately not used
 
 **Access control, permissions, roles, groups**: authorisation, meaning who may

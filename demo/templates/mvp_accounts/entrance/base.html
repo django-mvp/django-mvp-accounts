@@ -1,0 +1,26 @@
+{% extends "mvp_accounts/entrance/layout.html" %}
+{% load static mvp %}
+{% comment %}
+  The demo's entrance layout: the floating sign-in page from daisy-cotton-ext,
+  with the demo's own background and words.
+{% endcomment %}
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/daisy-cotton-ext.css' %}" />
+{% endblock head %}
+{% comment %}
+  The layout writes on a dark surface, so the logo is the dark-theme one.
+{% endcomment %}
+{% block logo %}
+  {% logo_url 40 "dark" as logo %}
+  <a href="/"><img src="{{ logo }}" alt="django-mvp-accounts" style="height: 2.5rem" /></a>
+{% endblock logo %}
+{% block layout %}
+  <c-sign-in.floating invert class="dce:bg-neutral" headline="Every account page, already built.">
+    <c-slot name="background"><c-background.hyperspace /></c-slot>
+    <c-slot name="aside">
+      <p class="dce:text-lg">Sign-in, sign-up, recovery and a second factor, drawn in your own theme.</p>
+    </c-slot>
+    {{ block.super }}
+  </c-sign-in.floating>
+{% endblock layout %}

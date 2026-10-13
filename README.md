@@ -89,6 +89,68 @@ Nothing about that setup is checked or configured for you. This package adds no
 system check and sets no default, so allauth's middleware, authentication
 backend and settings are yours to choose.
 
+## Choosing the entrance layout
+
+The pages a visitor sees before signing in are drawn in a centred card. To draw them another way,
+add one template to your project, `mvp_accounts/entrance/base.html`, and wrap the page's pieces in
+the component you want:
+
+```html
+{% extends "mvp_accounts/entrance/layout.html" %}
+{% load static %}
+
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/daisy-cotton-ext.css' %}" />
+{% endblock head %}
+
+{% block layout %}
+  <c-sign-in.split reverse>
+    <c-slot name="background"><c-background.grid /></c-slot>
+    <c-slot name="aside">
+      <p>Every release, and who shipped it.</p>
+    </c-slot>
+    {{ block.super }}
+  </c-sign-in.split>
+{% endblock layout %}
+```
+
+That example uses the split sign-in page from
+[daisy-cotton-ext](https://github.com/django-mvp/daisy-cotton-ext), which has several sign-in and
+sign-up layouts made for this. This package does not install it. Add `daisy-cotton-ext` to your
+project, list `daisy_cotton_ext` in `INSTALLED_APPS` after `mvp`, and link its stylesheet as shown.
+Every attribute and slot a layout documents works as written, because the tag is yours.
+
+`{{ block.super }}` is the page. It hands the component these pieces, each as a slot:
+
+| Slot | What it holds |
+|---|---|
+| `logo` | Your brand logo, linking home |
+| `title` | The page's heading, on the sign-in and sign-up pages |
+| `providers` | The buttons that skip the form: a passkey, an emailed code, each social provider |
+| default | The form. On every page but sign-in and sign-up, the whole page |
+| `footer` | The link across to the other page, on the sign-in and sign-up pages |
+
+The logo is django-mvp's `<c-mvp.brand.logo>`, so it is the one your project already declares. To
+draw a different mark on these pages, fill the block in the same template:
+
+```html
+{% block logo %}
+  <a href="/"><img src="{% static 'brand/mark-on-dark.svg' %}" alt="Northwind" /></a>
+{% endblock logo %}
+```
+
+Three things to know:
+
+- **The pieces have to be wrapped in a Cotton component.** Plain HTML around `{{ block.super }}`
+  raises an error, because a slot needs a component to belong to. For a layout of your own, write a
+  component that draws `{{ logo }}`, `{{ title }}`, `{{ providers }}`, `{{ slot }}` and
+  `{{ footer }}`, and wrap that.
+- **One layout covers every entrance page**, including password reset, email verification and the
+  second step of a two-factor sign-in.
+- **A layout with a page heading of its own**, such as `<c-sign-up.pitch>`, gives the pages other
+  than sign-in and sign-up two top-level headings, because those pages bring their own.
+
 ## What appears in the Account Center
 
 With django-allauth installed, this package adds to django-mvp's Account Center:

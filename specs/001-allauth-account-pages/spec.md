@@ -181,6 +181,42 @@ navigation and contains allauth's form.
 
 ---
 
+### User Story 5 - Choose the layout of the entrance pages (Priority: P3)
+
+A developer wants the pages a visitor sees before signing in to look like more than a form in a card:
+a brand pane beside the form, or the form over a background. They write one template, which wraps the
+pieces of each entrance page in a layout component of their choice. Every entrance page is then drawn
+in that layout. A project that writes nothing keeps the centred card.
+
+**Why this priority**: The entrance pages are the first thing a visitor sees, and the card is one
+layout among many. Nothing else in the feature depends on it.
+
+**Independent Test**: In a project that provides `mvp_accounts/entrance/base.html` wrapping the
+page's pieces in a component of its own, open the sign-in, sign-up and password reset pages. Each is
+drawn by that component, and the sign-in page's form, its other ways in and its link to sign-up
+arrive as separate pieces.
+
+**Acceptance Scenarios**:
+
+1. **Given** a project with no `mvp_accounts/entrance/base.html` of its own, **When** a visitor opens
+   an entrance page, **Then** it is drawn in the centred card, with the site's logo, the page's
+   heading, its form, its other ways in and its link to the other page.
+2. **Given** a project whose `mvp_accounts/entrance/base.html` wraps the pieces in a component,
+   **When** a visitor opens any entrance page, **Then** that component draws it.
+3. **Given** that project, **When** a visitor opens the sign-in or the sign-up page, **Then** the
+   component receives the heading, the form, the buttons that skip the form (a passkey, an emailed
+   code, each provider) and the link to the other page as four separate pieces.
+4. **Given** that project, **When** a visitor opens an entrance page this package has not taken
+   apart, such as password reset, **Then** the whole page arrives as the form piece and the other
+   three are empty.
+5. **Given** that project, **When** a sign-in attempt fails, **Then** the form comes back in the same
+   layout with allauth's errors.
+6. **Given** any layout, **When** the project has not said otherwise, **Then** the logo piece is the
+   site's brand logo linking home. **Given** a project that fills the logo block, **Then** its own
+   mark is drawn instead.
+
+---
+
 ### Edge Cases
 
 - A host project that already overrides one of allauth's templates keeps its own version.
@@ -192,7 +228,11 @@ navigation and contains allauth's form.
 - A message allauth adds, such as "Confirmation email sent", appears in the shell like any other
   Django message.
 - A page a later 65.x release adds, which this feature did not cover, still extends allauth's
-  layouts and so still renders inside the shell.
+  layouts and so still renders inside the shell, in the project's entrance layout.
+- The pieces of an entrance page are Cotton slots, so what a project wraps around them has to be a
+  Cotton component. Plain markup around them raises an error.
+- A layout that draws a page heading of its own gives the pages this package has not taken apart two
+  top-level headings, because those pages bring their own.
 
 ## Requirements *(mandatory)*
 
@@ -229,6 +269,16 @@ navigation and contains allauth's form.
 - **FR-014**: Every string the package adds MUST be marked for translation.
 - **FR-015**: A reskinned form field MUST keep its label, help text and errors associated with its
   input.
+- **FR-016**: Every entrance page MUST be drawn in the layout the host project's
+  `mvp_accounts/entrance/base.html` wraps around the page's pieces, and in a centred card when the
+  project provides no such template.
+- **FR-017**: The sign-in and sign-up pages MUST hand a layout the heading, the form, the buttons
+  that skip the form and the link to the other page as separate pieces. Any other entrance page MUST
+  arrive whole as the form piece.
+- **FR-018**: A layout MUST receive the site's brand logo linking home as its logo piece, unless the
+  project supplies its own.
+- **FR-019**: Choosing a layout MUST need no setting, and the package MUST NOT depend at runtime on
+  any package that provides layout components.
 
 ### Traceability
 
@@ -238,6 +288,7 @@ navigation and contains allauth's form.
 | FR-009, FR-010, FR-012, FR-013 | US1 |
 | FR-006, FR-007, FR-008, FR-014 | US3 |
 | FR-003 | US4 |
+| FR-016, FR-017, FR-018, FR-019 | US5 |
 
 ### Key Entities
 
@@ -264,6 +315,7 @@ navigation and contains allauth's form.
 - **SC-004**: For each behaviour a project can turn off (code sign-in, code reset, code verification,
   phone numbers, sign-up), a test confirms nothing on any page offers it when it is off.
 - **SC-005**: Every error allauth attaches to a form in the demo appears on the rendered page.
+- **SC-006**: A project changes the layout of every entrance page by writing one template.
 
 ## Assumptions
 

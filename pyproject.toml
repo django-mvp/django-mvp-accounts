@@ -48,6 +48,8 @@ Issues = "https://github.com/django-mvp/django-mvp-accounts/issues"
 dev = [
     "django-allauth[mfa]>=65.19.4,<66",
     "django-mvp-accounts[api]",
+    # The sign-in page layout the demo project draws its entrance pages in.
+    "daisy-cotton-ext>=0.5.0",
     "mvp-shared[dev,test]",
 ]
 
@@ -149,6 +151,7 @@ non-mirror-paths = [
     "tests/test_connections_page.py",
     "tests/test_demo.py",
     "tests/test_elements.py",
+    "tests/test_entrance_layout.py",
     "tests/test_entrance_pages.py",
     "tests/test_management_pages.py",
     "tests/test_recovery_pages.py",

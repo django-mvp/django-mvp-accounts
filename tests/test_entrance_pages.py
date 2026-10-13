@@ -135,7 +135,7 @@ class TestWhatAProjectTurnedOff:
 
         response = client.get(reverse("account_login"))
 
-        # The one in allauth's own sentence, "please sign up first".
+        # The one at the foot of the page.
         assert response.content.decode().count(signup) == 1
         closed = client.get(signup)
         assert "account/signup_closed.html" in [t.name for t in closed.templates]

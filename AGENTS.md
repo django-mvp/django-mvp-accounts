@@ -50,6 +50,11 @@ deployed. Nothing in it is distributed — `pyproject.toml` packages
 `tests/settings.py` inherits `demo/settings.py` rather than restating it, so
 there is one description of the shell.
 
+The demo chooses its own entrance layout in
+`demo/templates/mvp_accounts/entrance/base.html`, and the tests inherit it with
+the rest of the demo. A test about the package's default card puts the
+package's templates first (`tests/test_entrance_layout.py`).
+
 Everything in the demo fails quietly. A Cotton component that cannot be
 resolved renders as empty output, a Tailwind class the packaged stylesheet does
 not emit does nothing, and a menu entry whose URL will not resolve is dropped

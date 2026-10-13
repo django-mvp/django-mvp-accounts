@@ -1,0 +1,10 @@
+{% extends "mvp_accounts/entrance/layout.html" %}
+{% comment %}
+  The entrance layout a project gets when it writes none: a centred card. A
+  project's own file of this name wraps `block.super` in a different component.
+{% endcomment %}
+{% block layout %}
+  <c-mvp_accounts.entrance.card>
+    {{ block.super }}
+  </c-mvp_accounts.entrance.card>
+{% endblock layout %}

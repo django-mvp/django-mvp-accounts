@@ -59,6 +59,9 @@ INSTALLED_APPS = [
     "knox",
     "mvp",
     "daisy_cotton",
+    # The sign-in page layout demo/templates/mvp_accounts/entrance/base.html uses.
+    # After mvp, so the shell's own components of the same name are the ones found.
+    "daisy_cotton_ext",
     "easy_icons",
     "crispy_forms",
     "mvp_forms",

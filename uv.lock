@@ -598,16 +598,16 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "6.1.1"
+version = "6.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f8/d4/8314b5bdef20832f0ac6ae3b3e4d4924e4759fa3b4af27609dd747e7a6be/django-6.1.1.tar.gz", hash = "sha256:7ab93536d8e677aa14554c56426290c69480bf2ee68d7513d4a22f57d6bfeb84", size = 11284905, upload-time = "2026-09-02T17:20:45.621Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/89/24/20d187a22ac821288b53c53b8f696019dcb0c7b4f973f052ade19392c74d/django-6.1.2.tar.gz", hash = "sha256:a1e92451ccb8b514e91bbb3b6d186d20b4030558f116b5d9de6535455ff210b7", size = 11251425, upload-time = "2026-10-06T12:53:29.622Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8d/ca/c1040a4fd15754ede7df15fd72fc2e123045b473b253ab5f5284e11c651e/django-6.1.1-py3-none-any.whl", hash = "sha256:585fb82bf15053c42cf52e67c2f1b54a032dca384759315fd6678ab1870d1d72", size = 8419512, upload-time = "2026-09-02T17:20:39.153Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/83/90ff2dbfac7b519ed77620bdbb827cd2d1a83faf00d076bf95056428bce7/django-6.1.2-py3-none-any.whl", hash = "sha256:141efee6ec64d1db6db90683bf734c550102450f444fb099063b0be1bd27d991", size = 8420684, upload-time = "2026-10-06T12:53:17.381Z" },
 ]
 
 [[package]]
@@ -759,7 +759,7 @@ wheels = [
 
 [[package]]
 name = "django-mvp"
-version = "0.27.1"
+version = "0.28.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "daisy-cotton" },
@@ -771,9 +771,9 @@ dependencies = [
     { name = "django-mvp-forms" },
     { name = "mergedeep" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/22/df/174c7b78477934efccef02b8d415ee85a78cb86d2033491e13810bcfde9a/django_mvp-0.27.1.tar.gz", hash = "sha256:c45c1331d5fd3cda207f290f077a7fc9369f0270caf04b2305342801f4d8d05b", size = 289776, upload-time = "2026-10-07T16:47:09.556Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/fd/3a8840fc4d9b8fe9b975c28f150064e7f03cb497cf7a807999847406475d/django_mvp-0.28.1.tar.gz", hash = "sha256:5fa4d27a72c2f7bf450f17415746507b77a4e4da7fb105fb5c3a9ccb4da1a338", size = 294583, upload-time = "2026-10-09T20:49:14.954Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/55/7b873ed9a283a9396ef6c85cd22d4eb9072a507e99ca6043be46629e7006/django_mvp-0.27.1-py3-none-any.whl", hash = "sha256:24e2a29aea4d727ac2076856a364e578ba287d4b6b8604694d84eb1d290e9a99", size = 339709, upload-time = "2026-10-07T16:47:08.165Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/2c/dfaed45f55d93052473506fc3789766a894e32539d183c07ab40b49652ff/django_mvp-0.28.1-py3-none-any.whl", hash = "sha256:96d33222923689c44b21477912a3a21208b5e0546823fbd8f3c3936aa7033bd7", size = 345486, upload-time = "2026-10-09T20:49:13.504Z" },
 ]
 
 [[package]]

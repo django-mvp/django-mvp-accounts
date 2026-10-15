@@ -1,6 +1,6 @@
 [project]
 name = "django-mvp-accounts"
-description = "Sign-up, sign-in, account management and API access for django-mvp projects, built from the third-party packages that already do each job well"
+description = "Sign-up, sign-in, account management and API access for django-mvp projects"
 # Pre-viable. The first published release is 0.1.0, cut once the Essential
 # goals in GOALS.md are delivered; until then the version stays in 0.0.x and
 # nothing is uploaded to the package index.

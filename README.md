@@ -1,10 +1,20 @@
 # django-mvp-accounts
 
-Sign-up, sign-in, account management and API access for
-[django-mvp](https://github.com/django-mvp/django-mvp) projects, built from the
-third-party packages that already do each job well.
+[![Tests](https://github.com/django-mvp/django-mvp-accounts/actions/workflows/tests.yml/badge.svg)](https://github.com/django-mvp/django-mvp-accounts/actions/workflows/tests.yml)
+[![Build](https://github.com/django-mvp/django-mvp-accounts/actions/workflows/build.yml/badge.svg)](https://github.com/django-mvp/django-mvp-accounts/actions/workflows/build.yml)
+[![Publish](https://github.com/django-mvp/django-mvp-accounts/actions/workflows/publish.yml/badge.svg)](https://github.com/django-mvp/django-mvp-accounts/actions/workflows/publish.yml)
+[![Coverage](https://codecov.io/gh/django-mvp/django-mvp-accounts/branch/main/graph/badge.svg)](https://codecov.io/gh/django-mvp/django-mvp-accounts)
+[![PyPI](https://img.shields.io/pypi/v/django-mvp-accounts)](https://pypi.org/project/django-mvp-accounts/)
+[![Development status](https://img.shields.io/pypi/status/django-mvp-accounts)](https://pypi.org/project/django-mvp-accounts/)
+[![Python](https://img.shields.io/pypi/pyversions/django-mvp-accounts)](https://pypi.org/project/django-mvp-accounts/)
+[![Django](https://img.shields.io/pypi/djversions/django-mvp-accounts)](https://pypi.org/project/django-mvp-accounts/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Licence](https://img.shields.io/github/license/django-mvp/django-mvp-accounts)](https://github.com/django-mvp/django-mvp-accounts/blob/main/LICENSE)
 
-It is not released yet. So far it puts django-allauth's sign-in, sign-up and
+Sign-up, sign-in, account management and API access for django-mvp projects.
+
+It is built for [django-mvp](https://github.com/django-mvp/django-mvp) from the
+third-party packages that already do each job well. It is not released yet. So far it puts django-allauth's sign-in, sign-up and
 sign-out pages inside django-mvp's application shell.
 
 ## Scope & philosophy
@@ -40,6 +50,12 @@ done.
 This package supersedes
 [django-accounts-center](https://github.com/django-mvp/django-accounts-center),
 which will be retired once everything it provides is available here.
+
+## Requirements
+
+- Python 3.12 or later.
+- Django 5.2, 6.0 or 6.1.
+- [django-mvp](https://github.com/django-mvp/django-mvp) 0.27.0 or later.
 
 ## Installation
 
@@ -479,6 +495,10 @@ signing in ends at the second-factor step. The demo sets `MFA_TOTP_INSECURE_BYPA
 to `123456`, so that code passes the step without a phone. That is a convenience for
 this demo only: allauth refuses the setting when `DEBUG` is off, and a project of your
 own should not copy it.
+
+## Changelog
+
+See [CHANGELOG.md](https://github.com/django-mvp/django-mvp-accounts/blob/main/CHANGELOG.md).
 
 ## License
 

@@ -22,6 +22,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** Requires django-mvp 0.30.0 or later. A project that upgrades django-mvp from a
+  version before 0.29 has to add `"django_filters"` to `INSTALLED_APPS` and move any list view of
+  its own to a filterset. django-mvp's
+  [changelog](https://github.com/django-mvp/django-mvp/blob/main/CHANGELOG.md) lists what else
+  changed in those releases.
+
+### Fixed
+
+- The alerts on the API tokens pages and allauth's messages show their icon again. daisy-cotton
+  0.2 stopped choosing one from the colour, so this package now names it.
+
 ## [v0.3.0] - 2026-10-13
 
 ### Added

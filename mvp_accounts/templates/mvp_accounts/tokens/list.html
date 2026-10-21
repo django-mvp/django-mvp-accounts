@@ -21,7 +21,7 @@
                                     done_url="{{ tokens_url }}" />
     {% endif %}
     {% if at_limit %}
-      <c-alert variant="info" role="status">
+      <c-alert variant="info" icon="info" role="status">
         <span>
           {% blocktrans trimmed count limit=token_limit %}
             You hold {{ limit }} token, the most this site allows. Revoke it before you create another.

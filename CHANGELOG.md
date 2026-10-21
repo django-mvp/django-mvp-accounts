@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.4.0] - 2026-10-21
+
 ### Changed
 
 - **Breaking:** Requires django-mvp 0.30.0 or later. A project that upgrades django-mvp from a

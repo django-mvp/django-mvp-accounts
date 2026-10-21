@@ -66,6 +66,9 @@ INSTALLED_APPS = [
     "crispy_forms",
     "mvp_forms",
     "flex_menu",
+    # django-mvp draws every list page's search, sort and filters from a
+    # django-filter filterset and needs it installed.
+    "django_filters",
     "django_cotton",
     # Reloads the browser on a change to a template, a stylesheet or Python. It
     # arrives with the shared development bundle rather than a pin of its own,

@@ -76,7 +76,7 @@ class TokensView(TokenPageMixin, MVPTemplateView):
 
     template_name = "mvp_accounts/tokens/list.html"
     page_title = _("API tokens")
-    page_subtitle = _(
+    page_lead = _(
         "A token lets a script or another tool use the API as you, "
         "without your password."
     )

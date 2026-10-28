@@ -55,7 +55,7 @@ which will be retired once everything it provides is available here.
 
 - Python 3.12 or later.
 - Django 5.2, 6.0 or 6.1.
-- [django-mvp](https://github.com/django-mvp/django-mvp) 0.30.0 or later.
+- [django-mvp](https://github.com/django-mvp/django-mvp) 0.32.0 or later.
 
 ## Installation
 

@@ -12,7 +12,7 @@ class OverviewView(MVPTemplateView):
 
     template_name = "demo/overview.html"
     page_title = "Overview"
-    page_subtitle = "What this package puts on a page"
+    page_lead = "What this package puts on a page"
     breadcrumbs = [{"text": "Overview"}]
 
 
@@ -25,7 +25,7 @@ class OutboxView(MVPTemplateView):
 
     template_name = "demo/outbox.html"
     page_title = "Outbox"
-    page_subtitle = "The emails and text messages the demo would have sent"
+    page_lead = "The emails and text messages the demo would have sent"
     breadcrumbs = [{"text": "Outbox"}]
 
     def dispatch(self, request, *args, **kwargs):

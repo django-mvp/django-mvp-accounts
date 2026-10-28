@@ -71,8 +71,8 @@ its "how to send it" line.
 ## R2 — The page machinery
 
 `mvp.views.MVPTemplateView` is `PageMixin` plus Django's `TemplateView`. `PageMixin`
-(`views/base.py:148-240`) supplies `page.title`, `page.subtitle` and `page.breadcrumbs` from
-`page_title`, `page_subtitle` and `get_breadcrumbs()`. It is importable from `mvp.views.base`.
+(`views/base.py:148-240`) supplies `page.title`, `page.title_args.lead` and `page.breadcrumbs` from
+`page_title`, `page_lead` and `get_breadcrumbs()`. It is importable from `mvp.views.base`.
 django-mvp has a form view for a form with no model, `MVPFormView` (`views/edit.py:251`), but it
 sends the person to a `next` value from the request ahead of its own success URL
 (`views/edit.py:138-148`). The create page must always return to the tokens page, where the

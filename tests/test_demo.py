@@ -48,6 +48,13 @@ class TestOverviewPage:
     def test_the_starter_component_reached_the_page(self, overview_page: str) -> None:
         assert "It renders" in overview_page
 
+    def test_the_lead_is_drawn_under_the_title(self, overview_page: str) -> None:
+        soup = BeautifulSoup(overview_page, "html.parser")
+
+        lead = soup.select_one(".page-title .mvp-page-lead")
+        assert lead is not None
+        assert lead.get_text(strip=True)
+
 
 class TestDemoSignIn:
     def test_allauths_sign_in_page_responds(self, client, db) -> None:

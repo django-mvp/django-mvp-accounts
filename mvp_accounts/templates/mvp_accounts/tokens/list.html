@@ -4,7 +4,7 @@
   {% url "account_api_tokens" as tokens_url %}
   <c-mvp.page>
     {% comment %} `inline_actions` keeps the button beside the heading at every width, and the button's text on one line. {% endcomment %}
-    <c-mvp.page.title :title="page.title" :subtitle="page.subtitle" inline_actions>
+    <c-mvp.page.title :title="page.title" :lead="page.title_args.lead" inline_actions>
       {% if not at_limit %}
         <c-slot name="actions">
           <c-button href="{% url "account_api_token_create" %}"

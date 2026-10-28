@@ -22,6 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Requires django-mvp 0.32.0 or later.
+
+### Fixed
+
+- The API tokens page draws its lead, the line under the title, again. On django-mvp 0.32 it
+  had disappeared, because django-mvp renamed `page_subtitle` to `page_lead`.
+
 ## [v0.4.0] - 2026-10-21
 
 ### Changed

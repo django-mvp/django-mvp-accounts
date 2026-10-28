@@ -131,6 +131,15 @@ class TestTokensView:
 
         assert f'href="{reverse("account_api_token_create")}"' in page
 
+    def test_the_lead_is_drawn_under_the_title(self, signed_in_client) -> None:
+        page = signed_in_client.get(reverse("account_api_tokens")).content.decode()
+
+        lead = BeautifulSoup(page, "html.parser").select_one(
+            ".page-title .mvp-page-lead"
+        )
+        assert lead is not None
+        assert lead.get_text(strip=True)
+
 
 class TestTokensList:
     @pytest.fixture

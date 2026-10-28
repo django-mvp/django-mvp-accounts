@@ -791,7 +791,7 @@ wheels = [
 
 [[package]]
 name = "django-mvp-accounts"
-version = "0.4.0"
+version = "0.4.1"
 source = { editable = "." }
 dependencies = [
     { name = "django" },

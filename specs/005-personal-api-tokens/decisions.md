@@ -93,12 +93,19 @@ same count before creating (FR-009).
 
 **ADR:** none, covered by the decision record D1 requires.
 
-## D8 — No re-authentication before creating a token
+## D8 — Creating a token asks a person to confirm who they are, where allauth is installed
 
-A token is worth as much as a password, and allauth can ask a person to confirm who they are before
-a sensitive change. Using that here would tie the tokens page to allauth, against D3. A token made
-from a hijacked session lasts as long as whoever made it chose, which can be for good, and shows up
-in the list, where it can be revoked. Left out, and named as an open risk on the pull request.
+A token is worth as much as a password, and a person can choose one that never expires, so a token
+made from a hijacked session could keep access for good. Where allauth is installed, the create
+page uses allauth's `reauthentication_required` decorator, as allauth's own pages for adding a
+second factor do: a person who has not signed in within allauth's re-authentication timeout
+confirms who they are first, and allauth replays the submitted form afterwards. It applies
+whether or not `ACCOUNT_REAUTHENTICATION_REQUIRED` is set, as allauth's second-factor pages do,
+because that setting covers allauth's own email and password pages.
+
+Without allauth there is no step. Asking for a password here would rebuild what allauth already
+does (Article XII), and the tokens pages still need nothing from allauth (D3). allauth is imported
+only when it is installed. Revoking asks for nothing, because it only removes access.
 
 **ADR:** none, local to this feature and nothing downstream inherits it.
 

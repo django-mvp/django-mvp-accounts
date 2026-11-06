@@ -29,7 +29,7 @@ from django.test import override_settings
 from django.urls import clear_url_caches, reverse
 from django_cotton.compiler_regex import CottonCompiler
 
-from tests.factories import AuthTokenFactory, EmailAddressFactory
+from tests.factories import PASSWORD, AuthTokenFactory, EmailAddressFactory
 
 
 @pytest.fixture(scope="session")
@@ -62,6 +62,32 @@ def signed_in_client(client, db):
     client.force_login(address.user)
     client.user = address.user
     return client
+
+
+@pytest.fixture
+def sign_in(db, settings):
+    """Sign a person in through allauth's sign-in form.
+
+    ``force_login`` records no sign-in, so a page that asks a person who has not
+    signed in recently to confirm who they are, such as creating an API token,
+    needs a person signed in this way. allauth's sign-in rate limit is off,
+    because the suite signs in from one address far more often than it allows,
+    and the page it lands on is opened here, which shows and clears the
+    "signed in" message so no test sees it.
+    """
+    settings.ACCOUNT_RATE_LIMITS = False
+
+    def sign_in(client, address=None):
+        address = address or EmailAddressFactory()
+        response = client.post(
+            reverse("account_login"), {"login": address.email, "password": PASSWORD}
+        )
+        assert response.status_code == 302
+        client.get(response["Location"])
+        client.user = address.user
+        return client
+
+    return sign_in
 
 
 @pytest.fixture

@@ -147,6 +147,12 @@ value is no longer anywhere on it, and that its row shows the expiry that was ch
 6. **Given** a person chooses a token that never expires, **When** it is created, **Then** knox's
    record has no expiry.
 7. **Given** a person on the create page, **When** they back out, **Then** no token is created.
+8. **Given** a project with django-allauth installed and a person who has not signed in recently,
+   **When** they open the create page or submit it, **Then** allauth asks them to confirm who they
+   are first, and no token is created until they have. Once they confirm, the token they asked for
+   is created.
+9. **Given** a project without django-allauth, **When** a signed-in person opens the create page,
+   **Then** it opens with no confirmation step.
 
 ---
 
@@ -336,13 +342,17 @@ there.
   setting, every signed-in person may. The same answer MUST decide the Account Center entry, the
   card and every tokens page: a person who may not hold tokens sees no entry and no card, and
   every tokens page refuses them, whether loaded or submitted to.
+- **FR-020**: Where django-allauth is installed, creating a token MUST first ask a person who has not
+  signed in recently to confirm who they are, through allauth's own re-authentication step, as
+  allauth does before a new second factor. Revoking a token MUST NOT ask, because it only removes
+  access. Without allauth, the create page MUST open with no confirmation step.
 
 ### Traceability
 
 | Requirement | Story |
 |---|---|
 | FR-002, FR-003, FR-004, FR-005, FR-012, FR-014 | US1 |
-| FR-007, FR-008, FR-009, FR-018 | US2 |
+| FR-007, FR-008, FR-009, FR-018, FR-020 | US2 |
 | FR-010, FR-013 | US3 |
 | FR-011 | US4 |
 | FR-019 | US5 |
@@ -391,8 +401,8 @@ there.
   are the same for every project.
 - The function that says who may hold tokens is the project's. The package calls it and decides
   nothing about what a token is allowed to do.
-- The pages do not ask a person to confirm their password or second factor before creating a
-  token. That step is django-allauth's, and these pages do not depend on allauth.
+- Confirming who a person is before a token is created is django-allauth's step, so a project
+  without allauth gets none. The package does not ask for a password itself.
 - Names for tokens and a last-used time are gaps in django-rest-knox. Raising them there is the
   maintainer's decision. How a person might name a token is an open question for planning and
   review (`planning-notes.md`), and building it here would need its own decision record.

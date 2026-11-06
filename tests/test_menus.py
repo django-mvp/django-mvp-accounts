@@ -75,8 +75,9 @@ class TestApiTokensEntry:
         "name", ["account_api_token_create", "account_api_token_revoke"]
     )
     def test_the_account_sidebar_stays_on_the_pages_under_it(
-        self, signed_in_client, name
+        self, client, sign_in, name
     ) -> None:
+        signed_in_client = sign_in(client)
         token = AuthTokenFactory(user=signed_in_client.user)
         args = [token.token_key] if name.endswith("revoke") else []
 

@@ -35,6 +35,7 @@ SCRIPT = textwrap.dedent(
     account_center = client.get(reverse("account-center"))
     tokens_url = reverse("account_api_tokens")
     tokens_page = client.get(tokens_url)
+    create_page = client.get(reverse("account_api_token_create"))
     group = AccountCenterMenu.get("account")
 
     print(json.dumps({
@@ -44,6 +45,7 @@ SCRIPT = textwrap.dedent(
         "account_entries": [child.name for child in group.children],
         "tokens_url": tokens_url,
         "tokens_page": tokens_page.status_code,
+        "create_page": create_page.status_code,
         "overview": [overview.status_code, overview.content.decode()],
         "account_center": [account_center.status_code, account_center.content.decode()],
     }))
@@ -89,3 +91,6 @@ class TestWithoutAllauth:
 
     def test_the_tokens_page_answers_a_signed_in_person(self, result) -> None:
         assert result["tokens_page"] == 200
+
+    def test_the_create_page_opens_without_confirming(self, result) -> None:
+        assert result["create_page"] == 200

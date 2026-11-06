@@ -33,6 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Requires django-mvp 0.34.0 or later.
 
+### Security
+
+- Creating an API token now asks a person who has not signed in recently to confirm who they are
+  first, through allauth's re-authentication step, so a signed-in session left open is no longer
+  enough to create a token that lasts. Projects without allauth are unchanged.
+
 ## [v0.4.1] - 2026-10-28
 
 ### Changed

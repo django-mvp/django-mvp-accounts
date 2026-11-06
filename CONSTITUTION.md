@@ -82,6 +82,14 @@ hard-coded user-visible string is a blocking review comment.
 A package with no user-facing strings satisfies this trivially, and should not
 carry an empty `locale/` directory to look as though it does.
 
+This article covers the package. The `demo/` application is never translated:
+its strings are plain text, with no `gettext_lazy`, `{% load i18n %}`,
+`{% trans %}` or `{% blocktrans %}`. Every string marked there would be one
+more for the package's translators to carry, for an app no one installs.
+Translation markup in `demo/` is a blocking comment in review. The catalogue
+is built by running `makemessages` from inside `mvp_accounts/`, so it holds the
+package's strings and none of the demo's.
+
 ### Article IX — Data-model conventions
 
 Every model field is a deliberate indexing decision. A consuming project cannot
@@ -222,4 +230,4 @@ Read at planning and at review; applies to every change.
 
 ---
 
-**Version**: 2.1.0 | **Ratified**: 2026-09-24 | **Last Amended**: 2026-10-12
+**Version**: 2.2.0 | **Ratified**: 2026-09-24 | **Last Amended**: 2026-11-06

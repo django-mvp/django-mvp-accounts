@@ -500,6 +500,13 @@ uv run pytest
 uv run pre-commit install
 ```
 
+The English translation catalogue is rebuilt from inside the package, so it
+picks up the package's strings and never the demo's:
+
+```bash
+cd mvp_accounts && uv run django-admin makemessages -l en --no-obsolete
+```
+
 `demo/` is a Django project on django-mvp's application shell, for looking at
 this package in a browser while working on it:
 

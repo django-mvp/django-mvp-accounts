@@ -2,7 +2,6 @@
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 class PhoneNumber(models.Model):
@@ -12,24 +11,24 @@ class PhoneNumber(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="phone_number",
-        verbose_name=_("user"),
-        help_text=_("The account this number belongs to."),
+        verbose_name="user",
+        help_text="The account this number belongs to.",
     )
     number = models.CharField(
         max_length=32,
         unique=True,
-        verbose_name=_("number"),
-        help_text=_("The number in international format, for example +4915112345678."),
+        verbose_name="number",
+        help_text="The number in international format, for example +4915112345678.",
     )
     verified = models.BooleanField(
         default=False,
-        verbose_name=_("verified"),
-        help_text=_("Whether the person has entered the code sent to this number."),
+        verbose_name="verified",
+        help_text="Whether the person has entered the code sent to this number.",
     )
 
     class Meta:
-        verbose_name = _("phone number")
-        verbose_name_plural = _("phone numbers")
+        verbose_name = "phone number"
+        verbose_name_plural = "phone numbers"
 
     def __str__(self) -> str:
         """Return the number."""
@@ -46,29 +45,29 @@ class SentMessage(models.Model):
 
     recipient = models.CharField(
         max_length=254,
-        verbose_name=_("recipient"),
-        help_text=_("The address or phone number it was sent to."),
+        verbose_name="recipient",
+        help_text="The address or phone number it was sent to.",
     )
     subject = models.CharField(
         max_length=255,
-        verbose_name=_("subject"),
-        help_text=_("The email's subject, or 'Text message'."),
+        verbose_name="subject",
+        help_text="The email's subject, or 'Text message'.",
     )
     body = models.TextField(
-        verbose_name=_("body"),
-        help_text=_("The message as it would have been sent."),
+        verbose_name="body",
+        help_text="The message as it would have been sent.",
     )
     sent_at = models.DateTimeField(
         auto_now_add=True,
         db_index=True,
-        verbose_name=_("sent at"),
-        help_text=_("When it was sent. The outbox lists the newest first."),
+        verbose_name="sent at",
+        help_text="When it was sent. The outbox lists the newest first.",
     )
 
     class Meta:
         ordering = ["-sent_at"]
-        verbose_name = _("sent message")
-        verbose_name_plural = _("sent messages")
+        verbose_name = "sent message"
+        verbose_name_plural = "sent messages"
 
     def __str__(self) -> str:
         """Return the subject and the recipient."""

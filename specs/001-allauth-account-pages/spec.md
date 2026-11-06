@@ -323,5 +323,6 @@ arrive as separate pieces.
   65.x line, which is what this feature relies on.
 - django-mvp's shell provides the user menu and the message display used here. A gap in either is
   raised on django-mvp, not worked around.
-- The emails allauth sends keep allauth's own templates.
+- The emails allauth sends keep allauth's subjects and plain text. Their HTML part is drawn on
+  django-mvp's email layout.
 - django-accounts-center is read only for which pages it had to cover, never for how it built them.

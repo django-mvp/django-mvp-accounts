@@ -1,0 +1,19 @@
+{% extends "mvp/email/base.html" %}
+{% load i18n account %}{% comment %}
+allauth passes a code when email verification is by code, and an activate_url otherwise.
+{% endcomment %}
+{% block preheader %}{% if code %}{% blocktrans %}Your email verification code is {{ code }}.{% endblocktrans %}{% else %}{% trans "Confirm your email address to finish signing up." %}{% endif %}{% endblock %}
+{% block body %}
+  {% user_display user as user_display %}
+  <h1>{% trans "Confirm your email address" %}</h1>
+  <c-mvp.email.text>{% blocktranslate with site_domain=current_site.domain %}You're receiving this email because user {{ user_display }} has given your email address to register an account on {{ site_domain }}.{% endblocktranslate %}</c-mvp.email.text>
+  {% if code %}
+    <c-mvp.email.text>{% blocktranslate %}Your email verification code is listed below. Please enter it in your open browser window.{% endblocktranslate %}</c-mvp.email.text>
+    <c-mvp.email.code :code="code" />
+  {% else %}
+    {% trans "Confirm your email address" as button_text %}
+    <c-mvp.email.button :href="activate_url" :text="button_text" />
+    {% include "mvp_accounts/email/link_fallback.html" with url=activate_url %}
+  {% endif %}
+  <c-mvp.email.note>{% blocktranslate %}This mail can be safely ignored if you did not initiate this action.{% endblocktranslate %}</c-mvp.email.note>
+{% endblock %}

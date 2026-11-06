@@ -55,7 +55,7 @@ which will be retired once everything it provides is available here.
 
 - Python 3.12 or later.
 - Django 5.2, 6.0 or 6.1.
-- [django-mvp](https://github.com/django-mvp/django-mvp) 0.32.0 or later.
+- [django-mvp](https://github.com/django-mvp/django-mvp) 0.34.0 or later.
 
 ## Installation
 
@@ -448,6 +448,27 @@ defaults to the value of `DEBUG`, so with `DEBUG` off a missing icon raises and
 breaks the sign-in and sign-up pages, and with it on (or the setting turned on) the
 button shows its name alone. This package ships no provider icons and checks for none.
 The OpenID buttons, one for each brand, all use the `openid` icon.
+
+## Emails
+
+Every email allauth sends has an HTML part drawn on django-mvp's email layout,
+so it arrives with the site's logo, name and theme colours, in light and dark
+mode. That covers email confirmation, sign-in and password reset codes and
+links, the "account already exists" and "unknown account" emails, and the
+notifications allauth sends after a change to an account, including the
+two-factor and connected-account ones.
+
+The subject and the plain-text part stay allauth's own. The HTML part is a
+template at allauth's own name, `<prefix>_message.html`, which allauth sends
+alongside its plain text whenever it finds one. Notifications are sent only
+when the project turns on `ACCOUNT_EMAIL_NOTIFICATIONS`.
+
+To change one, write a template at the same path in your project's template
+directory, such as `templates/account/email/password_reset_key_message.html`.
+The notifications all extend `account/email/base_notification.html`, so
+replacing that one changes all of them. How the layout picks up the logo and
+colours, and how to check an email in a mail catcher, is in
+[django-mvp's email guide](https://github.com/django-mvp/django-mvp/blob/main/docs/developer/email.md).
 
 ## Quickstart
 

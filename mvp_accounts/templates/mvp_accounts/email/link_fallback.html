@@ -1,0 +1,6 @@
+{% load i18n %}{% comment %}
+The address behind an email's button, written out for a mail client that draws no button. Pass the address as url.
+{% endcomment %}<c-mvp.email.note>
+  <p>{% trans "If the button doesn't work, paste this address into your browser:" %}</p>
+  <p style="word-break:break-all;"><a href="{{ url }}">{{ url }}</a></p>
+</c-mvp.email.note>

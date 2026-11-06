@@ -231,5 +231,6 @@ element allauth gave it to.
   forward is added to that element here.
 - allauth's multi-factor app keeps rendering through its layout and element templates, and keeps
   its script hooks, across the 65.x line.
-- The notification emails allauth sends keep allauth's own templates.
+- The notification emails allauth sends keep allauth's subjects and plain text. Their HTML part
+  is drawn on django-mvp's email layout.
 - Enabling factors and setting WebAuthn options belong to the host project.

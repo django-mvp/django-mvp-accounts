@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.5.0] - 2026-11-06
+
 ### Added
 
 - Every email allauth sends now has an HTML part on django-mvp's branded email

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-13 11:07+0200\n"
+"POT-Creation-Date: 2026-11-06 14:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,6 +53,178 @@ msgstr ""
 #: menus.py:165 templates/mvp/account/overview.html:66 tokens/views.py:78
 #: tokens/views.py:88 tokens/views.py:193 tokens/views.py:208
 msgid "API tokens"
+msgstr ""
+
+#: templates/account/email/account_already_exists_message.html:3
+msgid "An account with this email address already exists."
+msgstr ""
+
+#: templates/account/email/account_already_exists_message.html:5
+msgid "You already have an account"
+msgstr ""
+
+#: templates/account/email/account_already_exists_message.html:6
+#, python-format
+msgid ""
+"Someone tried to sign up with %(email)s, but an account with that address "
+"already exists. If it was you and you've forgotten your password, you can "
+"reset it."
+msgstr ""
+
+#: templates/account/email/account_already_exists_message.html:7
+#: templates/account/email/password_reset_key_message.html:5
+#: templates/account/email/password_reset_key_message.html:8
+msgid "Reset your password"
+msgstr ""
+
+#: templates/account/email/account_already_exists_message.html:10
+#: templates/account/email/email_confirmation_message.html:18
+#: templates/account/email/login_code_message.html:8
+#: templates/account/email/password_reset_code_message.html:8
+#: templates/account/email/unknown_account_message.html:11
+msgid "This mail can be safely ignored if you did not initiate this action."
+msgstr ""
+
+#: templates/account/email/base_notification.html:5
+msgid "A change was made to your account."
+msgstr ""
+
+#: templates/account/email/base_notification.html:8
+msgid ""
+"If you didn't make this change, secure your account straight away. It was "
+"made from:"
+msgstr ""
+
+#: templates/account/email/base_notification.html:10
+msgid "IP address"
+msgstr ""
+
+#: templates/account/email/base_notification.html:11
+msgid "Browser"
+msgstr ""
+
+#: templates/account/email/base_notification.html:12
+msgid "Date"
+msgstr ""
+
+#: templates/account/email/email_changed_message.html:3
+#, python-format
+msgid "Your email has been changed from %(from_email)s to %(to_email)s."
+msgstr ""
+
+#: templates/account/email/email_confirmation_message.html:5
+#, python-format
+msgid "Your email verification code is %(code)s."
+msgstr ""
+
+#: templates/account/email/email_confirmation_message.html:5
+msgid "Confirm your email address to finish signing up."
+msgstr ""
+
+#: templates/account/email/email_confirmation_message.html:8
+#: templates/account/email/email_confirmation_message.html:14
+msgid "Confirm your email address"
+msgstr ""
+
+#: templates/account/email/email_confirmation_message.html:9
+#, python-format
+msgid ""
+"You're receiving this email because user %(user_display)s has given your "
+"email address to register an account on %(site_domain)s."
+msgstr ""
+
+#: templates/account/email/email_confirmation_message.html:11
+msgid ""
+"Your email verification code is listed below. Please enter it in your open "
+"browser window."
+msgstr ""
+
+#: templates/account/email/email_deleted_message.html:3
+#, python-format
+msgid "Email address %(deleted_email)s has been removed from your account."
+msgstr ""
+
+#: templates/account/email/login_code_message.html:3
+#, python-format
+msgid "Your sign-in code is %(code)s."
+msgstr ""
+
+#: templates/account/email/login_code_message.html:5
+msgid "Your sign-in code"
+msgstr ""
+
+#: templates/account/email/login_code_message.html:6
+msgid ""
+"Your sign-in code is listed below. Please enter it in your open browser "
+"window."
+msgstr ""
+
+#: templates/account/email/password_changed_message.html:3
+msgid "Your password has been changed."
+msgstr ""
+
+#: templates/account/email/password_reset_code_message.html:3
+#, python-format
+msgid "Your password reset code is %(code)s."
+msgstr ""
+
+#: templates/account/email/password_reset_code_message.html:5
+msgid "Your password reset code"
+msgstr ""
+
+#: templates/account/email/password_reset_code_message.html:6
+msgid ""
+"Your password reset code is listed below. Please enter it in your open "
+"browser window."
+msgstr ""
+
+#: templates/account/email/password_reset_key_message.html:3
+msgid "Choose a new password with the link in this email."
+msgstr ""
+
+#: templates/account/email/password_reset_key_message.html:6
+msgid ""
+"You're receiving this email because you or someone else has requested a "
+"password reset for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+
+#: templates/account/email/password_reset_key_message.html:11
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr ""
+
+#: templates/account/email/password_reset_message.html:3
+msgid "Your password has been reset."
+msgstr ""
+
+#: templates/account/email/password_set_message.html:3
+msgid "Your password has been set."
+msgstr ""
+
+#: templates/account/email/unknown_account_message.html:3
+msgid "There is no account with this email address."
+msgstr ""
+
+#: templates/account/email/unknown_account_message.html:5
+msgid "No account with this address"
+msgstr ""
+
+#: templates/account/email/unknown_account_message.html:6
+#, python-format
+msgid ""
+"You are receiving this email because you, or someone else, tried to access "
+"an account with email %(email)s. However, we do not have any record of such "
+"an account in our database."
+msgstr ""
+
+#: templates/account/email/unknown_account_message.html:7
+msgid "If it was you, you can sign up for an account using the link below."
+msgstr ""
+
+#: templates/account/email/unknown_account_message.html:8
+msgid "Sign up"
 msgstr ""
 
 #: templates/account/login.html:9 templates/account/login.html:24
@@ -185,6 +357,27 @@ msgstr ""
 msgid "I have copied it"
 msgstr ""
 
+#: templates/mfa/email/recovery_codes_generated_message.html:3
+msgid ""
+"A new set of Two-Factor Authentication recovery codes has been generated."
+msgstr ""
+
+#: templates/mfa/email/totp_activated_message.html:3
+msgid "Authenticator app activated."
+msgstr ""
+
+#: templates/mfa/email/totp_deactivated_message.html:3
+msgid "Authenticator app deactivated."
+msgstr ""
+
+#: templates/mfa/email/webauthn_added_message.html:3
+msgid "A new security key has been added."
+msgstr ""
+
+#: templates/mfa/email/webauthn_removed_message.html:3
+msgid "A security key has been removed."
+msgstr ""
+
 #: templates/mvp/account/overview.html:12
 msgid ""
 "Add, remove and verify the addresses on your account, and choose the one we "
@@ -249,6 +442,10 @@ msgstr ""
 
 #: templates/mvp/account/overview.html:69
 msgid "Manage API tokens"
+msgstr ""
+
+#: templates/mvp_accounts/email/link_fallback.html:4
+msgid "If the button doesn't work, paste this address into your browser:"
 msgstr ""
 
 #: templates/mvp_accounts/entrance/layout.html:11
@@ -348,6 +545,19 @@ msgstr ""
 
 #: templates/mvp_accounts/tokens/revoke.html:28
 msgid "Revoke token"
+msgstr ""
+
+#: templates/socialaccount/email/account_connected_message.html:3
+#, python-format
+msgid ""
+"A third-party account from %(provider)s has been connected to your account."
+msgstr ""
+
+#: templates/socialaccount/email/account_disconnected_message.html:3
+#, python-format
+msgid ""
+"A third-party account from %(provider)s has been disconnected from your "
+"account."
 msgstr ""
 
 #: templates/socialaccount/login_redirect.html:16

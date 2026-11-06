@@ -1,0 +1,14 @@
+{% extends "mvp/email/base.html" %}
+{% load i18n %}{% comment %}
+The HTML part of every notification allauth sends about a change to an account. Each one fills notification_message with the change. allauth passes ip, user_agent and timestamp, which say where the change came from.
+{% endcomment %}
+{% block preheader %}{% trans "A change was made to your account." %}{% endblock %}
+{% block body %}
+  <h1>{% block notification_message %}{% endblock %}</h1>
+  <c-mvp.email.text>{% trans "If you didn't make this change, secure your account straight away. It was made from:" %}</c-mvp.email.text>
+  <ul>
+    <li>{% trans "IP address" %}: {{ ip|default:"—" }}</li>
+    <li>{% trans "Browser" %}: {{ user_agent|default:"—" }}</li>
+    <li>{% trans "Date" %}: {{ timestamp }}</li>
+  </ul>
+{% endblock %}

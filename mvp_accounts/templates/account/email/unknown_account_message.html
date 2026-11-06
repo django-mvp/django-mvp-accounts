@@ -1,0 +1,12 @@
+{% extends "mvp/email/base.html" %}
+{% load i18n %}
+{% block preheader %}{% trans "There is no account with this email address." %}{% endblock %}
+{% block body %}
+  <h1>{% trans "No account with this address" %}</h1>
+  <c-mvp.email.text>{% blocktranslate %}You are receiving this email because you, or someone else, tried to access an account with email {{ email }}. However, we do not have any record of such an account in our database.{% endblocktranslate %}</c-mvp.email.text>
+  <c-mvp.email.text>{% blocktranslate %}If it was you, you can sign up for an account using the link below.{% endblocktranslate %}</c-mvp.email.text>
+  {% trans "Sign up" as button_text %}
+  <c-mvp.email.button :href="signup_url" :text="button_text" />
+  {% include "mvp_accounts/email/link_fallback.html" with url=signup_url %}
+  <c-mvp.email.note>{% blocktranslate %}This mail can be safely ignored if you did not initiate this action.{% endblocktranslate %}</c-mvp.email.note>
+{% endblock %}

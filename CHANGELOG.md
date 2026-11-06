@@ -22,6 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Every email allauth sends now has an HTML part on django-mvp's branded email
+  layout, with the site's logo, name and theme colours. The subject and the
+  plain text stay allauth's. A project overrides one by writing a template at
+  the same path.
+
+### Changed
+
+- Requires django-mvp 0.34.0 or later.
+
 ## [v0.4.1] - 2026-10-28
 
 ### Changed

@@ -46,7 +46,11 @@ EMAILS = {
         [f'href="{LINK}"', "person@example.com"],
     ),
     "account/email/email_changed": (
-        {**NOTIFICATION, "from_email": "old@example.com", "to_email": "new@example.com"},
+        {
+            **NOTIFICATION,
+            "from_email": "old@example.com",
+            "to_email": "new@example.com",
+        },
         ["old@example.com", "new@example.com"],
     ),
     "account/email/email_deleted": (

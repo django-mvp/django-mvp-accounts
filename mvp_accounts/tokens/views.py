@@ -4,6 +4,9 @@ Only a project that routes ``mvp_accounts.tokens.urls`` ever imports this module
 which is why it may import django-rest-knox where nothing else in the package may.
 """
 
+from collections.abc import Callable
+
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -140,13 +143,35 @@ class CreateTokenView(TokenPageMixin, PageMixin, FormView):
         """Send a person who is at the limit back to the tokens page."""
         if self.is_at_limit():
             return self.refuse_at_limit()
-        return super().get(request, *args, **kwargs)
+        return self.confirming_identity(super().get)(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """Create nothing for a person who is at the limit."""
         if self.is_at_limit():
             return self.refuse_at_limit()
-        return super().post(request, *args, **kwargs)
+        return self.confirming_identity(super().post)(request, *args, **kwargs)
+
+    def confirming_identity(self, handler: Callable) -> Callable:
+        """Wrap a handler in allauth's re-authentication step, where allauth is installed.
+
+        A token is worth as much as a password, so a person who has not signed in
+        recently confirms who they are first, as allauth asks before a new second
+        factor. allauth replays the submitted form once they have. A project
+        without allauth gets the handler unchanged, and allauth is imported only
+        when it is installed.
+
+        Args:
+            handler: The view method to run once the person is confirmed.
+
+        Returns:
+            The handler, wrapped when allauth is installed.
+        """
+        if not apps.is_installed("allauth.account"):
+            return handler
+        from allauth.account.decorators import reauthentication_required
+
+        confirmed: Callable = reauthentication_required(handler)
+        return confirmed
 
     def refuse_at_limit(self) -> HttpResponse:
         """Say the limit is reached and return to the tokens page.

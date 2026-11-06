@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from unittest import mock
+from urllib.parse import urlencode
 
 import pytest
 from bs4 import BeautifulSoup
@@ -18,7 +19,7 @@ from django.utils import timezone
 from knox.crypto import hash_token
 from knox.models import get_token_model
 
-from tests.factories import AuthTokenFactory, UserFactory
+from tests.factories import AuthTokenFactory, EmailAddressFactory, UserFactory
 
 
 @pytest.fixture
@@ -93,9 +94,8 @@ class TestTokenPagesForAPersonTheProjectTurnsAway:
             == 403
         )
 
-    def test_a_staff_person_is_served(self, staff_only, client, db, page_urls) -> None:
-        staff = UserFactory(is_staff=True)
-        client.force_login(staff)
+    def test_a_staff_person_is_served(self, staff_only, client, sign_in) -> None:
+        staff = sign_in(client, EmailAddressFactory(user__is_staff=True)).user
         token = AuthTokenFactory(user=staff)
         urls = [
             reverse("account_api_tokens"),
@@ -345,6 +345,62 @@ class TestCreateTokenView:
 
         assert response.status_code == 302
         assert response["Location"] == f"{resolve_url('account_login')}?next={url}"
+        assert get_token_model().objects.count() == 0
+
+
+class TestCreateTokenAsksWhoYouAre:
+    @pytest.fixture
+    def create_url(self) -> str:
+        return reverse("account_api_token_create")
+
+    @pytest.fixture
+    def confirm_url(self, create_url) -> str:
+        return f"{reverse('account_reauthenticate')}?{urlencode({'next': create_url})}"
+
+    def test_loading_the_page_asks_to_confirm_first(
+        self, stale_client, create_url, confirm_url
+    ) -> None:
+        response = stale_client.get(create_url)
+
+        assert response.status_code == 302
+        assert response["Location"] == confirm_url
+
+    def test_submitting_the_page_creates_nothing_until_confirmed(
+        self, stale_client, create_url, confirm_url
+    ) -> None:
+        response = stale_client.post(create_url, {"lifetime": "never"})
+
+        assert response["Location"] == confirm_url
+        assert get_token_model().objects.count() == 0
+
+    def test_confirming_creates_the_token_that_was_submitted(
+        self, stale_client, create_url, confirm_url
+    ) -> None:
+        stale_client.post(create_url, {"lifetime": "never"})
+
+        response = stale_client.post(confirm_url, {"password": "password"})
+
+        created = get_token_model().objects.get()
+        assert created.user == stale_client.user
+        assert created.expiry is None
+        assert response["Location"] == reverse("account_api_tokens")
+
+    def test_a_wrong_password_creates_nothing(
+        self, stale_client, create_url, confirm_url
+    ) -> None:
+        stale_client.post(create_url, {"lifetime": "never"})
+
+        stale_client.post(confirm_url, {"password": "wrong"})
+
+        assert get_token_model().objects.count() == 0
+
+    def test_revoking_does_not_ask(self, stale_client) -> None:
+        token = AuthTokenFactory(user=stale_client.user)
+        url = reverse("account_api_token_revoke", args=[token.token_key])
+
+        response = stale_client.post(url)
+
+        assert response["Location"] == reverse("account_api_tokens")
         assert get_token_model().objects.count() == 0
 
 

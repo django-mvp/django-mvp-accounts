@@ -266,6 +266,12 @@ package. The page's form is `CreateTokenForm` in `mvp_accounts.tokens.forms`: it
 field holds the choice, and `get_expiry()` turns a valid choice into a `timedelta`, or `None`
 for "never".
 
+Where allauth is installed, a person who has not signed in recently confirms who they are before
+the create page opens, through allauth's re-authentication step, as they do before adding a second
+factor. If that comes up after they submit the form, the token they asked for is created once they
+confirm. The window is allauth's `ACCOUNT_REAUTHENTICATION_TIMEOUT`, five minutes by default.
+Revoking a token asks for nothing. Without allauth the create page has no such step.
+
 A new token is shown once. The page the person returns to after creating it holds the complete
 value, and no later page does: the package stores nothing but what django-rest-knox keeps, which
 is a digest and the token's first characters. A person who loses a token revokes it and creates

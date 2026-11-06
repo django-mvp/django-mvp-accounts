@@ -468,6 +468,11 @@ class TestDemoWhoAmI:
         return reverse("api-whoami")
 
     @pytest.fixture
+    def signed_in_client(self, client, sign_in):
+        """A person who has just signed in, so creating a token asks nothing more."""
+        return sign_in(client)
+
+    @pytest.fixture
     def new_token(self, signed_in_client) -> str:
         """Create a token on the create page and return the value it shows."""
         response = signed_in_client.post(

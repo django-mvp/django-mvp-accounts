@@ -180,3 +180,6 @@ DEP002 = ["django-mvp", "djangorestframework"]
 # flex_menu comes in through django-mvp, which builds its menus on it, so
 # django-mvp's requirement is the pin that matters.
 DEP003 = ["flex_menu"]
+# allauth is the host project's install, bounded in the README, and the tokens
+# pages work without it. The create page imports it only where it is installed.
+DEP004 = ["allauth"]

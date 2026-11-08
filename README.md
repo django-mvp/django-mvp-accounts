@@ -35,9 +35,21 @@ through django-mvp's application shell, and the places they appear in its menus.
 What appears depends on what the project has installed. Nothing shows up for a
 package or a feature the project has not turned on.
 
-It is about access to your *own* account. It does not decide what a signed-in
-person is allowed to do: roles, groups, object permissions and authorisation
-rules stay the host project's. Handling people's data rights, such as producing
+Where a site groups people, such as a family sharing one plan or a school
+with its classes, those people also need organisations: one they can create,
+invite others to, manage the members of, and switch between when they belong
+to more than one. Organisations come from
+[django-organizations](https://github.com/bennylope/django-organizations), and
+appear only in a project that installs it.
+
+It is about access to your *own* account and to the organisations you belong
+to. It does not decide what a signed-in person is allowed to do. A member's
+role in an organisation (owner, admin or member) says who runs it. What anyone
+may do with the project's own objects, and every other permission, group and
+authorisation rule, stays the host project's. Paying for an organisation's
+places belongs to
+[django-mvp-payments](https://github.com/django-mvp/django-mvp-payments).
+Handling people's data rights, such as producing
 what a site holds about someone, belongs to
 [django-mvp-compliance](https://github.com/django-mvp/django-mvp-compliance).
 

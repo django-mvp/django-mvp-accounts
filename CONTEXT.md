@@ -101,8 +101,10 @@ _Avoid_: section, block (a Django template block is how a page fills a piece, no
 
 ## Terms deliberately not used
 
-**Access control, permissions, roles, groups**: authorisation, meaning who may
-do what. Out of scope. They belong to the host project.
+**Access control, permissions, groups**: authorisation, meaning who may do
+what. Out of scope. They belong to the host project. "Role" is used only for a
+member's place in an organisation (owner, admin or member), which says who runs
+the organisation and grants nothing in the host project.
 
 **Integration**, for a supported third-party package: it was the name of
 django-accounts-center's plugin system, which this package does not carry

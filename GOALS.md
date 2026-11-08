@@ -21,5 +21,6 @@ Importance is a tag on each goal, not a ranking:
 | G3 | Adopting it is as simple as possible, and which pages and menu entries appear depends on what the project has installed | Essential | | |
 | G4 | When the project has a REST API, a person can create, see and revoke their own API tokens | Expected | | |
 | G5 | The latest release of every integrated package is supported wherever possible | Expected | | |
+| G6 | A person can belong to organisations: create one, invite others to it, see and manage its members and their roles, and switch between the organisations they are in | Expected | | Built on django-organizations ([ADR 0007](docs/adr/0007-organisations-come-from-django-organizations.md)) |
 
 _Written 2026-09-24. Revise as the goals change._

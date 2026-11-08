@@ -11,6 +11,7 @@ One file per architecturally significant decision, named
 - [0004 — Reskinned elements keep the ids allauth's scripts look up](0004-elements-keep-allauths-script-hooks.md)
 - [0005 — The package provides the API tokens pages itself](0005-the-package-provides-the-api-tokens-pages.md)
 - [0006 — The entrance layout is a template a project replaces](0006-the-entrance-layout-is-a-template-a-project-replaces.md)
+- [0007 — Organisations come from django-organizations](0007-organisations-come-from-django-organizations.md)
 
 ## What earns a record
 

@@ -11,7 +11,9 @@ and "access" there means access to your own account, never authorisation.
 Before building anything, check whether the authentication package or Django
 REST framework already does it (`CONSTITUTION.md`, Article XII). Anything that needs Django
 REST framework must be absent, not broken, in a project that has not installed
-it (Article XIII). Permissions, roles and groups are out of scope (Article XIV).
+it (Article XIII). Organisations come from django-organizations, and an
+organisation role only says who runs it. Permissions, groups and what a role
+lets a person do with the project's objects are out of scope (Article XIV).
 
 This package supersedes django-accounts-center. Read that repository for what
 the account pages have to cover, not for how to build them: its plugin system

@@ -160,10 +160,11 @@ warning before it is removed, and the CHANGELOG says what replaces it.
 
 ### Article XII — Upstream does the work
 
-Every account, sign-in and token behaviour comes from the package that already
-implements it: the integrated authentication package for accounts and sign-in
-(django-allauth is the only one supported today), Django REST framework and
-its token package for API access. This package configures them, renders their pages
+Every account, sign-in, token and organisation behaviour comes from the package
+that already implements it: the integrated authentication package for accounts
+and sign-in (django-allauth is the only one supported today), Django REST
+framework and its token package for API access, and django-organizations for
+organisations. This package configures them, renders their pages
 through django-mvp's application shell, and places them in its menus. It never
 reimplements one of their features, subclasses one of their models, or ships a
 form that replaces theirs where overriding a template would do.
@@ -188,10 +189,19 @@ project may not want.
 
 ### Article XIV — Scope
 
-This package is about a person's access to their own account. It does not
-decide what a signed-in person may do: permissions, roles, groups and
-object-level authorisation are the host project's, and a pull request adding
-them is out of scope however small it is.
+This package is about a person's access to their own account and to the
+organisations they belong to. It presents what django-organizations provides:
+creating an organisation, inviting people to it, its members and their owner,
+admin or member role, and switching between organisations. A role says who
+runs an organisation, and nothing here gives it any further meaning.
+
+It does not decide what a signed-in person may do. Permissions, groups,
+object-level authorisation, and what membership of an organisation lets a
+person do with the host project's objects are the host project's, and a pull
+request adding them is out of scope however small it is.
+
+It does not bill for organisations. Places an organisation pays for are
+django-mvp-payments', and this package never depends on a payment provider.
 
 It does not issue tokens to third-party applications on a person's behalf.
 That is OAuth, a separate protocol with its own consent and client model, and
@@ -230,4 +240,4 @@ Read at planning and at review; applies to every change.
 
 ---
 
-**Version**: 2.2.0 | **Ratified**: 2026-09-24 | **Last Amended**: 2026-11-06
+**Version**: 3.0.0 | **Ratified**: 2026-09-24 | **Last Amended**: 2026-11-08

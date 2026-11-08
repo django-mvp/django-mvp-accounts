@@ -1,6 +1,6 @@
 # Roadmap — django-mvp-accounts
 
-**Date:** 2026-09-24
+**Date:** 2026-11-08
 
 This document was designed against [GOALS.md](../GOALS.md). See also [CONTEXT.md](../CONTEXT.md)
 for domain terminology and [CONSTITUTION.md](../CONSTITUTION.md) for project standards.
@@ -143,3 +143,30 @@ Every integrated package is tested against its latest release, so a new
 release that breaks something is found here before a project finds it.
 
 Serves G5.
+
+### R7 — Organisations
+
+*feature · advances G6, G2, G3*
+
+A person can belong to organisations as well as having their own account: a
+family sharing a plan, a teacher's class, a language school, a research group.
+They can create an organisation, invite people to it, see its members and
+change their roles, and switch between the organisations they are in, all from
+the Account Center. Built on django-organizations, using its own models,
+invitations and roles
+([ADR 0007](adr/0007-organisations-come-from-django-organizations.md)).
+
+**Deliverables:**
+
+- Pages for creating an organisation, inviting people by email, accepting an
+  invitation, and leaving an organisation.
+- A members page where the organisation's owner and admins change a member's
+  role or remove them.
+- A way to switch between the organisations a person belongs to, and to see
+  which one they are working in.
+- Nothing at all in a project without django-organizations: no menu entry, no
+  page and no import error.
+
+Serves G6, G2 and G3. Out of scope: what membership lets a person do with the
+host project's objects, which stays the project's, and paying for an
+organisation's places, which is django-mvp-payments'.

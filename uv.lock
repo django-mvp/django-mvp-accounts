@@ -628,16 +628,16 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "6.1.2"
+version = "6.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/89/24/20d187a22ac821288b53c53b8f696019dcb0c7b4f973f052ade19392c74d/django-6.1.2.tar.gz", hash = "sha256:a1e92451ccb8b514e91bbb3b6d186d20b4030558f116b5d9de6535455ff210b7", size = 11251425, upload-time = "2026-10-06T12:53:29.622Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/55/79/49a609ea76ec51404b482932e33f1e6858946b920232c11b11a25bea3032/django-6.1.3.tar.gz", hash = "sha256:b5d2d9e35295065d13b1927b3f19a59bd119f737aa6299def14ccca1ae3c8c0d", size = 11306257, upload-time = "2026-11-03T15:21:26.142Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/83/90ff2dbfac7b519ed77620bdbb827cd2d1a83faf00d076bf95056428bce7/django-6.1.2-py3-none-any.whl", hash = "sha256:141efee6ec64d1db6db90683bf734c550102450f444fb099063b0be1bd27d991", size = 8420684, upload-time = "2026-10-06T12:53:17.381Z" },
+    { url = "https://files.pythonhosted.org/packages/77/f2/adbe0352c6673f7b608724be5f69962c80ba1d06f8ed60fa4bfbec258b08/django-6.1.3-py3-none-any.whl", hash = "sha256:a0530e3fdac55d34ccc5893c36f6c57d7a7083064f3d414537e51473648b3290", size = 8424610, upload-time = "2026-11-03T15:21:19.64Z" },
 ]
 
 [[package]]
@@ -877,15 +877,15 @@ wheels = [
 
 [[package]]
 name = "django-rest-knox"
-version = "5.1.0"
+version = "5.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "djangorestframework" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/45/8d/14c8e67495f0e01fd26929c34d2fbebd910c20f9f3dcc268fadb93a009ec/django_rest_knox-5.1.0.tar.gz", hash = "sha256:78307dce32858679fe96afb06c4ab2d4fe0ed085c7a739a7ccc03a14dea2b37b", size = 20973, upload-time = "2026-07-12T12:02:34.482Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/a3/1a59745c00179784452edb5d2a5fdf409fbef0e51b1aeb8fb6b072f0533a/django_rest_knox-5.1.1.tar.gz", hash = "sha256:b303d1a7c898d535cb2d2f153ca80b6d71e493d5fa2d8f09aa17f9b86c66641b", size = 21072, upload-time = "2026-11-04T18:43:34.836Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/20/188535a919c642a20fef171571e5b3470c3323c4be952602e709a0790edf/django_rest_knox-5.1.0-py3-none-any.whl", hash = "sha256:7dad21e91091db07796ea96f559fd2e1f67b8d42748d4e140d2fa7a0319538e7", size = 16044, upload-time = "2026-07-12T12:02:33.249Z" },
+    { url = "https://files.pythonhosted.org/packages/34/de/7a9819f13e8f728f8dccfd4029775d5d98f60063d5b2da8da471ce4e3ab8/django_rest_knox-5.1.1-py3-none-any.whl", hash = "sha256:4a61218ef771c1573edf5c1c308a3c6acc438a6be2e86e225620b74b18fc38b4", size = 16014, upload-time = "2026-11-04T18:43:33.34Z" },
 ]
 
 [[package]]

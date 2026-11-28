@@ -143,9 +143,9 @@ code to make a test pass.
 
 | Check | How |
 |---|---|
-| No N+1 queries on list and detail pages | Render with one record and with several, and assert the same query count under `django_assert_num_queries`. Never pin a count that grows with rows, and never time a request. |
+| No N+1 queries on list and detail pages | Evaluate the queryset or render the page once to warm caches, then render with one record and with several and assert the same query count under `django_assert_num_queries`. The only absolute count allowed is a constant 1. Never pin a count that grows with rows, and never time a request. |
 | Migrations are complete | `python manage.py makemigrations --check` is clean after the change. |
-| Every model field has `verbose_name` and `help_text` | One parametrised test over every field of every model. Never one test per field, and never asserting the wording. |
+| Every model field has `verbose_name` and `help_text` | One test that walks every field of every model, collects the fields that lack either and reports them together (section 7). Never one test per field, and never asserting the wording. |
 | Template output for component changes | Render the template, not only the context. A context key can be right while the template never renders it. |
 | Translated strings compare correctly | Compare `str(value)`. A lazy translation proxy can pass or fail `==` for the wrong reason. |
 
@@ -157,10 +157,94 @@ code to make a test pass.
   lower the figure. Do not enable template coverage.
 - A test written only to raise coverage is still bound by section 1.
 
+## 7. How many tests, and at which layer
+
+**One test per code path.** Parametrise only over values that take different branches: one
+representative case plus each boundary. Twelve models through one generic view, four record kinds
+through one shared page, every role through one permission check: one or two cases.
+
+**A sweep is one test.** A check over every template, icon alias, component or field collects
+every failure and reports them together. It never produces one test id per item.
+
+**Test each rule where it is implemented.**
+
+- A form, view, admin, API or page test checks that a rule is wired in, with one case. It does not
+  repeat the rule's own cases.
+- The behaviour of a shared base class, mixin or generic view is tested once, against the base. A
+  concrete class gets its own test only for what it overrides.
+- A browser test is only for behaviour that needs a browser: JavaScript, focus, keyboard, drag,
+  storage, htmx swaps and client-side state. Server-rendered markup is tested with the test
+  client. Computed layout, colour and size are not tested (section 1).
+
+## 8. Tests that earn nothing
+
+A review names each of these as a finding. Do not write them.
+
+- **What Django or a dependency guarantees.** Field options (required, `max_length`, null and
+  blank, choices, default, editable, ordering), cascades, a unique constraint raising
+  `IntegrityError`, `auto_now`, admin `search_fields` and `list_filter` doing their job,
+  `ModelForm` saving, django-filter combining filters.
+- **Configuration literals.** A fixed list of field names, choices, vocabulary members, menu
+  entries, inline classes, widget class names, icon names or CSS classes.
+- **Tests that cannot fail.** `count() >= 0`, `hasattr`, `is not None`, `issubclass` of a class the
+  code defines, `or True`, an assertion inside an `if` guard, a `try`/`except` that ends in
+  `skip`, a substring the page shell already contains.
+- **Tests of the test setup.** Factories returning what they build, fixtures existing.
+- **A regression test for behaviour the suite already tests.** A fixed bug gets its own test only
+  when no behaviour test would have caught it. The test is named for the behaviour, never the issue.
+
+## 9. Deterministic tests
+
+- No `sleep` to separate timestamps: set them explicitly. No fixed wait in a browser test: wait
+  for the state.
+- No `.first()` or slice without `order_by` when the result matters.
+- Random factory data is seeded, and a factory never randomises a field a test depends on, such
+  as an active user or a visibility flag.
+- Anything a test mutates (a registry, settings, a cache, the ContentType cache) is restored by a
+  fixture.
+- No network. Vendor the assets a test needs.
+
+## 10. Fast tests
+
+- Shared setup is class- or module-scoped where the tests only read it.
+- When one value is checked, read the view's context or the plugin's output instead of rendering
+  and parsing a full page.
+- "One and several" means 1 and 3 rows, never 5 and 25.
+- A test that takes over a second, starts a subprocess or needs a browser carries a marker: `slow`
+  for the first two, `e2e` for a browser. Register both under `markers` in the pytest
+  configuration. Run the quick selection `-m "not e2e and not slow"` while you work, so a test
+  that should be skipped there and is not marked costs time on every run.
+
 ## Project additions
 
-<!-- Rules that apply to this repository only. Leave empty when there are none. -->
+- **Run the quick suite with `pytest -m "not e2e and not slow"`.** It leaves out every browser test
+  and every test that takes over a second or starts a subprocess. `tests/conftest.py` adds the
+  `e2e` marker to any test that uses the Playwright `browser` fixture, so a new browser test cannot
+  miss it, and the `slow` marker to the tests listed in `SLOW_TESTS` in the same file. The full
+  suite, browser tests included, runs before a pull request opens and in CI.
+- **Write a browser test only for what the test client cannot see.** In this package that is the
+  new-token card's script: the field selecting its whole text when clicked and the copy button.
+  A page's markup, its links and its forms are tested with the test client.
+- **Install the browser once with `uv run playwright install chromium`.** A machine without the browser
+  skips them. In CI a missing browser is a failure, so a skip never reads as a pass.
+- **A browser test signs in with the test client and hands the session to the browser.** Use the
+  `sign_in` fixture, copy the `sessionid` cookie into a new context and mark the test
+  `django_db(transaction=True)` so the live server sees its rows. Drive the page through its form,
+  as a person would.
+- **Browser tests wait for a state, never for a number of milliseconds.** `wait_for_alpine` waits
+  until every `x-data` element is set up, `wait_until_still` until no htmx request is in flight
+  and nothing is moving, and `wait_until` for something the server does. Playwright's `expect`
+  waits on its own.
+- **A browser test never reaches the network.** The browser answers the CDN addresses a page asks
+  for from files in `tests/fixtures/vendor/`: the Bootstrap Icons stylesheet and its font. Add a
+  pattern to `STAND_INS` in `tests/conftest.py` for a new address. Any other request to a host that
+  is not this machine is refused, and the test fails at its end with the addresses it asked for.
+- **A browser test puts a patched value back only when the server is idle.** The live server
+  answers in its own threads and reads the same settings. Change a value with `monkeypatch` before
+  the first request: the test's pages are closed and the server has finished its requests before
+  the `monkeypatch` undoes the change. Values set through the `settings` fixture are put back
+  earlier and do not have this guarantee.
 
 ---
 
-**Version**: 1.0.0
+**Version**: 1.1.0

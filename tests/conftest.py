@@ -29,8 +29,8 @@ from allauth.mfa.totp.internal.auth import (
 )
 from bs4 import BeautifulSoup
 from django import template as dj_template
-from django.template import Context
 from django.core.signals import request_finished, request_started
+from django.template import Context
 from django.test import override_settings
 from django.urls import clear_url_caches, reverse
 from django_cotton.compiler_regex import CottonCompiler

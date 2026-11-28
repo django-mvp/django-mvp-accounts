@@ -9,7 +9,7 @@
 # black and pyupgrade are deliberately absent: `ruff format` is a drop-in black
 # replacement, and ruff's UP rules cover pyupgrade.
 
-exclude: "^docs/|/migrations/"
+exclude: "^docs/|/migrations/|^tests/fixtures/vendor/"
 default_stages: [pre-commit]
 
 repos:

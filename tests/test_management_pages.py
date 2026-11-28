@@ -13,6 +13,7 @@ import re
 
 import pytest
 from allauth.account.models import EmailAddress
+from bs4 import BeautifulSoup
 from django.core.cache import cache
 from django.urls import reverse
 
@@ -218,8 +219,7 @@ class TestWarnNoEmail:
         html = client.get(reverse("account_email")).content.decode()
 
         assert STYLESHEET in html
-        assert 'role="alert"' in html
-        alert = re.search(
-            r'<div role="alert"[^>]*class="alert alert-warning[^"]*"', html
-        ) or re.search(r'class="alert alert-warning[^"]*"[^>]*role="alert"', html)
+        alert = BeautifulSoup(html, "html.parser").select_one(
+            '[role="alert"].alert-warning'
+        )
         assert alert, "the warning is not drawn as a warning alert"

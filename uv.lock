@@ -846,6 +846,7 @@ dev = [
     { name = "django-allauth", extra = ["mfa"] },
     { name = "django-mvp-accounts", extra = ["api"] },
     { name = "mvp-shared", extra = ["dev", "test"] },
+    { name = "pytest-playwright" },
 ]
 
 [package.metadata]
@@ -863,6 +864,7 @@ dev = [
     { name = "django-allauth", extras = ["mfa"], specifier = ">=65.19.4,<66" },
     { name = "django-mvp-accounts", extras = ["api"] },
     { name = "mvp-shared", extras = ["dev", "test"], git = "https://github.com/django-mvp/shared.git?tag=v0.6.0" },
+    { name = "pytest-playwright" },
 ]
 
 [[package]]

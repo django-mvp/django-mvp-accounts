@@ -23,4 +23,5 @@ jobs:
     uses: django-mvp/shared/.github/workflows/tests.yml@v0.6.0
     with:
       coverage-package: mvp_accounts
+      install-playwright: true
     secrets: inherit

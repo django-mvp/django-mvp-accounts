@@ -51,6 +51,9 @@ dev = [
     # The sign-in page layout the demo project draws its entrance pages in.
     "daisy-cotton-ext>=0.5.0",
     "mvp-shared[dev,test]",
+    # Drives the browser tests. The shared bundle brings it too, named here
+    # because the suite imports it.
+    "pytest-playwright",
 ]
 
 [tool.uv.sources]
@@ -84,6 +87,15 @@ addopts = [
     "--tb=short",
     "-ra",
 ]
+markers = [
+    "e2e: Tests that drive a real browser through Playwright",
+    "slow: Tests that take over a second or start a subprocess",
+]
+# pytest-playwright's sync API keeps an event loop on the main thread, which
+# trips Django's async-safety guard as a false positive during pytest-django's
+# database setup for a live_server test. No async view under test touches the
+# database from that loop, so the guard is switched off.
+env = ["DJANGO_ALLOW_ASYNC_UNSAFE=1"]
 
 [tool.coverage.report]
 skip_empty = true
@@ -148,6 +160,7 @@ non-mirror-paths = [
     "tests/test_account_center.py",
     "tests/test_app.py",
     "tests/test_components/",
+    "tests/test_conftest.py",
     "tests/test_connections_page.py",
     "tests/test_demo.py",
     "tests/test_elements.py",
@@ -159,6 +172,7 @@ non-mirror-paths = [
     "tests/test_security_key_pages.py",
     "tests/test_sessions_page.py",
     "tests/test_social_entrance_pages.py",
+    "tests/test_tokens/test_created_token_e2e.py",
     "tests/test_two_factor_pages.py",
     "tests/test_two_factor_sign_in.py",
     "tests/test_without_allauth.py",

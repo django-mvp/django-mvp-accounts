@@ -20,8 +20,11 @@ on:
 
 jobs:
   call-tests:
-    uses: django-mvp/shared/.github/workflows/tests.yml@v0.6.0
+    uses: django-mvp/shared/.github/workflows/tests.yml@v0.7.0
     with:
       coverage-package: mvp_accounts
       install-playwright: true
+      # Browser tests behave the same on every Python and Django release, so only
+      # the coverage leg runs them. The other legs run `-m "not e2e"`.
+      browser-marker: e2e
     secrets: inherit

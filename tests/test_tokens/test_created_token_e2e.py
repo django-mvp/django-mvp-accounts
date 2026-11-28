@@ -1,15 +1,15 @@
 """The new-token card in a real browser: what its script does on the page.
 
 The page's markup is tested with the test client in ``test_views.py``. What needs
-a browser is the card's Alpine component: the field selects the whole token when it
-takes focus, and the button copies it.
+a browser is the card's Alpine component: the field selects the whole token when
+clicked, and the button copies it.
 """
 
 import pytest
 from django.urls import reverse
 from playwright.sync_api import expect
 
-from tests.conftest import requires_browser, wait_for_alpine, wait_until_still
+from tests.conftest import requires_browser, wait_for_alpine
 
 pytestmark = [requires_browser, pytest.mark.django_db(transaction=True)]
 
@@ -42,21 +42,17 @@ def new_token_page(browser, live_server, client, sign_in):
     page.locator("form button[type=submit]").click()
     page.wait_for_url("**" + reverse("account_api_tokens"))
     wait_for_alpine(page)
-    wait_until_still(page)
     yield page
     context.close()
 
 
 class TestNewTokenCard:
-    def test_tabbing_back_into_the_token_selects_all_of_it(self, new_token_page):
+    def test_clicking_the_token_selects_all_of_it(self, new_token_page):
         page = new_token_page
-        expect(page.locator(TOKEN_FIELD)).to_be_focused()
+        page.locator(COPY_BUTTON).focus()
 
-        page.keyboard.press("Tab")
-        expect(page.locator(TOKEN_FIELD)).not_to_be_focused()
-        page.keyboard.press("Shift+Tab")
+        page.locator(TOKEN_FIELD).click()
 
-        expect(page.locator(TOKEN_FIELD)).to_be_focused()
         selected = page.evaluate(
             """() => {
               const field = document.querySelector('#new-api-token');

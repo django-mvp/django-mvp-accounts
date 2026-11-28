@@ -93,8 +93,8 @@ markers = [
 ]
 # pytest-playwright's sync API keeps an event loop on the main thread, which
 # trips Django's async-safety guard as a false positive during pytest-django's
-# database setup for a live_server test. No async view under test touches the
-# database from that loop, so the guard is switched off.
+# database setup for a live_server test. This package has no async views, so
+# the guard is switched off for the run.
 env = ["DJANGO_ALLOW_ASYNC_UNSAFE=1"]
 
 [tool.coverage.report]

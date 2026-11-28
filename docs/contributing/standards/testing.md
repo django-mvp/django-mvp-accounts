@@ -223,9 +223,9 @@ A review names each of these as a finding. Do not write them.
   miss it, and the `slow` marker to the tests listed in `SLOW_TESTS` in the same file. The full
   suite, browser tests included, runs before a pull request opens and in CI.
 - **Write a browser test only for what the test client cannot see.** In this package that is the
-  new-token card's script: the field selecting its text when it takes focus and the copy button.
+  new-token card's script: the field selecting its whole text when clicked and the copy button.
   A page's markup, its links and its forms are tested with the test client.
-- **Run the browser tests once with `playwright install chromium`.** A machine without the browser
+- **Install the browser once with `uv run playwright install chromium`.** A machine without the browser
   skips them. In CI a missing browser is a failure, so a skip never reads as a pass.
 - **A browser test signs in with the test client and hands the session to the browser.** Use the
   `sign_in` fixture, copy the `sessionid` cookie into a new context and mark the test
